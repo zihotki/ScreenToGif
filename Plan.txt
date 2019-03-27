@@ -1,0 +1,25 @@
+After opening a default screen should be present with buttons - Start recording and Options
+
+Options screen should incorporate all file save options and configuration.
+
+Editor needs to be trimmed down so that there will be less toolbars as well as buttons available. 
+Main goal of the editor is to cut extra frames in the beginning and at the end.
+
+The workflow (after setup is done) will be:
+1. Run the app
+2. switch to youtube
+3. press hotkeys to start recording
+4. Recording window pops-out to foreground maintaining the focus to original window
+5. press hotkey to stop recording
+6. the app will also send 'SPACE' key to window in focus so that play back will be paused
+7. an editor will open and focus will go to it
+8. adjustments can be done for the animation in the editor
+9. 'CTRL+S' pressed, save operation is run in background. Encoder window will remain hidden and can be opened via menu in the tray.
+The editor will be closed.
+10. Recording window will open in foreground but the focus will go to original window (optional, we can use global hotkeys to start new one)
+
+
+Tasks:
+
+1. Move save options to config window
+2. Remove redundant toolbar buttons
