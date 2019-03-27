@@ -2200,7 +2200,7 @@
                                         <n:ExtendedTextBox Grid.Row="5" x:Name="CustomCommandsVideoTextBox" MinHeight="23" Margin="20,3,3,3" VerticalContentAlignment="Top" TextWrapping="WrapWithOverflow" 
                                                            AcceptsReturn="True" Text="{Binding Source={x:Static u:UserSettings.All}, Path=CustomCommandsVideo, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                                            Visibility="{Binding IsChecked, ElementName=CustomCommandsVideoCheckBox, Converter={StaticResource Bool2Visibility}}"
-                                                           ToolTip="{DynamicResource S.SaveAs.SaveOptions.ExecuteCommands.Info}"/>
+                                                           ToolTip="{DynamicResource S.SaveAs.SaveOptions.ExecuteCommands.Info}"/>                                        
                                     </Grid>
 
                                     <Grid Visibility="{Binding IsChecked, ElementName=ProjectRadioButton, Converter={StaticResource Bool2Visibility}}">
@@ -2395,6 +2395,14 @@
                                 </Grid>
 
                                 <Grid Grid.Row="1">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+
+                                    <n:ExtendedCheckBox Grid.Row="0" x:Name="AutoGenerateFileNameCheckBox" Text="{DynamicResource S.SaveAs.SaveOptions.AutoGenerateFilename}" Margin="0,3,3,3"
+                                                            IsChecked="{Binding Source={x:Static u:UserSettings.All}, Path=AutoGenerateFilename, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                                </Grid>
+                                <Grid Grid.Row="2">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition/>
                                         <ColumnDefinition Width="Auto"/>

@@ -266,6 +266,11 @@ namespace ScreenToGif.Util
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
+        private string AutogenerateFileName()
+        {
+            return DateTime.Now.ToString("dd-MM-yy HH-mm-ss");
+        }
+
         #endregion
 
         #region Startup
@@ -1801,9 +1806,23 @@ namespace ScreenToGif.Util
             set => SetValue(value);
         }
 
+        public bool AutoGenerateFilename
+        {
+            get => (bool)GetValue();
+            set => SetValue(value);
+        }
+
         public string LatestFilename
         {
-            get => (string)GetValue();
+            get
+            {
+                if (AutoGenerateFilename)
+                {
+                    return AutogenerateFileName();
+                }
+
+                return (string)GetValue();
+            }
             set => SetValue(value);
         }
 
@@ -1913,7 +1932,15 @@ namespace ScreenToGif.Util
 
         public string LatestApngFilename
         {
-            get => (string)GetValue();
+            get
+            {
+                if (AutoGenerateFilename)
+                {
+                    return AutogenerateFileName();
+                }
+
+                return (string)GetValue();
+            }
             set => SetValue(value);
         }
 
@@ -1999,7 +2026,15 @@ namespace ScreenToGif.Util
 
         public string LatestVideoFilename
         {
-            get => (string)GetValue();
+            get
+            {
+                if (AutoGenerateFilename)
+                {
+                    return AutogenerateFileName();
+                }
+
+                return (string)GetValue();
+            }
             set => SetValue(value);
         }
 
@@ -2061,7 +2096,15 @@ namespace ScreenToGif.Util
 
         public string LatestProjectFilename
         {
-            get => (string)GetValue();
+            get
+            {
+                if (AutoGenerateFilename)
+                {
+                    return AutogenerateFileName();
+                }
+
+                return (string)GetValue();
+            }
             set => SetValue(value);
         }
 
@@ -2105,7 +2148,15 @@ namespace ScreenToGif.Util
 
         public string LatestImageFilename
         {
-            get => (string)GetValue();
+            get
+            {
+                if (AutoGenerateFilename)
+                {
+                    return AutogenerateFileName();
+                }
+
+                return (string)GetValue();
+            }
             set => SetValue(value);
         }
 
@@ -2149,7 +2200,15 @@ namespace ScreenToGif.Util
 
         public string LatestPhotoshopFilename
         {
-            get => (string)GetValue();
+            get
+            {
+                if (AutoGenerateFilename)
+                {
+                    return AutogenerateFileName();
+                }
+
+                return (string)GetValue();
+            }
             set => SetValue(value);
         }
 
