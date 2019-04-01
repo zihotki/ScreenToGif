@@ -286,7 +286,7 @@ namespace ScreenToGif.Windows
 
             #endregion
 
-            RibbonTabControl.SelectedIndex = 0;
+            //RibbonTabControl.SelectedIndex = 0;
 
             WelcomeTextBlock.Text = StringResource(Humanizer.WelcomeInfo());
             SymbolTextBlock.Text = Humanizer.Welcome();
@@ -299,7 +299,7 @@ namespace ScreenToGif.Windows
             else
                 Glass.RetractGlassFrame(this);
 
-            RibbonTabControl.UpdateVisual();
+            //RibbonTabControl.UpdateVisual();
 
             //Returns the preview if was playing before the deactivation of the window.
             if (WasPreviewing)
@@ -311,7 +311,7 @@ namespace ScreenToGif.Windows
 
         private void Window_Deactivated(object sender, EventArgs e)
         {
-            RibbonTabControl.UpdateVisual(false);
+            //RibbonTabControl.UpdateVisual(false);
 
             //Pauses the recording preview.
             if (_timerPreview.Enabled)
@@ -450,8 +450,8 @@ namespace ScreenToGif.Windows
                 return;
 
             //If the window color changes, update the tabs style.
-            if (e.PropertyName == "WindowGlassColor")
-                RibbonTabControl.UpdateVisual(IsActive);
+           // if (e.PropertyName == "WindowGlassColor")
+            //    RibbonTabControl.UpdateVisual(IsActive);
         }
 
         #endregion
@@ -581,22 +581,6 @@ namespace ScreenToGif.Windows
             Encoder.Restore();
             ShowInTaskbar = true;
             WindowState = WindowState.Normal;
-        }
-
-        private void NewWebcamRecording_Executed(object sender, ExecutedRoutedEventArgs e)
-        {
-            e.Handled = true;
-            Pause();
-            ClosePanel(removeEvent: true);
-
-            var recorder = new Webcam();
-            recorder.ShowDialog();
-
-            if (recorder.Project?.Any == true)
-            {
-                LoadProject(recorder.Project);
-                ShowHint("Hint.NewWebcamRecording");
-            }
         }
 
         private void NewBoardRecording_Executed(object sender, ExecutedRoutedEventArgs e)
@@ -731,40 +715,6 @@ namespace ScreenToGif.Windows
 
             Encoder.Restore();
             WindowState = WindowState.Normal;
-        }
-
-        private void InsertWebcamRecording_Executed(object sender, ExecutedRoutedEventArgs e)
-        {
-            e.Handled = true;
-            Pause();
-
-            var recorder = new Webcam();
-            recorder.ShowDialog();
-
-            #region If recording cancelled
-
-            if (recorder.Project?.Frames == null || !recorder.Project.Any)
-            {
-                GC.Collect();
-
-                return;
-            }
-
-            #endregion
-
-            #region Insert
-
-            var insert = new Insert(Project.Frames.CopyList(), recorder.Project.Frames, FrameListView.SelectedIndex) { Owner = this };
-
-            var result = insert.ShowDialog();
-
-            if (result.HasValue && result.Value)
-            {
-                Project.Frames = insert.ActualList;
-                LoadSelectedStarter(0);
-            }
-
-            #endregion
         }
 
         private void InsertBoardRecording_Executed(object sender, ExecutedRoutedEventArgs e)
@@ -1794,7 +1744,7 @@ namespace ScreenToGif.Windows
 
             //Bug: I need to take into consideration that the RibbonTabControl.ActualHeight can change, because the tab headers can occupy 2 rows.
             var width = (size.Width * ZoomBoxControl.Zoom / ZoomBoxControl.ScaleDiff + 60) + borderWidth;
-            var height = (size.Height * ZoomBoxControl.Zoom / ZoomBoxControl.ScaleDiff + (RibbonTabControl.ActualHeight + FrameListView.ActualHeight + LowerGrid.ActualHeight)) + borderHeight;
+            var height = (size.Height * ZoomBoxControl.Zoom / ZoomBoxControl.ScaleDiff + (Menu.ActualHeight + FrameListView.ActualHeight + LowerGrid.ActualHeight)) + borderHeight;
 
             //If image is too small, size to the minimum size.
             if (width < 770)
@@ -4386,8 +4336,9 @@ namespace ScreenToGif.Windows
                 _timerPreview.Stop();
 
                 NotPreviewing = true;
-                PlayButton.Text = StringResource("Editor.Playback.Play");
-                PlayButton.Content = FindResource("Vector.Play");
+                
+                Menu.PlayButton.Text = StringResource("Editor.Playback.Play");
+                Menu.PlayButton.Content = FindResource("Vector.Play");
                 PlayPauseButton.Content = FindResource("Vector.Play");
 
                 PlayMenuItem.Header = StringResource("Editor.Playback.Play");
@@ -4398,8 +4349,8 @@ namespace ScreenToGif.Windows
             else
             {
                 NotPreviewing = false;
-                PlayButton.Text = StringResource("Editor.Playback.Pause");
-                PlayButton.Content = FindResource("Vector.Pause");
+                Menu.PlayButton.Text = StringResource("Editor.Playback.Pause");
+                Menu.PlayButton.Content = FindResource("Vector.Pause");
                 PlayPauseButton.Content = FindResource("Vector.Pause");
 
                 PlayMenuItem.Header = StringResource("Editor.Playback.Pause");
@@ -4436,8 +4387,8 @@ namespace ScreenToGif.Windows
             _timerPreview.Stop();
 
             NotPreviewing = true;
-            PlayButton.Text = StringResource("Editor.Playback.Play");
-            PlayButton.Content = FindResource("Vector.Play");
+            Menu.PlayButton.Text = StringResource("Editor.Playback.Play");
+            Menu.PlayButton.Content = FindResource("Vector.Play");
             PlayPauseButton.Content = FindResource("Vector.Play");
 
             PlayMenuItem.Header = StringResource("Editor.Playback.Play");
@@ -6844,7 +6795,7 @@ namespace ScreenToGif.Windows
 
         public void NotificationUpdated()
         {
-            RibbonTabControl.UpdateNotifications();
+            //RibbonTabControl.UpdateNotifications();
         }
     }
 }

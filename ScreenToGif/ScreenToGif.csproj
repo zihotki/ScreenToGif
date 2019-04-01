@@ -201,9 +201,6 @@
     <Compile Include="Controls\StatusBand.cs" />
     <Compile Include="Controls\StatusList.cs" />
     <Compile Include="Controls\TextPath.cs" />
-    <Compile Include="Controls\WebcamControl.xaml.cs">
-      <DependentUpon>WebcamControl.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Controls\ZoomBox.cs" />
     <Compile Include="ImageUtil\Apng\Apng.cs" />
     <Compile Include="ImageUtil\Apng\Chunks\ActlChunk.cs" />
@@ -374,18 +371,6 @@
     <Compile Include="Util\UiElementsExtension.cs" />
     <Compile Include="Util\UserSettings.cs" />
     <Compile Include="Util\VisualHelper.cs" />
-    <Compile Include="Webcam\DirectShow\ControlStreaming.cs" />
-    <Compile Include="Webcam\DirectShow\CoreStreaming.cs" />
-    <Compile Include="Webcam\DirectShow\Devices.cs" />
-    <Compile Include="Webcam\DirectShow\EditStreaming.cs" />
-    <Compile Include="Webcam\DirectShow\ExtendStreaming.cs" />
-    <Compile Include="Webcam\DirectShow\UtilStreaming.cs" />
-    <Compile Include="Webcam\DirectShow\Uuid.cs" />
-    <Compile Include="Webcam\DirectShow\Workaround.cs" />
-    <Compile Include="Webcam\DirectX\CaptureWebcam.cs" />
-    <Compile Include="Webcam\DirectX\Filter.cs" />
-    <Compile Include="Webcam\DirectX\FilterCollection.cs" />
-    <Compile Include="Webcam\DirectX\Filters.cs" />
     <Compile Include="Windows\Other\ColorSelector.xaml.cs">
       <DependentUpon>ColorSelector.xaml</DependentUpon>
     </Compile>
@@ -464,16 +449,9 @@
     <Compile Include="Windows\UserControls\EditorMenu.xaml.cs">
       <DependentUpon>EditorMenu.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Windows\Webcam.xaml.cs">
-      <DependentUpon>Webcam.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Windows\Board.xaml.cs">
       <DependentUpon>Board.xaml</DependentUpon>
     </Compile>
-    <Page Include="Controls\WebcamControl.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="Resources\Backgrounds.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -732,10 +710,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Windows\UserControls\EditorMenu.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Windows\Webcam.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

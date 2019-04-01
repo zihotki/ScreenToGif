@@ -117,46 +117,6 @@ namespace ScreenToGif.Model
             }
         }
 
-        public ICommand OpenWebcamRecorder
-        {
-            get
-            {
-                return new RelayCommand
-                {
-                    CanExecutePredicate = o =>
-                    {
-                        //True if all windows are not Recorders.
-                        return Application.Current.Windows.OfType<Window>().All(a => !(a is RecorderWindow));
-                    },
-                    ExecuteAction = a =>
-                    {
-                        var caller = a as Window;
-                        caller?.Hide();
-
-                        var recorder = new Windows.Webcam();
-                        recorder.Closed += (sender, args) =>
-                        {
-                            var window = sender as Windows.Webcam;
-
-                            if (window?.Project != null && window.Project.Any)
-                            {
-                                ShowEditor(window.Project);
-                                caller?.Close();
-                            }
-                            else
-                            {
-                                caller?.Show();
-                                CloseOrNot();
-                            }
-                        };
-
-                        Application.Current.MainWindow = recorder;
-                        recorder.Show();
-                    }
-                };
-            }
-        }
-
         public ICommand OpenBoardRecorder
         {
             get

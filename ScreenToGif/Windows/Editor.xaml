@@ -9,10 +9,12 @@
         xmlns:s="clr-namespace:System;assembly=mscorlib"
         xmlns:gl="clr-namespace:System.Globalization;assembly=mscorlib"
         xmlns:h="clr-namespace:ScreenToGif.Controls.Shapes"
+        xmlns:uc="clr-namespace:ScreenToGif.Windows.UserControls"
         x:Name="EditorWindow" Title="{DynamicResource Editor.Title}" MinHeight="500" MinWidth="700" 
         Background="#FFF1F1F1" UseLayoutRounding="True" Icon="/Resources/Logo.ico"
         FocusManager.FocusedElement="{Binding RelativeSource={x:Static RelativeSource.Self}, Mode=OneTime}"
-        Loaded="Window_Loaded" Closing="Window_Closing" Activated="Window_Activated" KeyUp="Window_KeyUp" Deactivated="Window_Deactivated">
+        Loaded="Window_Loaded" Closing="Window_Closing" Activated="Window_Activated" KeyUp="Window_KeyUp" 
+        Deactivated="Window_Deactivated">
 
     <Window.Resources>
         <c:DoubleToInt x:Key="DoubleToIntConverter"/>
@@ -209,7 +211,7 @@
         <DataTemplate x:Key="FontTemplate">
             <!--x:Shared="False"-->
             <VirtualizingStackPanel IsVirtualizing="True" VirtualizationMode="Recycling" ScrollViewer.IsDeferredScrollingEnabled="True">
-                <TextBlock FontFamily="{Binding .}" FontSize="16" Text="{Binding .}" ToolTip="{Binding Path=.Source}" />
+                <TextBlock FontFamily="{Binding .}" FontSize="16" Text="{Binding .}" ToolTip="{Binding Path=Source}" />
             </VirtualizingStackPanel>
         </DataTemplate>
     </Window.Resources>
@@ -217,16 +219,13 @@
     <Window.CommandBindings>
         <!--New-->
         <CommandBinding Command="u:Commands.NewRecording" CanExecute="NewRecording_CanExecute" Executed="NewRecording_Executed"/>
-        <CommandBinding Command="u:Commands.NewWebcamRecording" CanExecute="NewRecording_CanExecute" Executed="NewWebcamRecording_Executed"/>
         <CommandBinding Command="u:Commands.NewBoardRecording" CanExecute="NewRecording_CanExecute" Executed="NewBoardRecording_Executed"/>
         <CommandBinding Command="u:Commands.NewAnimation" CanExecute="NewProject_CanExecute" Executed="NewProject_Executed"/>
 
         <!--Insert-->
         <CommandBinding Command="u:Commands.InsertRecording" CanExecute="Insert_CanExecute" Executed="InsertRecording_Executed"/>
-        <CommandBinding Command="u:Commands.InsertWebcamRecording" CanExecute="Insert_CanExecute" Executed="InsertWebcamRecording_Executed"/>
         <CommandBinding Command="u:Commands.InsertBoardRecording" CanExecute="Insert_CanExecute" Executed="InsertBoardRecording_Executed"/>
-        <CommandBinding Command="u:Commands.InsertFromMedia" CanExecute="InsertFromMedia_CanExecute" Executed="InsertFromMedia_Executed"/>
-
+        
         <!--File-->
         <CommandBinding Command="u:Commands.SaveAs" CanExecute="File_CanExecute" Executed="SaveAs_Executed"/>
         <CommandBinding Command="u:Commands.Load" CanExecute="NewProject_CanExecute" Executed="Load_Executed"/>
@@ -313,112 +312,10 @@
         <CommandBinding Command="u:Commands.ExploreFolder" CanExecute="ListFramesSelection_CanExecute" Executed="ExploreFolder_Executed"/>
         <CommandBinding Command="u:Commands.ExportImages" CanExecute="ListFramesSelection_CanExecute" Executed="ExportImages_Executed"/>
     </Window.CommandBindings>
-
     <Window.TaskbarItemInfo>
         <TaskbarItemInfo Description="{DynamicResource Editor.Title}">
-            <!--<TaskbarItemInfo.ThumbButtonInfos>
-                <ThumbButtonInfoCollection>
-                    <ThumbButtonInfo x:Name="NewRecordingThumbInfo" Command="u:Commands.NewRecording" DismissWhenClicked="True" 
-                                     Description="{Binding Command, RelativeSource={RelativeSource Self}, Converter={StaticResource CommandToInputGestureTextConverter}}" 
-                                     CommandTarget="{Binding ElementName=NewRecordingButton}">
-                        <ThumbButtonInfo.ImageSource>
-                            <DrawingImage>
-                                <DrawingImage.Drawing>
-                                    <GeometryDrawing>
-                                        <GeometryDrawing.Geometry>
-                                            <RectangleGeometry Rect="0,0,20,20"/>
-                                        </GeometryDrawing.Geometry>
-                                        <GeometryDrawing.Brush>
-                                            <VisualBrush Visual="{StaticResource Vector.Record.New}" Stretch="Uniform"/>
-                                        </GeometryDrawing.Brush>
-                                    </GeometryDrawing>
-                                </DrawingImage.Drawing>
-                            </DrawingImage>
-                        </ThumbButtonInfo.ImageSource>
-                    </ThumbButtonInfo>
-
-                    <ThumbButtonInfo x:Name="NewWebcamRecordingThumbInfo" Command="u:Commands.NewWebcamRecording" DismissWhenClicked="True" 
-                                     Description="{Binding Command, RelativeSource={RelativeSource Self}, Converter={StaticResource CommandToInputGestureTextConverter}}" 
-                                     CommandTarget="{Binding ElementName=NewWebcamRecordingButton}">
-                        <ThumbButtonInfo.ImageSource>
-                            <DrawingImage>
-                                <DrawingImage.Drawing>
-                                    <GeometryDrawing>
-                                        <GeometryDrawing.Geometry>
-                                            <RectangleGeometry Rect="0,0,20,20"/>
-                                        </GeometryDrawing.Geometry>
-                                        <GeometryDrawing.Brush>
-                                            <VisualBrush Visual="{StaticResource Vector.Camera.New}" Stretch="Uniform"/>
-                                        </GeometryDrawing.Brush>
-                                    </GeometryDrawing>
-                                </DrawingImage.Drawing>
-                            </DrawingImage>
-                        </ThumbButtonInfo.ImageSource>
-                    </ThumbButtonInfo>
-
-                    <ThumbButtonInfo x:Name="NewBoardRecordingThumbInfo" Command="u:Commands.NewBoardRecording" DismissWhenClicked="True" 
-                                     Description="{Binding Command, RelativeSource={RelativeSource Self}, Converter={StaticResource CommandToInputGestureTextConverter}}" 
-                                     CommandTarget="{Binding ElementName=NewBoardRecordingButton}">
-                        <ThumbButtonInfo.ImageSource>
-                            <DrawingImage>
-                                <DrawingImage.Drawing>
-                                    <GeometryDrawing>
-                                        <GeometryDrawing.Geometry>
-                                            <RectangleGeometry Rect="0,0,20,20"/>
-                                        </GeometryDrawing.Geometry>
-                                        <GeometryDrawing.Brush>
-                                            <VisualBrush Visual="{StaticResource Vector.Board.New}" Stretch="Uniform"/>
-                                        </GeometryDrawing.Brush>
-                                    </GeometryDrawing>
-                                </DrawingImage.Drawing>
-                            </DrawingImage>
-                        </ThumbButtonInfo.ImageSource>
-                    </ThumbButtonInfo>
-
-                    <ThumbButtonInfo x:Name="NewFromMediaProjectThumbInfo" Command="u:Commands.NewFromMediaProject" DismissWhenClicked="True" 
-                                     Description="{Binding Command, RelativeSource={RelativeSource Self}, Converter={StaticResource CommandToInputGestureTextConverter}}" 
-                                     CommandTarget="{Binding ElementName=OpenMediaProjectButton}">
-                        <ThumbButtonInfo.ImageSource>
-                            <DrawingImage>
-                                <DrawingImage.Drawing>
-                                    <GeometryDrawing>
-                                        <GeometryDrawing.Geometry>
-                                            <RectangleGeometry Rect="0,0,20,20"/>
-                                        </GeometryDrawing.Geometry>
-                                        <GeometryDrawing.Brush>
-                                            <VisualBrush Visual="{StaticResource Vector.Open}" Stretch="Uniform"/>
-                                        </GeometryDrawing.Brush>
-                                    </GeometryDrawing>
-                                </DrawingImage.Drawing>
-                            </DrawingImage>
-                        </ThumbButtonInfo.ImageSource>
-                    </ThumbButtonInfo>
-
-                    <ThumbButtonInfo Visibility="Hidden"/>
-
-                    <ThumbButtonInfo x:Name="DiscardThumbInfo" Command="u:Commands.DiscardProject" DismissWhenClicked="True" 
-                                     Description="{Binding Command, RelativeSource={RelativeSource Self}, Converter={StaticResource CommandToInputGestureTextConverter}}" 
-                                     CommandTarget="{Binding ElementName=DiscardProjectButton}">
-                        <ThumbButtonInfo.ImageSource>
-                            <DrawingImage>
-                                <DrawingImage.Drawing>
-                                    <GeometryDrawing>
-                                        <GeometryDrawing.Geometry>
-                                            <RectangleGeometry Rect="0,0,20,20"/>
-                                        </GeometryDrawing.Geometry>
-                                        <GeometryDrawing.Brush>
-                                            <VisualBrush Visual="{StaticResource Vector.Remove}" Stretch="Uniform"/>
-                                        </GeometryDrawing.Brush>
-                                    </GeometryDrawing>
-                                </DrawingImage.Drawing>
-                            </DrawingImage>
-                        </ThumbButtonInfo.ImageSource>
-                    </ThumbButtonInfo>
-                </ThumbButtonInfoCollection>
-            </TaskbarItemInfo.ThumbButtonInfos>-->
         </TaskbarItemInfo>
     </Window.TaskbarItemInfo>
-
     <Grid x:Name="MainGrid" DataContext="{Binding ElementName=FrameListView, Path=SelectedItem}">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -427,7 +324,7 @@
             <RowDefinition Height="20"/>
         </Grid.RowDefinitions>
 
-   
+        <uc:EditorMenu Grid.Row="0" x:Name="Menu"></uc:EditorMenu>
 
         <!--Hack for the extended title bar-->
         <Grid Grid.Row="1" Grid.RowSpan="3" Background="#FFF1F1F1"/>

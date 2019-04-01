@@ -1137,143 +1137,6 @@ namespace ScreenToGif.Windows
 
         #endregion
 
-        #region Cloud Services
-
-        private void ImgurHyperlink_Click(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                StatusBand.Hide();
-                Process.Start(Imgur.GetGetAuthorizationAdress());
-            }
-            catch (Exception ex)
-            {
-                LogWriter.Log(ex, "Creating the link and opening a Imgur related page");
-                StatusBand.Error(LocalizationHelper.Get("S.Upload.Imgur.Auth.NotPossible"));
-            }
-        }
-
-        private async void ImgurAuthorizeButton_Click(object sender, RoutedEventArgs e)
-        {
-            if (string.IsNullOrWhiteSpace(UserSettings.All.ImgurOAuthToken))
-            {
-                StatusBand.Warning(LocalizationHelper.Get("S.Upload.Imgur.Auth.Missing"));
-                return;
-            }
-
-            try
-            {
-                ImgurExpander.IsEnabled = false;
-                StatusBand.Hide();
-
-                if (await Imgur.GetAccessToken())
-                {
-                    UserSettings.All.ImgurOAuthToken = null;
-                    StatusBand.Info(LocalizationHelper.Get("S.Upload.Imgur.Auth.Completed"));
-                }
-                else
-                    StatusBand.Warning(LocalizationHelper.Get("S.Upload.Imgur.Auth.Error"));
-            }
-            catch (Exception ex)
-            {
-                LogWriter.Log(ex, "Authorizing access - Imgur");
-                ErrorDialog.Ok("ScreenToGif - Options", "It was not possible to authorize the app", "It was not possible to authorize the app. Check if you provided the correct token and if you have an internet connection.", ex);
-            }
-
-            ImgurExpander.IsEnabled = true;
-            UpdateImgurStatus();
-            UpdateAlbumList();
-        }
-
-        private async void ImgurRefreshButton_Click(object sender, RoutedEventArgs e)
-        {
-            if (string.IsNullOrWhiteSpace(UserSettings.All.ImgurRefreshToken))
-            {
-                StatusBand.Warning(LocalizationHelper.Get("S.Upload.Imgur.Refresh.None"));
-                return;
-            }
-
-            try
-            {
-                ImgurExpander.IsEnabled = false;
-                StatusBand.Hide();
-
-                if (await Imgur.RefreshToken())
-                    StatusBand.Info(LocalizationHelper.Get("S.Upload.Imgur.Auth.Completed"));
-                else
-                    StatusBand.Warning(LocalizationHelper.Get("S.Upload.Imgur.Auth.Error"));
-            }
-            catch (Exception ex)
-            {
-                LogWriter.Log(ex, "Refreshing authorization - Imgur");
-                ErrorDialog.Ok("ScreenToGif - Options", "It was not possible to authorize the app", "It was not possible to authorize the app. Check if you provided the correct token and if you have an internet connection.", ex);
-            }
-
-            ImgurExpander.IsEnabled = true;
-            UpdateImgurStatus();
-            UpdateAlbumList();
-        }
-
-        private void ImgurClearButton_Click(object sender, RoutedEventArgs e)
-        {
-            UserSettings.All.ImgurOAuthToken = null;
-            UserSettings.All.ImgurAccessToken = null;
-            UserSettings.All.ImgurRefreshToken = null;
-            UserSettings.All.ImgurExpireDate = null;
-            UserSettings.All.ImgurAlbumList = null;
-            UserSettings.All.ImgurSelectedAlbum = null;
-            ImgurAlbumComboBox.ItemsSource = null;
-
-            StatusBand.Info(LocalizationHelper.Get("S.Upload.Imgur.Removed"));
-            UpdateImgurStatus();
-            UpdateAlbumList();
-        }
-
-        private void YandexOauth_OnRequestNavigate(object sender, RequestNavigateEventArgs e)
-        {
-            try
-            {
-                Process.Start(UserSettings.All.LanguageCode.StartsWith("ru") ? e.Uri.AbsoluteUri.Replace("yandex.com", "yandex.ru") : e.Uri.AbsoluteUri);
-            }
-            catch (Exception ex)
-            {
-                LogWriter.Log(ex, "Open Hyperlink");
-            }
-        }
-
-        private void UpdateImgurStatus()
-        {
-            ImgurTextBlock.Text = UserSettings.All.ImgurAccessToken == null || !UserSettings.All.ImgurExpireDate.HasValue ? LocalizationHelper.Get("S.Upload.Imgur.NotAuthorized") :
-                UserSettings.All.ImgurExpireDate < DateTime.UtcNow ? string.Format(LocalizationHelper.Get("S.Upload.Imgur.Expired"), UserSettings.All.ImgurExpireDate.Value.ToLocalTime().ToString("g", CultureInfo.CurrentUICulture)) :
-                    string.Format(LocalizationHelper.Get("S.Upload.Imgur.Valid"), UserSettings.All.ImgurExpireDate.Value.ToLocalTime().ToString("g", CultureInfo.CurrentUICulture));
-        }
-
-        private async void UpdateAlbumList(bool offline = false)
-        {
-            if (!offline && !await Imgur.IsAuthorized())
-                return;
-
-            var list = offline && UserSettings.All.ImgurAlbumList != null ? UserSettings.All.ImgurAlbumList.Cast<ImgurAlbumData>().ToList() : offline ? null : await Imgur.GetAlbums();
-
-            if (list == null)
-            {
-                list = new List<ImgurAlbumData>();
-
-                if (!offline)
-                    StatusBand.Error(LocalizationHelper.Get("S.Upload.Imgur.Error.AlbumLoad"));
-            }
-
-            if (!offline || list.All(a => a.Id != "♥♦♣♠"))
-                list.Insert(0, new ImgurAlbumData { Id = "♥♦♣♠", Title = LocalizationHelper.Get("S.Upload.Imgur.AskMe") });
-
-            ImgurAlbumComboBox.ItemsSource = list;
-
-            if (ImgurAlbumComboBox.SelectedIndex == -1)
-                ImgurAlbumComboBox.SelectedIndex = 0;
-        }
-
-        #endregion
-
         #region Extras
 
         private void ExtrasGrid_Loaded(object sender, RoutedEventArgs e)
@@ -1633,140 +1496,11 @@ namespace ScreenToGif.Windows
 
         #endregion
 
-        #region Donate
-
-        private void DonateButton_Click(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                Process.Start("https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=JCY2BGLULSWVJ&lc=US&item_name=ScreenToGif&item_number=screentogif&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donateCC_LG%2egif%3aNonHosted");
-            }
-            catch (Exception ex)
-            {
-                LogWriter.Log(ex, "Error • Openning the Donation website");
-
-                ErrorDialog.Ok(LocalizationHelper.Get("Title.Options"), "Error openning the donation website", ex.Message, ex);
-            }
-        }
-
-        private void DonateEuroButton_Click(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                Process.Start("https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=JCY2BGLULSWVJ&lc=US&item_name=ScreenToGif&item_number=screentogif&currency_code=EUR&bn=PP%2dDonationsBF%3abtn_donateCC_LG%2egif%3aNonHosted");
-            }
-            catch (Exception ex)
-            {
-                LogWriter.Log(ex, "Error • Openning the Donation website");
-
-                ErrorDialog.Ok(LocalizationHelper.Get("Title.Options"), "Error openning the donation website", ex.Message, ex);
-            }
-        }
-
-        private void DonateOtherButton_Click(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                var label = CurrencyComboBox.SelectedValue as Label;
-
-                var currency = label?.Content.ToString().Substring(0, 3) ?? "USD";
-
-                Process.Start($"https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=JCY2BGLULSWVJ&lc=US&item_name=ScreenToGif&item_number=screentogif&currency_code={currency}&bn=PP%2dDonationsBF%3abtn_donateCC_LG%2egif%3aNonHosted");
-            }
-            catch (Exception ex)
-            {
-                LogWriter.Log(ex, "Error • Openning the Donation website");
-
-                ErrorDialog.Ok(LocalizationHelper.Get("Title.Options"), "Error openning the donation website", ex.Message, ex);
-            }
-        }
-
-        private void PatreonHyperlink_Click(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                Process.Start("https://www.patreon.com/nicke");
-            }
-            catch (Exception ex)
-            {
-                LogWriter.Log(ex, "Error • Openning the Patreon website");
-
-                ErrorDialog.Ok(LocalizationHelper.Get("Title.Options"), "Error openning the patreon website", ex.Message, ex);
-            }
-        }
-
-        private void BitcoinCashHyperlink_Click(object sender, RoutedEventArgs e)
-        {
-            System.Windows.Clipboard.SetText("1HN81cAwDo16tRtiYfkzvzFqikQUimM3S8");
-        }
-
-        private void MoneroHyperlink_Click(object sender, RoutedEventArgs e)
-        {
-            System.Windows.Clipboard.SetText("44yC9CkwHVfKPsKxg5RcA67GZEqiQH6QoBYtRKwkhDaE3tvRpiw1E5i6GShZYNsDq9eCtHnq49SrKjF4DG7NwjqWMoMueD4");
-        }
-
-        private void SteamHyperlink_Click(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                Process.Start("http://steamcommunity.com/id/nickesm/wishlist");
-            }
-            catch (Exception ex)
-            {
-                LogWriter.Log(ex, "Error • Openning the Steam website");
-
-                ErrorDialog.Ok(LocalizationHelper.Get("Title.Options"), "Error openning the steam website", ex.Message, ex);
-            }
-        }
-
-        private void ExtraSupportHyperlink_Click(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                Process.Start("http://www.screentogif.com/donate");
-            }
-            catch (Exception ex)
-            {
-                LogWriter.Log(ex, "Error • Openning the donation website");
-
-                ErrorDialog.Ok(LocalizationHelper.Get("Title.Options"), "Error openning the donation website", ex.Message, ex);
-            }
-        }
-
-        #endregion
-
-        #region About
-
-        private void Hyperlink_OnRequestNavigate(object sender, RequestNavigateEventArgs e)
-        {
-            try
-            {
-                Process.Start(e.Uri.AbsoluteUri);
-            }
-            catch (Exception ex)
-            {
-                LogWriter.Log(ex, "Open Hyperlink");
-            }
-        }
-
-        #endregion
-
         #region Other
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            try
-            {
-                ProxyPasswordBox.Password = WebHelper.Unprotect(UserSettings.All.ProxyPassword);
-            }
-            catch (Exception ex)
-            {
-                StatusBand.Warning("It was not possible to corectly load your proxy password. This usually happens when sharing the app settings with different computers.");
-                LogWriter.Log(ex, "Unprotect data");
-            }
-
-            UpdateImgurStatus();
-            UpdateAlbumList(true);
+        
         }
 
         private void OkButton_Click(object sender, RoutedEventArgs e)
@@ -1779,8 +1513,7 @@ namespace ScreenToGif.Windows
             Global.IgnoreHotKeys = false;
 
             RenderOptions.ProcessRenderMode = UserSettings.All.DisableHardwareAcceleration ? RenderMode.SoftwareOnly : RenderMode.Default;
-
-            UserSettings.All.ProxyPassword = WebHelper.Protect(ProxyPasswordBox.Password);
+        
             UserSettings.Save();
         }
 
@@ -1793,6 +1526,7 @@ namespace ScreenToGif.Windows
         }
 
         #endregion
+
 
         public void NotificationUpdated()
         {

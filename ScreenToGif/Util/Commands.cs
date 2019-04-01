@@ -49,16 +49,6 @@ namespace ScreenToGif.Util
 
         #endregion
 
-        #region Insert Webcam Recording
-
-        /// <summary>
-        /// Insert Webcam Recording Command, Ctrl + Shift + W
-        /// </summary>
-        public static RoutedUICommand InsertWebcamRecording { get; set; } = new RoutedUICommand("Insert Webcam Recording", "InsertWebcamRecording", typeof(Commands),
-            new InputGestureCollection { new KeyGesture(Key.W, ModifierKeys.Control | ModifierKeys.Shift, "Ctrl + Shift + W") });
-
-        #endregion
-
         #region Insert Board Recording
 
         /// <summary>
@@ -68,17 +58,7 @@ namespace ScreenToGif.Util
             new InputGestureCollection { new KeyGesture(Key.B, ModifierKeys.Control | ModifierKeys.Shift, "Ctrl + Shift + B") });
 
         #endregion
-
-        #region Insert From Media
-
-        /// <summary>
-        /// Insert From Media Command, Ctrl + Shift + O
-        /// </summary>
-        public static RoutedUICommand InsertFromMedia { get; set; } = new RoutedUICommand("Insert From Media", "InsertFromMedia", typeof(Commands),
-            new InputGestureCollection { new KeyGesture(Key.O, ModifierKeys.Control | ModifierKeys.Shift, "Ctrl + Shift + O") });
-
-        #endregion
-
+        
         #region Save as
 
         /// <summary>

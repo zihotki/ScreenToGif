@@ -3,15 +3,12 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:n="clr-namespace:ScreenToGif.Controls"
         xmlns:u="clr-namespace:ScreenToGif.Util"
-        x:Name="StartupWindow" Title="{DynamicResource Title.StartUp}" Height="220" Width="500" Icon="/Resources/Logo.ico" 
-        MinWidth="500" MinHeight="220" DataContext="{StaticResource AppViewModel}" UseLayoutRounding="True" 
+        x:Name="StartupWindow" Title="{DynamicResource Title.StartUp}" Height="220" Width="150" Icon="/Resources/Logo.ico" 
+        MinWidth="150" MinHeight="220" DataContext="{StaticResource AppViewModel}" UseLayoutRounding="True" 
         Loaded="Startup_Loaded" Closing="Startup_Closing">
 
     <Window.InputBindings>
         <KeyBinding Command="{Binding OpenRecorder}" CommandParameter="{Binding ElementName=StartupWindow}" Modifiers="Control" Key="N"/>
-        <KeyBinding Command="{Binding OpenWebcamRecorder}" CommandParameter="{Binding ElementName=StartupWindow}" Modifiers="Control" Key="W"/>
-        <KeyBinding Command="{Binding OpenBoardRecorder}" CommandParameter="{Binding ElementName=StartupWindow}" Modifiers="Control" Key="B"/>
-        <KeyBinding Command="{Binding OpenEditor}" CommandParameter="{Binding ElementName=StartupWindow}" Modifiers="Control" Key="E"/>
         <KeyBinding Command="{Binding OpenOptions}" Modifiers="Control+Alt" Key="O"/>
     </Window.InputBindings>
 
@@ -41,15 +38,10 @@
                 </Hyperlink>
             </TextBlock>
 
-            <n:ImageButton Grid.Column="3" Text="{DynamicResource Options}" Content="{StaticResource Vector.Options}" 
-                           Margin="5" Style="{StaticResource Style.Button.Horizontal}" Effect="{StaticResource Shadow.Black.Small}"
-                           Padding="2" MaxSize="25" Command="{Binding OpenOptions}"/>
         </Grid>
 
         <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition/>
-                <ColumnDefinition/>
                 <ColumnDefinition/>
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
@@ -59,20 +51,10 @@
                            Command="{Binding OpenRecorder}" CommandParameter="{Binding ElementName=StartupWindow}" 
                            ToolTip="{DynamicResource Tooltip.Recorder}" ToolTipService.Placement="Bottom"/>
 
-            <n:ImageButton Grid.Column="1" Text="{DynamicResource Webcam}" Margin="5,0,5,5" FontSize="13" Style="{StaticResource Style.Button.Vertical.Border}"
-                           Effect="{StaticResource Shadow.Black.Tiny}" MaxSize="36" Content="{StaticResource Vector.Camera.New}" 
-                           Command="{Binding OpenWebcamRecorder}" CommandParameter="{Binding ElementName=StartupWindow}" 
-                           ToolTip="{DynamicResource Tooltip.Webcam}" ToolTipService.Placement="Bottom"/>
+            <n:ImageButton Grid.Column="1" Text="{DynamicResource Options}" Margin="5,0,5,5" FontSize="13" Style="{StaticResource Style.Button.Vertical.Border}"
+                           Effect="{StaticResource Shadow.Black.Tiny}" MaxSize="36" Content="{StaticResource Vector.Options}" 
+                           Command="{Binding OpenOptions}"/>
 
-            <n:ImageButton Grid.Column="2" Text="{DynamicResource Board}" Margin="5,0,5,5" FontSize="13" Style="{StaticResource Style.Button.Vertical.Border}"
-                           Effect="{StaticResource Shadow.Black.Tiny}" MaxSize="36" Content="{StaticResource Vector.Board.New}" 
-                           Command="{Binding OpenBoardRecorder}" CommandParameter="{Binding ElementName=StartupWindow}"
-                           ToolTip="{DynamicResource Tooltip.Board}" ToolTipService.Placement="Bottom"/>
-
-            <n:ImageButton Grid.Column="3" Text="{DynamicResource Editor}" Margin="5,0,5,5" FontSize="13" Style="{StaticResource Style.Button.Vertical.Border}"
-                           Effect="{StaticResource Shadow.Black.Tiny}" MaxSize="35" Content="{StaticResource Vector.Editor}" 
-                           Command="{Binding OpenEditor}" CommandParameter="{Binding ElementName=StartupWindow}" 
-                           ToolTip="{DynamicResource Tooltip.Editor}" ToolTipService.Placement="Bottom"/>
         </Grid>
     </Grid>
 </Window>

@@ -8,7 +8,6 @@ namespace ScreenToGif.Model
         #region Variables
 
         private string _recorderGesture;
-        private string _webcamRecorderGesture;
         private string _boardRecorderGesture;
         private string _editorGesture;
         private string _optionsGesture;
@@ -26,16 +25,6 @@ namespace ScreenToGif.Model
             set
             {
                 _recorderGesture = value;
-                OnPropertyChanged();
-            }
-        }
-
-        public string WebcamRecorderGesture
-        {
-            get => _webcamRecorderGesture;
-            set
-            {
-                _webcamRecorderGesture = value;
                 OnPropertyChanged();
             }
         }

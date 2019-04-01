@@ -110,16 +110,16 @@ namespace ScreenToGif.Windows.Other
 
         public void NotificationUpdated()
         {
-            if (Global.UpdateModel == null)
+            //if (Global.UpdateModel == null)
             {
                 UpdateTextBlock.Visibility = Visibility.Collapsed;
                 return;
             }
-
+            /*
             UpdateRun.Text = string.Format(LocalizationHelper.Get("NewRelease") ?? "New release available • {0}", Global.UpdateModel.Version.ToStringShort());
             UpdateTextBlock.Visibility = Visibility.Visible;
 
-            CommandManager.InvalidateRequerySuggested();
+            CommandManager.InvalidateRequerySuggested();*/
         }
 
         #endregion
