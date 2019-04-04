@@ -1,0 +1,74 @@
+﻿<UserControl x:Class="ScreenToGif.Windows.UserControls.OptionsExtras"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:ScreenToGif.Windows.UserControls"
+             xmlns:n="clr-namespace:ScreenToGif.Controls"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="21"/>
+            <RowDefinition MinHeight="29" Height="Auto"/>
+            <RowDefinition Height="21"/>
+            <RowDefinition MinHeight="29" Height="Auto"/>
+            <RowDefinition Height="21"/>
+            <RowDefinition MinHeight="29" Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <n:LabelSeparator Grid.Row="0" Text="{DynamicResource Extras.External}"/>
+        <WrapPanel Grid.Row="1" Margin="5,0">
+            <n:ImageCard x:Name="FfmpegImageCard" Header="FFmpeg" Click="FfmpegImageCard_Click"/>
+            <n:ImageCard x:Name="GifskiImageCard" Header="Gifski" Click="GifskiImageCard_Click"/>
+        </WrapPanel>
+
+        <n:LabelSeparator Grid.Row="2" Text="{DynamicResource Extras.FfmpegLocation}"/>
+        <Grid Grid.Row="3">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition Width="30"/>
+            </Grid.ColumnDefinitions>
+
+            <n:ExtendedTextBox Grid.Column="0" x:Name="FfmpegLocationTextBox" Margin="10,3,0,3" Text="{Binding FfmpegLocation, Source={x:Static u:UserSettings.All}, UpdateSourceTrigger=PropertyChanged}" 
+                                               LostKeyboardFocus="LocationTextBox_LostKeyboardFocus"/>
+
+            <n:ImageButton Grid.Column="1" Style="{StaticResource Style.Button.NoText}" Content="{StaticResource Vector.Open}" ContentWidth="20"
+                                           Click="SelectFfmpeg_Click" ToolTip="{DynamicResource Extras.FfmpegLocation.Select}"
+                                           ToolTipService.Placement="Top" ToolTipService.HorizontalOffset="-5"/>
+        </Grid>
+
+        <n:LabelSeparator Grid.Row="4" Text="{DynamicResource Extras.GifskiLocation}"/>
+        <Grid Grid.Row="5">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition Width="30"/>
+            </Grid.ColumnDefinitions>
+
+            <n:ExtendedTextBox Grid.Column="0" x:Name="GifskiLocationTextBox" Margin="10,3,0,3" Text="{Binding GifskiLocation, Source={x:Static u:UserSettings.All}, UpdateSourceTrigger=PropertyChanged}" 
+                                               LostKeyboardFocus="LocationTextBox_LostKeyboardFocus"/>
+
+            <n:ImageButton Grid.Column="1" Style="{StaticResource Style.Button.NoText}" Content="{StaticResource Vector.Open}" ContentWidth="20"
+                                           Click="SelectGifski_Click" ToolTip="{DynamicResource Extras.GifskiLocation.Select}"
+                                           ToolTipService.Placement="Top" ToolTipService.HorizontalOffset="-5"/>
+        </Grid>
+
+        <StackPanel Grid.Row="7" Orientation="Horizontal">
+            <Viewbox Child="{StaticResource Vector.Info}" Height="16" Width="16" Margin="2"/>
+
+            <TextBlock Margin="2" VerticalAlignment="Center">
+                                <Hyperlink NavigateUri="https://ffmpeg.org/legal.html" RequestNavigate="ExtrasHyperlink_OnRequestNavigate">
+                                    <Run Text="{DynamicResource Extras.License.Ffmpeg}"/>
+                                </Hyperlink>
+                                
+                                <Run>/</Run>
+
+                                <Hyperlink NavigateUri="https://github.com/ImageOptim/gifski/blob/master/LICENSE" RequestNavigate="ExtrasHyperlink_OnRequestNavigate">
+                                    <Run Text="{DynamicResource Extras.License.Gifski}"/>
+                                </Hyperlink>
+            </TextBlock>
+        </StackPanel>
+    </Grid>
+</UserControl>

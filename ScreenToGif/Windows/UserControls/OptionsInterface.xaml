@@ -1,0 +1,234 @@
+﻿<UserControl x:Class="ScreenToGif.Windows.UserControls.OptionsInterface"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:ScreenToGif.Windows.UserControls"
+             xmlns:c="clr-namespace:ScreenToGif.Util.Converters"
+             xmlns:n="clr-namespace:ScreenToGif.Controls"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <StackPanel>
+        <StackPanel.Resources>
+            <c:ColorToBrush x:Key="ColorToBrush"/>
+        </StackPanel.Resources>
+
+        <n:LabelSeparator Text="{DynamicResource Interface.EditorBackground}" Margin="0,0,0,5"/>
+        <StackPanel>
+            <Grid Margin="10,0,0,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition MinWidth="85" Width="Auto"/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+
+                <Label Content="{DynamicResource Interface.EditorBackground.Scheme}" Padding="0,5,5,5" VerticalContentAlignment="Center" Foreground="#FF444444"/>
+                <ComboBox x:Name="ColorSchemesComboBox" Grid.Column="1" Height="28" SelectionChanged="ColorSchemesComboBox_SelectionChanged" 
+                                          VerticalContentAlignment="Center" Padding="5,0">
+                    <ComboBox.Items>
+                        <StackPanel Orientation="Horizontal">
+                            <Border BorderBrush="#FFACACAC" BorderThickness="1,1,0,1" Background="#FFF5F5F5" Width="20" Height="20"/>
+                            <Border BorderBrush="#FFACACAC" BorderThickness="0,1,1,1" Background="#FFF0F0F0" Width="20" Height="20"/>
+                            <Label Content="{DynamicResource Interface.EditorBackground.Scheme.VeryLight}" VerticalAlignment="Center" VerticalContentAlignment="Center" Padding="10,0,5,0"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <Border BorderBrush="#FFACACAC" BorderThickness="1,1,0,1" Background="White" Width="20" Height="20"/>
+                            <Border BorderBrush="#FFACACAC" BorderThickness="0,1,1,1" Background="#FFD3D3D3" Width="20" Height="20"/>
+                            <Label Content="{DynamicResource Interface.EditorBackground.Scheme.Light}" VerticalAlignment="Center" VerticalContentAlignment="Center" Padding="10,0,5,0"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <Border BorderBrush="#FFACACAC" BorderThickness="1,1,0,1" Background="#FF999999" Width="20" Height="20"/>
+                            <Border BorderBrush="#FFACACAC" BorderThickness="0,1,1,1" Background="#FF666666" Width="20" Height="20"/>
+                            <Label Content="{DynamicResource Interface.EditorBackground.Scheme.Medium}" VerticalAlignment="Center" VerticalContentAlignment="Center" Padding="10,0,5,0"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <Border BorderBrush="#FFACACAC" BorderThickness="1,1,0,1" Background="#FF666666" Width="20" Height="20"/>
+                            <Border BorderBrush="#FFACACAC" BorderThickness="0,1,1,1" Background="#FF333333" Width="20" Height="20"/>
+                            <Label Content="{DynamicResource Interface.EditorBackground.Scheme.Dark}" VerticalAlignment="Center" VerticalContentAlignment="Center" Padding="10,0,5,0"/>
+                        </StackPanel>
+                        <Separator Height="1"/>
+                        <StackPanel Orientation="Horizontal">
+                            <Border BorderBrush="#FFACACAC" BorderThickness="1,1,0,1" Width="20" Height="20">
+                                <Label Content="?" Padding="0" HorizontalContentAlignment="Center" Foreground="#FF4D4D4D" FontSize="14"/>
+                            </Border>
+                            <Border BorderBrush="#FFACACAC" BorderThickness="0,1,1,1" Width="20" Height="20">
+                                <Label Content="?" Padding="0" HorizontalContentAlignment="Center" FontSize="14"/>
+                            </Border>
+                            <Label Content="{DynamicResource Interface.EditorBackground.Scheme.Custom}" VerticalAlignment="Center" VerticalContentAlignment="Center" Padding="10,0,5,0"/>
+                        </StackPanel>
+                    </ComboBox.Items>
+                </ComboBox>
+            </Grid>
+
+            <Grid Margin="10,5,0,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition MinWidth="85" Width="Auto"/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+
+                <Label Content="{DynamicResource Interface.EditorBackground.GridSize}" x:Uid="GridSizeLabel" Padding="0,5,5,5" VerticalContentAlignment="Center" Foreground="#FF444444"/>
+                <ComboBox x:Name="GridSizeComboBox" Grid.Column="1" Height="28" SelectionChanged="GridSizeComboBox_SelectionChanged" Tag="Editor"
+                                          VerticalContentAlignment="Center">
+                    <ComboBox.Items>
+                        <StackPanel x:Name="VerySmallPanel" Orientation="Horizontal">
+                            <Label Content="10 pt" Foreground="#FF969696" FontStyle="Italic" Width="41" HorizontalContentAlignment="Center" Padding="0,3"/>
+                            <Label Content="{DynamicResource Interface.EditorBackground.GridSize.VerySmall}" VerticalAlignment="Center" VerticalContentAlignment="Center" Padding="10,0,5,0"/>
+                        </StackPanel>
+                        <StackPanel x:Name="SmallPanel" Orientation="Horizontal">
+                            <Label Content="15 pt" Foreground="#FF969696" FontStyle="Italic" Width="41" HorizontalContentAlignment="Center" Padding="0,3"/>
+                            <Label Content="{DynamicResource Interface.EditorBackground.GridSize.Small}" VerticalAlignment="Center" VerticalContentAlignment="Center" Padding="10,0,5,0"/>
+                        </StackPanel>
+                        <StackPanel x:Name="MediumSizePanel" Orientation="Horizontal">
+                            <Label Content="20 pt" Foreground="#FF969696" FontStyle="Italic" Width="41" HorizontalContentAlignment="Center" Padding="0,3"/>
+                            <Label Content="{DynamicResource Interface.EditorBackground.GridSize.Medium}" VerticalAlignment="Center" VerticalContentAlignment="Center" Padding="10,0,5,0"/>
+                        </StackPanel>
+                        <StackPanel x:Name="LargePanel" Orientation="Horizontal">
+                            <Label Content="25 pt" Foreground="#FF969696" FontStyle="Italic" Width="41" HorizontalContentAlignment="Center" Padding="0,3"/>
+                            <Label Content="{DynamicResource Interface.EditorBackground.GridSize.Large}" VerticalAlignment="Center" VerticalContentAlignment="Center" Padding="10,0,5,0"/>
+                        </StackPanel>
+                        <StackPanel x:Name="VeryLargePanel" Orientation="Horizontal">
+                            <Label Content="30 pt" Foreground="#FF969696" FontStyle="Italic" Width="41" HorizontalContentAlignment="Center" Padding="0,3"/>
+                            <Label Content="{DynamicResource Interface.EditorBackground.GridSize.VeryLarge}" VerticalAlignment="Center" VerticalContentAlignment="Center" Padding="10,0,5,0"/>
+                        </StackPanel>
+                        <StackPanel x:Name="ILikeBigSquaresPanel" Orientation="Horizontal">
+                            <Label Content="50 pt" Foreground="#FF969696" FontStyle="Italic" Width="41" HorizontalContentAlignment="Center" Padding="0,3"/>
+                            <Label Content="{DynamicResource Interface.EditorBackground.GridSize.ILikeBigSquares}" VerticalAlignment="Center" VerticalContentAlignment="Center" Padding="10,0,5,0"/>
+                        </StackPanel>
+                        <StackPanel x:Name="ImBlindPanel" Orientation="Horizontal">
+                            <Label Content="100 pt" Foreground="#FF969696" FontStyle="Italic" Width="41" HorizontalContentAlignment="Center" Padding="0,3"/>
+                            <Label Content="{DynamicResource Interface.EditorBackground.GridSize.ImBlind}" VerticalAlignment="Center" VerticalContentAlignment="Center" Padding="10,0,5,0" FontWeight="Bold" FontSize="14"/>
+                        </StackPanel>
+                        <Separator />
+                        <StackPanel x:Name="CustomSizePanel" Orientation="Horizontal">
+                            <Label Content="? pt" Foreground="#FF969696" FontStyle="Italic" Width="41" HorizontalContentAlignment="Center" Padding="0,3"/>
+                            <Label Content="{DynamicResource Interface.EditorBackground.GridSize.Custom}" VerticalAlignment="Center" VerticalContentAlignment="Center" Padding="10,0,5,0"/>
+                        </StackPanel>
+                    </ComboBox.Items>
+                </ComboBox>
+            </Grid>
+
+            <Grid Margin="10,10,0,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+
+                <Border x:Name="EvenColorBorder" Height="40" BorderThickness="1" BorderBrush="#FFACACAC" Cursor="Hand" 
+                                        MouseLeftButtonDown="ColorBorder_OnMouseLeftButtonDown" Tag="Editor"
+                                        Background="{Binding Path=GridColor1, Converter={StaticResource ColorToBrush}, Mode=TwoWay}"
+                                        ToolTip="{DynamicResource Interface.EditorBackground.EvenColor}" ToolTipService.Placement="Bottom" ToolTipService.HorizontalOffset="-5"/>
+                <Border x:Name="OddColorBorder" Grid.Column="1" BorderThickness="0,1" BorderBrush="#FFACACAC" Cursor="Hand" 
+                                        MouseLeftButtonDown="ColorBorder_OnMouseLeftButtonDown" Tag="Editor"
+                                        Background="{Binding Path=GridColor2, Converter={StaticResource ColorToBrush}, Mode=TwoWay}"
+                                        ToolTip="{DynamicResource Interface.EditorBackground.OddColor}" ToolTipService.Placement="Bottom" ToolTipService.HorizontalOffset="-5"/>
+
+                <Border x:Name="GridSizeBorder" Grid.Column="2" BorderThickness="1" BorderBrush="#FFACACAC"
+                                        Background="{StaticResource Checker.DrawingBrush}" Cursor="Hand" MouseLeftButtonDown="GridSizeBorder_MouseLeftButtonDown"
+                                        ToolTip="{DynamicResource Interface.EditorBackground.GridSize}" ToolTipService.Placement="Bottom" ToolTipService.HorizontalOffset="-5">
+                    <Border.ContextMenu>
+                        <ContextMenu x:Name="GridSizeContextMenu" StaysOpen="True">
+                            <n:ImageMenuItem Header="{DynamicResource Interface.EditorBackground.GridSize.Height}" IsHitTestVisible="False" Image="{StaticResource Vector.WidthHeight}" ContentHeight="16" ContentWidth="16"/>
+                            <n:IntegerBox x:Name="GridHeightIntegerBox" Minimum="1" Maximum="1000" MinWidth="80" Margin="-10,0,0,0"
+                                                          UpdateOnInput="True" Value="{Binding GridSize.Height}" Tag="Editor"
+                                                          LostFocus="GridSizeIntegerBox_LostFocus" MouseWheel="GridSizeIntegerBox_MouseWheel" />
+
+                            <n:ImageMenuItem Header="{DynamicResource Interface.EditorBackground.GridSize.Width}" IsHitTestVisible="False" Image="{StaticResource Vector.WidthHeight}" ContentHeight="16" ContentWidth="16"/>
+                            <n:IntegerBox x:Name="GridWidthIntegerBox" Minimum="1" Maximum="1000" MinWidth="80" Margin="-10,0,0,0"
+                                                          UpdateOnInput="True" Value="{Binding GridSize.Width}" Tag="Editor"
+                                                          LostFocus="GridSizeIntegerBox_LostFocus" MouseWheel="GridSizeIntegerBox_MouseWheel" />
+                            <Separator/>
+
+                            <n:ImageMenuItem Header="{DynamicResource Interface.EditorBackground.GridSize.Apply}" Image="{StaticResource Vector.Ok}" ContentHeight="16" ContentWidth="16"/>
+                        </ContextMenu>
+                    </Border.ContextMenu>
+                </Border>
+            </Grid>
+        </StackPanel>
+
+        <n:LabelSeparator Text="{DynamicResource Interface.Recorder}"/>
+        <StackPanel>
+            <Grid Margin="10,0,0,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition MinWidth="85" Width="Auto"/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+
+                <Label Content="{DynamicResource Interface.EditorBackground.Scheme}" Padding="0,5,5,5" VerticalContentAlignment="Center" Foreground="#FF444444"/>
+                <ComboBox x:Name="RecorderSchemeComboBox" Grid.Column="1" Height="28" SelectionChanged="RecorderSchemeComboBox_SelectionChanged" 
+                                          VerticalContentAlignment="Center" Padding="5,0">
+                    <ComboBox.Items>
+                        <StackPanel Orientation="Horizontal">
+                            <Border BorderBrush="#FFACACAC" BorderThickness="1,1,0,1" Background="White" Width="20" Height="20"/>
+                            <Border BorderBrush="#FFACACAC" BorderThickness="0,1,1,1" Background="Black" Width="20" Height="20"/>
+                            <Border BorderBrush="#FFACACAC" BorderThickness="1,1,1,1" Background="White" Width="20" Height="20" Margin="5,0,0,0">
+                                <TextBlock Text="Aa" Foreground="Black" HorizontalAlignment="Center"/>
+                            </Border>
+                            <Label Content="{DynamicResource Interface.EditorBackground.Scheme.VeryLight}" VerticalAlignment="Center" 
+                                               VerticalContentAlignment="Center" Padding="10,0,5,0"/>
+                        </StackPanel>
+
+                        <StackPanel Orientation="Horizontal">
+                            <Border BorderBrush="#FFACACAC" BorderThickness="1,1,0,1" Background="WhiteSmoke" Width="20" Height="20"/>
+                            <Border BorderBrush="#FFACACAC" BorderThickness="0,1,1,1" Background="Black" Width="20" Height="20"/>
+                            <Border BorderBrush="#FFACACAC" BorderThickness="1,1,1,1" Background="WhiteSmoke" Width="20" Height="20" Margin="5,0,0,0">
+                                <TextBlock Text="Aa" Foreground="Black" HorizontalAlignment="Center"/>
+                            </Border>
+                            <Label Content="{DynamicResource Interface.EditorBackground.Scheme.Light}" VerticalAlignment="Center" 
+                                               VerticalContentAlignment="Center" Padding="10,0,5,0"/>
+                        </StackPanel>
+
+                        <StackPanel Orientation="Horizontal">
+                            <Border BorderBrush="#FFACACAC" BorderThickness="1,1,0,1" Background="#FFD3D3D3" Width="20" Height="20"/>
+                            <Border BorderBrush="#FFACACAC" BorderThickness="0,1,1,1" Background="Black" Width="20" Height="20"/>
+                            <Border BorderBrush="#FFACACAC" BorderThickness="1,1,1,1" Background="#FFD3D3D3" Width="20" Height="20" Margin="5,0,0,0">
+                                <TextBlock Text="Aa" Foreground="Black" HorizontalAlignment="Center"/>
+                            </Border>
+                            <Label Content="{DynamicResource Interface.EditorBackground.Scheme.Medium}" VerticalAlignment="Center" 
+                                               VerticalContentAlignment="Center" Padding="10,0,5,0"/>
+                        </StackPanel>
+
+                        <Separator Height="1" IsHitTestVisible="False"/>
+
+                        <StackPanel Orientation="Horizontal">
+                            <Border BorderBrush="#FFACACAC" BorderThickness="1,1,0,1" Width="20" Height="20">
+                                <TextBlock Text="?" Padding="0" HorizontalAlignment="Center" Foreground="#FF4D4D4D" FontSize="14"/>
+                            </Border>
+                            <Border BorderBrush="#FFACACAC" BorderThickness="0,1,1,1" Width="20" Height="20">
+                                <TextBlock Text="?" Padding="0" HorizontalAlignment="Center" Foreground="#FF4D4D4D" FontSize="14"/>
+                            </Border>
+                            <Border BorderBrush="#FFACACAC" BorderThickness="1,1,1,1" Background="White" Width="20" Height="20" Margin="5,0,0,0">
+                                <TextBlock Text="Aa" HorizontalAlignment="Center" Foreground="#FF4D4D4D"/>
+                            </Border>
+                            <Label Content="{DynamicResource Interface.EditorBackground.Scheme.Custom}" VerticalAlignment="Center" VerticalContentAlignment="Center" Padding="10,0,5,0"/>
+                        </StackPanel>
+                    </ComboBox.Items>
+                </ComboBox>
+            </Grid>
+
+            <Grid Margin="10,10,0,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+
+                <Border Grid.Column="0" x:Name="RecorderBackgroundBorder" Height="40" BorderThickness="1" BorderBrush="#FFACACAC" Cursor="Hand" 
+                                        MouseLeftButtonDown="ColorBorder_OnMouseLeftButtonDown" Tag="Recorder"
+                                        Background="{Binding RecorderBackground, Converter={StaticResource ColorToBrush}, Mode=TwoWay}"
+                                        ToolTip="{DynamicResource Interface.Background}" ToolTipService.Placement="Bottom" ToolTipService.HorizontalOffset="-5"/>
+
+                <Border Grid.Column="1" x:Name="RecorderForegroundBorder" Height="40" BorderThickness="0,1,1,1" BorderBrush="#FFACACAC" Cursor="Hand" 
+                                        MouseLeftButtonDown="ColorBorder_OnMouseLeftButtonDown" Tag="Recorder"
+                                        Background="{Binding RecorderForeground, Converter={StaticResource ColorToBrush}, Mode=TwoWay}"
+                                        ToolTip="{DynamicResource Interface.Foreground}" ToolTipService.Placement="Bottom" ToolTipService.HorizontalOffset="-5"/>
+            </Grid>
+        </StackPanel>
+
+        <n:LabelSeparator Text="{DynamicResource Interface.Other}" Margin="0,0,0,5"/>
+        <n:ExtendedCheckBox Text="{DynamicResource Interface.Other.ExtendChrome}" IsChecked="{Binding Path=EditorExtendChrome, Mode=TwoWay}" Margin="10,0,0,5"/>
+        <n:ExtendedCheckBox Text="{DynamicResource Interface.Other.HideTitleBar}" IsChecked="{Binding Path=RecorderThinMode, Mode=TwoWay}" Margin="10,0,0,5"/>
+        <n:ExtendedCheckBox Text="{DynamicResource Interface.Other.TripleClickSelection}" IsChecked="{Binding Path=TripleClickSelection, Mode=TwoWay}" Margin="10,0,0,5"/>
+        <n:ExtendedCheckBox Text="{DynamicResource Interface.Other.AutomaticallySizeOnContent}" IsChecked="{Binding Path=AutomaticallySizeOnContent, Mode=TwoWay}" Margin="10,0,0,5"/>
+        <n:ExtendedCheckBox Text="{DynamicResource Interface.Other.AutomaticallyFitImage}" IsChecked="{Binding Path=AutomaticallyFitImage, Mode=TwoWay}" Margin="10,0,0,5"/>
+    </StackPanel>
+</UserControl>
