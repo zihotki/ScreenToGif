@@ -219,13 +219,11 @@
     <Window.CommandBindings>
         <!--New-->
         <CommandBinding Command="u:Commands.NewRecording" CanExecute="NewRecording_CanExecute" Executed="NewRecording_Executed"/>
-        <CommandBinding Command="u:Commands.NewBoardRecording" CanExecute="NewRecording_CanExecute" Executed="NewBoardRecording_Executed"/>
         <CommandBinding Command="u:Commands.NewAnimation" CanExecute="NewProject_CanExecute" Executed="NewProject_Executed"/>
 
         <!--Insert-->
         <CommandBinding Command="u:Commands.InsertRecording" CanExecute="Insert_CanExecute" Executed="InsertRecording_Executed"/>
-        <CommandBinding Command="u:Commands.InsertBoardRecording" CanExecute="Insert_CanExecute" Executed="InsertBoardRecording_Executed"/>
-        
+
         <!--File-->
         <CommandBinding Command="u:Commands.SaveAs" CanExecute="File_CanExecute" Executed="SaveAs_Executed"/>
         <CommandBinding Command="u:Commands.Load" CanExecute="NewProject_CanExecute" Executed="Load_Executed"/>

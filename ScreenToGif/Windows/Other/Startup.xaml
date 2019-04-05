@@ -12,10 +12,6 @@
         <KeyBinding Command="{Binding OpenOptions}" Modifiers="Control+Alt" Key="O"/>
     </Window.InputBindings>
 
-    <Window.CommandBindings>
-        <CommandBinding Command="u:Commands.Update" CanExecute="Update_CanExecute" Executed="Update_Executed"/>
-    </Window.CommandBindings>
-
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="45"/>
@@ -31,12 +27,6 @@
             </Grid.ColumnDefinitions>
 
             <Label Grid.Column="0" Content="ScreenToGif" Margin="5" FontSize="18" Foreground="#FF251E46" Effect="{DynamicResource Shadow.Black.Small}"/>
-
-            <TextBlock Grid.Column="1" Name="UpdateTextBlock" VerticalAlignment="Center" Visibility="Hidden" Effect="{StaticResource Shadow.Black.Small}">
-                <Hyperlink Command="u:Commands.Update" ToolTip="{DynamicResource NewRelease.Tooltip}" Cursor="Hand">
-                    <Run Name="UpdateRun" Text="{DynamicResource NewRelease}"/>
-                </Hyperlink>
-            </TextBlock>
 
         </Grid>
 

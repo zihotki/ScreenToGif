@@ -32,16 +32,6 @@ namespace ScreenToGif.Windows.Other
             NotificationUpdated();
         }
 
-        private void Update_CanExecute(object sender, CanExecuteRoutedEventArgs e)
-        {
-            e.CanExecute = Global.UpdateModel != null;
-        }
-
-        private void Update_Executed(object sender, ExecutedRoutedEventArgs e)
-        {
-            App.MainViewModel?.UpdateAction();
-        }
-
         private void System_DisplaySettingsChanged(object sender, EventArgs e)
         {
             UpdatePositioning(false);
@@ -110,16 +100,7 @@ namespace ScreenToGif.Windows.Other
 
         public void NotificationUpdated()
         {
-            //if (Global.UpdateModel == null)
-            {
-                UpdateTextBlock.Visibility = Visibility.Collapsed;
-                return;
-            }
-            /*
-            UpdateRun.Text = string.Format(LocalizationHelper.Get("NewRelease") ?? "New release available • {0}", Global.UpdateModel.Version.ToStringShort());
-            UpdateTextBlock.Visibility = Visibility.Visible;
 
-            CommandManager.InvalidateRequerySuggested();*/
         }
 
         #endregion

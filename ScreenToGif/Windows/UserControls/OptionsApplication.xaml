@@ -71,13 +71,33 @@
                                             CheckedChanged="NotificationIconCheckBox_CheckedChanged"/>
         <n:ExtendedCheckBox Text="{DynamicResource Application.Other.LeaveOpen}" Margin="30,3,5,3" IsChecked="{Binding Path=KeepOpen, Mode=TwoWay}"
                                             Visibility="{Binding ShowNotificationIcon, Converter={StaticResource Bool2Visibility}}"/>
-        <n:ExtendedCheckBox Text="{DynamicResource Application.Other.NotifyFrameDeletion}" Margin="15,3,5,3" IsChecked="{Binding Path=NotifyFrameDeletion, Mode=TwoWay}"/>
-        <n:ExtendedCheckBox Text="{DynamicResource Application.Other.NotifyProjectDiscard}" Margin="15,3,5,3" IsChecked="{Binding Path=NotifyProjectDiscard, Mode=TwoWay}"/>
-        <n:ExtendedCheckBox Text="{DynamicResource Application.Other.NotifyWhileClosingEditor}" Margin="15,3,5,3" IsChecked="{Binding Path=NotifyWhileClosingEditor, Mode=TwoWay}"/>
-        <n:ExtendedCheckBox Text="{DynamicResource Application.Other.NotifyWhileClosingApp}" Margin="15,3,5,3" IsChecked="{Binding Path=NotifyWhileClosingApp, Mode=TwoWay}"/>
-        <n:ExtendedCheckBox Text="{DynamicResource Application.Other.DrawOutlineOutside}" Margin="15,3,5,3" IsChecked="{Binding Path=DrawOutlineOutside, Mode=TwoWay}"/>
-        <n:ExtendedCheckBox Text="{DynamicResource Application.Other.DisableHardwareAcceleration}" Margin="15,3,5,3" IsChecked="{Binding Path=DisableHardwareAcceleration, Mode=TwoWay}"/>
-        <n:ExtendedCheckBox Text="{DynamicResource Application.Other.CheckForTranslationUpdates}" Margin="15,3,5,3" IsChecked="{Binding Path=CheckForTranslationUpdates, Mode=TwoWay}"/>
-        <n:ExtendedCheckBox x:Name="UpdatesCheckBox" Text="{DynamicResource Application.Other.CheckForUpdates}" Margin="15,3,5,3" IsChecked="{Binding Path=CheckForUpdates, Mode=TwoWay}"/>
+        <n:ExtendedCheckBox Text="{DynamicResource Application.Other.NotifyFrameDeletion}" Margin="15,3,5,3" 
+                            IsChecked="{Binding Path=NotifyFrameDeletion, Mode=TwoWay}"/>
+        <n:ExtendedCheckBox Text="{DynamicResource Application.Other.NotifyProjectDiscard}" Margin="15,3,5,3" 
+                            IsChecked="{Binding Path=NotifyProjectDiscard, Mode=TwoWay}"/>
+        <n:ExtendedCheckBox Text="{DynamicResource Application.Other.NotifyWhileClosingEditor}" Margin="15,3,5,3" 
+                            IsChecked="{Binding Path=NotifyWhileClosingEditor, Mode=TwoWay}"/>
+        <n:ExtendedCheckBox Text="{DynamicResource Application.Other.NotifyWhileClosingApp}" Margin="15,3,5,3" 
+                            IsChecked="{Binding Path=NotifyWhileClosingApp, Mode=TwoWay}"/>
+        <n:ExtendedCheckBox Text="{DynamicResource Application.Other.DrawOutlineOutside}" Margin="15,3,5,3" 
+                            IsChecked="{Binding Path=DrawOutlineOutside, Mode=TwoWay}"/>
+        <n:ExtendedCheckBox Text="{DynamicResource Application.Other.DisableHardwareAcceleration}" Margin="15,3,5,3" 
+                            IsChecked="{Binding Path=DisableHardwareAcceleration, Mode=TwoWay}"/>
+        <n:ExtendedCheckBox Text="{DynamicResource Application.Other.CheckForTranslationUpdates}" Margin="15,3,5,3" 
+                            IsChecked="{Binding Path=CheckForTranslationUpdates, Mode=TwoWay}"/>
+        <n:ExtendedCheckBox x:Name="UpdatesCheckBox" Text="{DynamicResource Application.Other.CheckForUpdates}" Margin="15,3,5,3" 
+                            IsChecked="{Binding Path=CheckForUpdates, Mode=TwoWay}"/>
+
+        <n:LabelSeparator Text="{DynamicResource Interface.Other}" Margin="0,0,0,5"/>
+        <n:ExtendedCheckBox Text="{DynamicResource Interface.Other.ExtendChrome}" 
+                            IsChecked="{Binding Path=EditorExtendChrome, Mode=TwoWay}" Margin="15,3,5,3"/>
+        <n:ExtendedCheckBox Text="{DynamicResource Interface.Other.HideTitleBar}" 
+                            IsChecked="{Binding Path=RecorderThinMode, Mode=TwoWay}" Margin="15,3,5,3"/>
+        <n:ExtendedCheckBox Text="{DynamicResource Interface.Other.TripleClickSelection}" 
+                            IsChecked="{Binding Path=TripleClickSelection, Mode=TwoWay}" Margin="15,3,5,3"/>
+        <n:ExtendedCheckBox Text="{DynamicResource Interface.Other.AutomaticallySizeOnContent}" 
+                            IsChecked="{Binding Path=AutomaticallySizeOnContent, Mode=TwoWay}" Margin="15,3,5,3"/>
+        <n:ExtendedCheckBox Text="{DynamicResource Interface.Other.AutomaticallyFitImage}" 
+                            IsChecked="{Binding Path=AutomaticallyFitImage, Mode=TwoWay}" Margin="15,3,5,3"/>
     </StackPanel>
 </UserControl>

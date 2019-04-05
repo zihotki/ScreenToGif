@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:u="clr-namespace:ScreenToGif.Util"
              xmlns:local="clr-namespace:ScreenToGif.Windows.UserControls"
              xmlns:n="clr-namespace:ScreenToGif.Controls"
              mc:Ignorable="d" 
@@ -59,15 +60,15 @@
             <Viewbox Child="{StaticResource Vector.Info}" Height="16" Width="16" Margin="2"/>
 
             <TextBlock Margin="2" VerticalAlignment="Center">
-                                <Hyperlink NavigateUri="https://ffmpeg.org/legal.html" RequestNavigate="ExtrasHyperlink_OnRequestNavigate">
-                                    <Run Text="{DynamicResource Extras.License.Ffmpeg}"/>
-                                </Hyperlink>
+                <Hyperlink NavigateUri="https://ffmpeg.org/legal.html" RequestNavigate="ExtrasHyperlink_OnRequestNavigate">
+                    <Run Text="{DynamicResource Extras.License.Ffmpeg}"/>
+                </Hyperlink>
                                 
-                                <Run>/</Run>
+                <Run>/</Run>
 
-                                <Hyperlink NavigateUri="https://github.com/ImageOptim/gifski/blob/master/LICENSE" RequestNavigate="ExtrasHyperlink_OnRequestNavigate">
-                                    <Run Text="{DynamicResource Extras.License.Gifski}"/>
-                                </Hyperlink>
+                <Hyperlink NavigateUri="https://github.com/ImageOptim/gifski/blob/master/LICENSE" RequestNavigate="ExtrasHyperlink_OnRequestNavigate">
+                    <Run Text="{DynamicResource Extras.License.Gifski}"/>
+                </Hyperlink>
             </TextBlock>
         </StackPanel>
     </Grid>

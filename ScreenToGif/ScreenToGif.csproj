@@ -191,9 +191,6 @@
     <Compile Include="Controls\StatusBand.cs" />
     <Compile Include="Controls\StatusList.cs" />
     <Compile Include="Controls\TextPath.cs" />
-    <Compile Include="Controls\WebcamControl.xaml.cs">
-      <DependentUpon>WebcamControl.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Controls\ZoomBox.cs" />
     <Compile Include="ImageUtil\Apng\Apng.cs" />
     <Compile Include="ImageUtil\Apng\Chunks\ActlChunk.cs" />
@@ -231,9 +228,6 @@
     </Compile>
     <Compile Include="Windows\UserControls\OptionsExtras.xaml.cs">
       <DependentUpon>OptionsExtras.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Windows\UserControls\OptionsInterface.xaml.cs">
-      <DependentUpon>OptionsInterface.xaml</DependentUpon>
     </Compile>
     <Compile Include="Windows\UserControls\OptionsSave.xaml.cs">
       <DependentUpon>OptionsSave.xaml</DependentUpon>
@@ -297,7 +291,6 @@
     <Compile Include="Util\CrcHelper.cs" />
     <Compile Include="Util\DataGridHelper.cs" />
     <Compile Include="Util\DynamicResourceBinding.cs" />
-    <Compile Include="Util\FeedbackHelper.cs" />
     <Compile Include="Util\Framerate.cs" />
     <Compile Include="Util\Clipboard.cs" />
     <Compile Include="Util\ColorExtensions.cs" />
@@ -353,7 +346,6 @@
     <Compile Include="Model\UpdateModel.cs" />
     <Compile Include="Util\MutexList.cs" />
     <Compile Include="Util\NotificationManager.cs" />
-    <Compile Include="Util\WebHelper.cs" />
     <Compile Include="Model\ApplicationModel.cs" />
     <Compile Include="Model\ApplicationViewModel.cs" />
     <Compile Include="Model\FrameInfo.cs" />
@@ -379,18 +371,6 @@
     <Compile Include="Util\UiElementsExtension.cs" />
     <Compile Include="Util\UserSettings.cs" />
     <Compile Include="Util\VisualHelper.cs" />
-    <Compile Include="Webcam\DirectShow\ControlStreaming.cs" />
-    <Compile Include="Webcam\DirectShow\CoreStreaming.cs" />
-    <Compile Include="Webcam\DirectShow\Devices.cs" />
-    <Compile Include="Webcam\DirectShow\EditStreaming.cs" />
-    <Compile Include="Webcam\DirectShow\ExtendStreaming.cs" />
-    <Compile Include="Webcam\DirectShow\UtilStreaming.cs" />
-    <Compile Include="Webcam\DirectShow\Uuid.cs" />
-    <Compile Include="Webcam\DirectShow\Workaround.cs" />
-    <Compile Include="Webcam\DirectX\CaptureWebcam.cs" />
-    <Compile Include="Webcam\DirectX\Filter.cs" />
-    <Compile Include="Webcam\DirectX\FilterCollection.cs" />
-    <Compile Include="Webcam\DirectX\Filters.cs" />
     <Compile Include="Windows\Other\ColorSelector.xaml.cs">
       <DependentUpon>ColorSelector.xaml</DependentUpon>
     </Compile>
@@ -406,17 +386,11 @@
     <Compile Include="Windows\Other\FeedbackPreview.xaml.cs">
       <DependentUpon>FeedbackPreview.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Windows\Other\PickAlbumDialog.xaml.cs">
-      <DependentUpon>PickAlbumDialog.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Windows\Other\ErrorDialog.xaml.cs">
       <DependentUpon>ErrorDialog.xaml</DependentUpon>
     </Compile>
     <Compile Include="Windows\Other\Dialog.xaml.cs">
       <DependentUpon>Dialog.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Windows\Other\DownloadDialog.xaml.cs">
-      <DependentUpon>DownloadDialog.xaml</DependentUpon>
     </Compile>
     <Compile Include="Windows\Other\Encoder.xaml.cs">
       <DependentUpon>Encoder.xaml</DependentUpon>
@@ -432,9 +406,6 @@
     </Compile>
     <Compile Include="Windows\Other\KeyStrokes.xaml.cs">
       <DependentUpon>KeyStrokes.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Windows\Other\Localization.xaml.cs">
-      <DependentUpon>Localization.xaml</DependentUpon>
     </Compile>
     <Compile Include="Windows\Options.xaml.cs">
       <DependentUpon>Options.xaml</DependentUpon>
@@ -469,10 +440,6 @@
     <Compile Include="Windows\UserControls\EditorMenu.xaml.cs">
       <DependentUpon>EditorMenu.xaml</DependentUpon>
     </Compile>
-    <Page Include="Controls\WebcamControl.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="Resources\Backgrounds.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -650,19 +617,11 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Windows\Other\PickAlbumDialog.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
     <Page Include="Windows\Other\ErrorDialog.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Windows\Other\Dialog.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Windows\Other\DownloadDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -683,10 +642,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Windows\Other\KeyStrokes.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Windows\Other\Localization.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -739,10 +694,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Windows\UserControls\OptionsExtras.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Windows\UserControls\OptionsInterface.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

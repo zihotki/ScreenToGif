@@ -29,16 +29,6 @@ namespace ScreenToGif.Model
             }
         }
 
-        public string BoardRecorderGesture
-        {
-            get => _boardRecorderGesture;
-            set
-            {
-                _boardRecorderGesture = value;
-                OnPropertyChanged();
-            }
-        }
-
         public string EditorGesture
         {
             get => _editorGesture;

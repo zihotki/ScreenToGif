@@ -12,18 +12,11 @@ namespace ScreenToGif.Util
 
         public int Width { get; set; }
 
-        public bool CopyToClipboard { get; set; }
-
         public CopyType CopyType { get; set; }
-
-        public bool Upload { get; set; }
-
-        public UploadService UploadDestination { get; set; }
 
         public bool ExecuteCommands { get; set; }
 
         public string PostCommands { get; set; }
-
 
         public int RepeatCount { get; set; }
 

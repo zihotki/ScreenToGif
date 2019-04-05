@@ -1,5 +1,4 @@
-﻿using ScreenToGif.Cloud;
-using ScreenToGif.Controls;
+﻿using ScreenToGif.Controls;
 using ScreenToGif.ImageUtil;
 using ScreenToGif.ImageUtil.Apng;
 using ScreenToGif.ImageUtil.Gif.Encoder;
@@ -969,91 +968,6 @@ namespace ScreenToGif.Windows.Other
                     SetStatus(Status.Canceled, id);
                     return;
                 }
-
-                #region Upload
-
-                if (param.Upload && File.Exists(param.Filename))
-                {
-                    InternalUpdate(id, "Encoder.Uploading", true, true);
-
-                    try
-                    {
-                        var cloud = CloudFactory.CreateCloud(param.UploadDestination);
-
-                        var uploadedFile = await cloud.UploadFileAsync(param.Filename, CancellationToken.None);
-
-                        InternalSetUpload(id, true, uploadedFile.Link, uploadedFile.DeleteLink);
-                    }
-                    catch (Exception e)
-                    {
-                        LogWriter.Log(e, "It was not possible to upload.");
-                        InternalSetUpload(id, false, null, null, e);
-                    }
-                }
-
-                #endregion
-
-                #region Copy to clipboard
-
-                if (param.CopyToClipboard && File.Exists(param.Filename))
-                {
-                    Dispatcher.Invoke(() =>
-                    {
-                        try
-                        {
-                            var data = new DataObject();
-
-                            switch (param.CopyType)
-                            {
-                                case CopyType.File:
-                                    if (param.Type != Export.Video)
-                                        data.SetImage(param.Filename.SourceFrom());
-
-                                    data.SetText(param.Filename, TextDataFormat.Text);
-                                    data.SetFileDropList(new StringCollection { param.Filename });
-                                    break;
-                                case CopyType.FolderPath:
-                                    data.SetText(Path.GetDirectoryName(param.Filename) ?? param.Filename, TextDataFormat.Text);
-                                    break;
-                                case CopyType.Link:
-                                    var link = InternalGetUpload(id);
-
-                                    data.SetText(string.IsNullOrEmpty(link) ? param.Filename : link, TextDataFormat.Text);
-                                    break;
-                                default:
-                                    data.SetText(param.Filename, TextDataFormat.Text);
-                                    break;
-                            }
-
-                            //It tries to set the data to the clipboard 10 times before failing it to do so.
-                            //This issue may happen if the clipboard is opened by any clipboard manager.
-                            for (var i = 0; i < 10; i++)
-                            {
-                                try
-                                {
-                                    Clipboard.SetDataObject(data, true);
-                                    break;
-                                }
-                                catch (COMException ex)
-                                {
-                                    if ((uint)ex.ErrorCode != 0x800401D0) //CLIPBRD_E_CANT_OPEN
-                                        throw;
-                                }
-
-                                Thread.Sleep(100);
-                            }
-
-                            InternalSetCopy(id, true);
-                        }
-                        catch (Exception e)
-                        {
-                            LogWriter.Log(e, "It was not possible to copy the file.");
-                            InternalSetCopy(id, false, e);
-                        }
-                    });
-                }
-
-                #endregion
 
                 #region Execute commands
 

@@ -107,8 +107,6 @@ namespace ScreenToGif
             #region Tasks
 
             Task.Factory.StartNew(MainViewModel.ClearTemporaryFilesTask, TaskCreationOptions.LongRunning);
-            Task.Factory.StartNew(MainViewModel.UpdateTask, TaskCreationOptions.LongRunning);
-            Task.Factory.StartNew(MainViewModel.SendFeedback, TaskCreationOptions.LongRunning);
 
             #endregion
 
@@ -131,9 +129,6 @@ namespace ScreenToGif
                 MainViewModel.OpenRecorder.Execute(null);
                 return;
             }
-
-            if (UserSettings.All.StartUp == 3)
-                MainViewModel.OpenBoardRecorder.Execute(null);
 
             #endregion
         }
@@ -196,9 +191,6 @@ namespace ScreenToGif
             var screen = HotKeyCollection.Default.TryRegisterHotKey(UserSettings.All.RecorderModifiers, UserSettings.All.RecorderShortcut, () =>
                 { if (!Global.IgnoreHotKeys && MainViewModel.OpenRecorder.CanExecute(null)) MainViewModel.OpenRecorder.Execute(null); }, true);
 
-            var board = HotKeyCollection.Default.TryRegisterHotKey(UserSettings.All.BoardRecorderModifiers, UserSettings.All.BoardRecorderShortcut, () =>
-                { if (!Global.IgnoreHotKeys && MainViewModel.OpenBoardRecorder.CanExecute(null)) MainViewModel.OpenBoardRecorder.Execute(null); }, true);
-
             var editor = HotKeyCollection.Default.TryRegisterHotKey(UserSettings.All.EditorModifiers, UserSettings.All.EditorShortcut, () =>
                 { if (!Global.IgnoreHotKeys && MainViewModel.OpenEditor.CanExecute(null)) MainViewModel.OpenEditor.Execute(null); }, true);
 
@@ -210,7 +202,6 @@ namespace ScreenToGif
 
             //Updates the input gesture text of each command.
             MainViewModel.RecorderGesture = screen ? Native.GetSelectKeyText(UserSettings.All.RecorderShortcut, UserSettings.All.RecorderModifiers, true, true) : "";
-            MainViewModel.BoardRecorderGesture = board ? Native.GetSelectKeyText(UserSettings.All.BoardRecorderShortcut, UserSettings.All.BoardRecorderModifiers, true, true) : "";
             MainViewModel.EditorGesture = editor ? Native.GetSelectKeyText(UserSettings.All.EditorShortcut, UserSettings.All.EditorModifiers, true, true) : "";
             MainViewModel.OptionsGesture = options ? Native.GetSelectKeyText(UserSettings.All.OptionsShortcut, UserSettings.All.OptionsModifiers, true, true) : "";
             MainViewModel.ExitGesture = exit ? Native.GetSelectKeyText(UserSettings.All.ExitShortcut, UserSettings.All.ExitModifiers, true, true) : "";

@@ -429,8 +429,6 @@ namespace ScreenToGif.Util
         /// The homepage of the app:
         /// 0 - StartUp window.
         /// 1 - Recorder window.
-        /// 2 - Webcam window.
-        /// 3 - Board window.
         /// 4 - Editor window.
         /// 5 - Open minimized.
         /// </summary>
@@ -674,30 +672,6 @@ namespace ScreenToGif.Util
             set => SetValue(value);
         }
 
-        public Key WebcamRecorderShortcut
-        {
-            get => (Key)GetValue(defaultValue: Key.None);
-            set => SetValue(value);
-        }
-
-        public ModifierKeys WebcamRecorderModifiers
-        {
-            get => (ModifierKeys)GetValue(defaultValue: ModifierKeys.None);
-            set => SetValue(value);
-        }
-
-        public Key BoardRecorderShortcut
-        {
-            get => (Key)GetValue(defaultValue: Key.None);
-            set => SetValue(value);
-        }
-
-        public ModifierKeys BoardRecorderModifiers
-        {
-            get => (ModifierKeys)GetValue(defaultValue: ModifierKeys.None);
-            set => SetValue(value);
-        }
-
         public Key EditorShortcut
         {
             get => (Key)GetValue(defaultValue: Key.None);
@@ -806,116 +780,6 @@ namespace ScreenToGif.Util
         public int AutomaticCleanUpDays
         {
             get => (int)GetValue();
-            set => SetValue(value);
-        }
-
-        #endregion
-
-        #region Options • Cloud
-
-        //Proxy
-        public ProxyType ProxyMode
-        {
-            get => (ProxyType)GetValue(defaultValue:ProxyType.Disabled);
-            set => SetValue(value);
-        }
-
-        public string ProxyHost
-        {
-            get => (string)GetValue();
-            set => SetValue(value);
-        }
-
-        public int ProxyPort
-        {
-            get => (int)GetValue();
-            set => SetValue(value);
-        }
-
-        public string ProxyUsername
-        {
-            get => (string)GetValue();
-            set => SetValue(value);
-        }
-
-        public string ProxyPassword
-        {
-            get => (string)GetValue();
-            set => SetValue(value);
-        }
-
-        //Imgur (Anonymous)
-        public bool ImgurAnonymousUseDirectLinks
-        {
-            get => (bool)GetValue();
-            set => SetValue(value);
-        }
-
-        public bool ImgurAnonymousUseGifvLink
-        {
-            get => (bool)GetValue();
-            set => SetValue(value);
-        }
-
-        //Imgur
-        public string ImgurOAuthToken
-        {
-            get => (string)GetValue();
-            set => SetValue(value);
-        }
-
-        public string ImgurAccessToken
-        {
-            get => (string)GetValue();
-            set => SetValue(value);
-        }
-
-        public string ImgurRefreshToken
-        {
-            get => (string)GetValue();
-            set => SetValue(value);
-        }
-
-        public DateTime? ImgurExpireDate
-        {
-            get => (DateTime?)GetValue();
-            set => SetValue(value);
-        }
-
-        public bool ImgurUseDirectLinks
-        {
-            get => (bool)GetValue();
-            set => SetValue(value);
-        }
-
-        public bool ImgurUseGifvLink
-        {
-            get => (bool)GetValue();
-            set => SetValue(value);
-        }
-
-        public bool ImgurUploadToAlbum
-        {
-            get => (bool)GetValue();
-            set => SetValue(value);
-        }
-
-        public string ImgurSelectedAlbum
-        {
-            get => (string)GetValue();
-            set => SetValue(value);
-        }
-
-        public ArrayList ImgurAlbumList
-        {
-            get => (ArrayList)GetValue();
-            set => SetValue(value);
-        }
-
-        //Yandex
-        public string YandexDiskOAuthToken
-        {
-            get => (string)GetValue();
             set => SetValue(value);
         }
 
@@ -1857,18 +1721,6 @@ namespace ScreenToGif.Util
             set => SetValue(value);
         }
 
-        public UploadService LatestUploadService
-        {
-            get => (UploadService)GetValue();
-            set => SetValue(value);
-        }
-
-        public bool SaveToClipboard
-        {
-            get => (bool)GetValue();
-            set => SetValue(value);
-        }
-
         public CopyType LatestCopyType
         {
             get => (CopyType)GetValue();
@@ -1969,12 +1821,6 @@ namespace ScreenToGif.Util
             set => SetValue(value);
         }
 
-        public bool SaveToClipboardApng
-        {
-            get => (bool)GetValue();
-            set => SetValue(value);
-        }
-
         public CopyType LatestCopyTypeApng
         {
             get => (CopyType)GetValue();
@@ -2063,12 +1909,6 @@ namespace ScreenToGif.Util
             set => SetValue(value);
         }
 
-        public bool SaveToClipboardVideo
-        {
-            get => (bool)GetValue();
-            set => SetValue(value);
-        }
-
         public CopyType LatestCopyTypeVideo
         {
             get => (CopyType)GetValue();
@@ -2116,12 +1956,6 @@ namespace ScreenToGif.Util
 
         //Project > Save options.
         public bool OverwriteOnSaveProject
-        {
-            get => (bool)GetValue();
-            set => SetValue(value);
-        }
-
-        public bool SaveToClipboardProject
         {
             get => (bool)GetValue();
             set => SetValue(value);
@@ -2232,12 +2066,6 @@ namespace ScreenToGif.Util
         }
 
         public bool SaveAsProjectTooPhotoshop
-        {
-            get => (bool)GetValue();
-            set => SetValue(value);
-        }
-
-        public bool SaveToClipboardPhotoshop
         {
             get => (bool)GetValue();
             set => SetValue(value);
@@ -2433,13 +2261,6 @@ namespace ScreenToGif.Util
         public string ExtraParametersGifski
         {
             get => (string)GetValue();
-            set => SetValue(value);
-        }
-
-        [Obsolete]
-        public int LatestUploadIndex
-        {
-            get => (int)GetValue();
             set => SetValue(value);
         }
 

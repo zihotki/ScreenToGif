@@ -21,8 +21,6 @@ using System.Windows.Media.Imaging;
 using System.Windows.Shell;
 using System.Windows.Threading;
 using Microsoft.Win32;
-using ScreenToGif.Cloud.Imgur;
-using ScreenToGif.Cloud.YandexDisk;
 using ScreenToGif.Controls;
 using ScreenToGif.ImageUtil;
 using ScreenToGif.ImageUtil.Gif.Decoder;
@@ -583,22 +581,6 @@ namespace ScreenToGif.Windows
             WindowState = WindowState.Normal;
         }
 
-        private void NewBoardRecording_Executed(object sender, ExecutedRoutedEventArgs e)
-        {
-            e.Handled = true;
-            Pause();
-            ClosePanel(removeEvent: true);
-
-            var recorder = new Board();
-            recorder.ShowDialog();
-
-            if (recorder.Project?.Any == true)
-            {
-                LoadProject(recorder.Project);
-                ShowHint("Hint.NewBoardRecording");
-            }
-        }
-
         private void NewProject_Executed(object sender, ExecutedRoutedEventArgs e)
         {
             Pause();
@@ -715,40 +697,6 @@ namespace ScreenToGif.Windows
 
             Encoder.Restore();
             WindowState = WindowState.Normal;
-        }
-
-        private void InsertBoardRecording_Executed(object sender, ExecutedRoutedEventArgs e)
-        {
-            e.Handled = true;
-            Pause();
-
-            var recorder = new Board();
-            recorder.ShowDialog();
-
-            #region If recording cancelled
-
-            if (recorder.Project?.Frames == null || !recorder.Project.Any)
-            {
-                GC.Collect();
-
-                return;
-            }
-
-            #endregion
-
-            #region Insert
-
-            var insert = new Insert(Project.Frames.CopyList(), recorder.Project.Frames, FrameListView.SelectedIndex) { Owner = this };
-
-            var result = insert.ShowDialog();
-
-            if (result.HasValue && result.Value)
-            {
-                Project.Frames = insert.ActualList;
-                LoadSelectedStarter(0);
-            }
-
-            #endregion
         }
 
         private void InsertFromMedia_Executed(object sender, ExecutedRoutedEventArgs e)
@@ -991,15 +939,6 @@ namespace ScreenToGif.Windows
             }
         }
 
-        private void SaveToClipboard_CheckedChanged(object sender, RoutedEventArgs e)
-        {
-            if (!IsLoaded)
-                return;
-
-            if (UserSettings.All.SaveToClipboard)
-                FileExistsGrid.Visibility = Visibility.Collapsed;
-        }
-
         private void FileHyperlink_OnClick(object sender, RoutedEventArgs e)
         {
             try
@@ -1025,8 +964,6 @@ namespace ScreenToGif.Windows
                 var pickLocation = GetPickLocation();
                 var overwrite = GetOverwriteOnSave();
                 var projectToo = GetSaveAsProjectToo();
-                var upload = GetUploadFile();
-                var saveToClipboard = GetSaveToClipboard();
                 var copyType = GetCopyType();
                 var executeCommands = GetExecuteCustomCommands();
                 var commands = GetCustomCommands();
@@ -1036,7 +973,7 @@ namespace ScreenToGif.Windows
 
                 #region Common validations
 
-                if (!pickLocation && !upload && !saveToClipboard)
+                if (!pickLocation)
                 {
                     StatusList.Warning(StringResource("S.SaveAs.Warning.Type"));
                     return;
@@ -1166,33 +1103,6 @@ namespace ScreenToGif.Windows
                     }
                 }
 
-                if (upload)
-                {
-                    if (UserSettings.All.LatestUploadService == UploadService.None)
-                    {
-                        StatusList.Warning(StringResource("S.SaveAs.Warning.Upload.None"));
-                        return;
-                    }
-
-                    if (UserSettings.All.LatestUploadService == UploadService.Imgur && !await Imgur.IsAuthorized())
-                    {
-                        StatusList.Warning(StringResource("S.SaveAs.Warning.Upload.NotAuthorized"));
-                        return;
-                    }
-
-                    if (UserSettings.All.LatestUploadService == UploadService.Yandex && !YandexDisk.IsAuthorized())
-                    {
-                        StatusList.Warning(StringResource("S.SaveAs.Warning.Upload.NotAuthorized"));
-                        return;
-                    }
-                }
-
-                if (saveToClipboard && copyType == CopyType.Link && !upload)
-                {
-                    StatusList.Warning(StringResource("S.SaveAs.Warning.Copy.Link"));
-                    return;
-                }
-
                 //When only copying to the clipboard or uploading.
                 if (!pickLocation)
                 {
@@ -1217,10 +1127,7 @@ namespace ScreenToGif.Windows
                 {
                     Type = UserSettings.All.SaveType,
                     Filename = filename,
-                    CopyToClipboard = saveToClipboard,
                     CopyType = copyType,
-                    Upload = upload,
-                    UploadDestination = UserSettings.All.LatestUploadService,
                     ExecuteCommands = executeCommands,
                     PostCommands = commands
                 };
@@ -1323,7 +1230,7 @@ namespace ScreenToGif.Windows
                         break;
                     case Export.Project:
                         _saveProjectDel = SaveProjectAsync;
-                        _saveProjectDel.BeginInvoke(filename, saveToClipboard, SaveProjectCallback, null);
+                        _saveProjectDel.BeginInvoke(filename, SaveProjectCallback, null);
                         break;
                     case Export.Photoshop:
                         var size2 = Project.Frames[0].Path.SizeOf();
@@ -5194,44 +5101,6 @@ namespace ScreenToGif.Windows
             }
         }
 
-        private bool GetUploadFile()
-        {
-            switch (UserSettings.All.SaveType)
-            {
-                case Export.Gif:
-                    return UserSettings.All.UploadFile;
-                case Export.Apng:
-                case Export.Video:
-                case Export.Project:
-                case Export.Images:
-                case Export.Photoshop:
-                    return false;
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
-        }
-
-        private bool GetSaveToClipboard()
-        {
-            switch (UserSettings.All.SaveType)
-            {
-                case Export.Gif:
-                    return UserSettings.All.SaveToClipboard;
-                case Export.Apng:
-                    return UserSettings.All.SaveToClipboardApng;
-                case Export.Video:
-                    return UserSettings.All.SaveToClipboardVideo;
-                case Export.Project:
-                    return UserSettings.All.SaveToClipboardProject;
-                case Export.Photoshop:
-                    return UserSettings.All.SaveToClipboardPhotoshop;
-                case Export.Images:
-                    return false;
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
-        }
-
         private CopyType GetCopyType()
         {
             switch (UserSettings.All.SaveType)
@@ -5421,7 +5290,7 @@ namespace ScreenToGif.Windows
             if (projectToo)
             {
                 _saveProjectDel = SaveProjectAsync;
-                _saveProjectDel.BeginInvoke(Path.Combine(GetOutputFolder(), GetOutputFilename() + (UserSettings.All.LatestProjectExtension ?? ".stg")), false, SaveProjectCallback, null);
+                _saveProjectDel.BeginInvoke(Path.Combine(GetOutputFolder(), GetOutputFilename() + (UserSettings.All.LatestProjectExtension ?? ".stg")), SaveProjectCallback, null);
             }
 
             return projectToo;
@@ -5451,11 +5320,11 @@ namespace ScreenToGif.Windows
 
         #region Async Project
 
-        private delegate void SaveProjectDelegate(string fileName, bool copyToClipboard = false);
+        private delegate void SaveProjectDelegate(string fileName);
 
         private SaveProjectDelegate _saveProjectDel;
 
-        private void SaveProjectAsync(string fileName, bool copyToClipboard = false)
+        private void SaveProjectAsync(string fileName)
         {
             ShowProgress(DispatcherStringResource("Editor.ExportingRecording"), Project.Frames.Count);
 
