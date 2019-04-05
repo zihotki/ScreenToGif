@@ -833,12 +833,6 @@ namespace ScreenToGif.Util
             set => SetValue(value);
         }
 
-        public PasteBehavior PasteBehavior
-        {
-            get => (PasteBehavior)GetValue();
-            set => SetValue(value);
-        }
-
         #endregion
 
         #region Editor • New Animation
@@ -1470,46 +1464,6 @@ namespace ScreenToGif.Util
         public StylusTip CinemagraphStylusTip
         {
             get => (StylusTip)GetValue();
-            set => SetValue(value);
-        }
-
-        #endregion
-
-        #region Editor • Transitions
-
-        public FadeToType FadeToType
-        {
-            get => (FadeToType)GetValue();
-            set => SetValue(value);
-        }
-
-        public Color FadeToColor
-        {
-            get => (Color)GetValue();
-            set => SetValue(value);
-        }
-
-        public int FadeTransitionLength
-        {
-            get => (int)GetValue();
-            set => SetValue(value);
-        }
-
-        public int FadeTransitionDelay
-        {
-            get => (int)GetValue();
-            set => SetValue(value);
-        }
-
-        public int SlideTransitionLength
-        {
-            get => (int)GetValue();
-            set => SetValue(value);
-        }
-
-        public int SlideTransitionDelay
-        {
-            get => (int)GetValue();
             set => SetValue(value);
         }
 
@@ -2188,28 +2142,6 @@ namespace ScreenToGif.Util
         public int ReduceCount
         {
             get => (int)GetValue();
-            set => SetValue(value);
-        }
-
-        #endregion
-
-        #region Remove Duplicates
-
-        public double DuplicatesSimilarity
-        {
-            get => (double)GetValue();
-            set => SetValue(value);
-        }
-
-        public DuplicatesRemovalType DuplicatesRemoval
-        {
-            get => (DuplicatesRemovalType)GetValue();
-            set => SetValue(value);
-        }
-
-        public DuplicatesDelayType DuplicatesDelay
-        {
-            get => (DuplicatesDelayType)GetValue();
             set => SetValue(value);
         }
 

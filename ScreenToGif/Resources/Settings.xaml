@@ -56,10 +56,6 @@
     <!--Options • Shortcuts-->
     <Key x:Key="RecorderShortcut">None</Key>
     <ModifierKeys x:Key="RecorderModifiers" xml:space="preserve">Alt</ModifierKeys>
-    <Key x:Key="WebcamRecorderShortcut">None</Key>
-    <ModifierKeys x:Key="WebcamRecorderModifiers" xml:space="preserve"></ModifierKeys>
-    <Key x:Key="BoardRecorderShortcut">None</Key>
-    <ModifierKeys x:Key="BoardRecorderModifiers" xml:space="preserve"></ModifierKeys>
     <Key x:Key="EditorShortcut">None</Key>
     <ModifierKeys x:Key="EditorModifiers" xml:space="preserve"></ModifierKeys>
     <Key x:Key="OptionsShortcut">None</Key>
@@ -84,28 +80,6 @@
     <s:Boolean x:Key="AutomaticCleanUp">True</s:Boolean>
     <s:Int32 x:Key="AutomaticCleanUpDays">5</s:Int32>
 
-    <!--Options • Cloud-->
-    <u:ProxyType x:Key="ProxyMode">Disabled</u:ProxyType>
-    <!--<s:String x:Key="ProxyHost"></s:String>-->
-    <s:Int32 x:Key="ProxyPort">0</s:Int32>
-    <!--<s:String x:Key="ProxyUsername"></s:String>-->
-    <!--<s:String x:Key="ProxyPassword"></s:String>-->
-
-    <s:Boolean x:Key="ImgurAnonymousUseDirectLinks">True</s:Boolean>
-    <s:Boolean x:Key="ImgurAnonymousUseGifvLink">False</s:Boolean>
-    
-    <!--<s:String x:Key="ImgurOAuthToken"></s:String>-->
-    <!--<s:String x:Key="ImgurAccessToken"></s:String>-->
-    <!--<s:String x:Key="ImgurRefreshToken"></s:String>-->
-    <!--<DateTime x:Key="ImgurExpireDate">(Nullable)</DateTime>-->
-    <s:Boolean x:Key="ImgurUseDirectLinks">True</s:Boolean>
-    <s:Boolean x:Key="ImgurUseGifvLink">False</s:Boolean>
-    <s:Boolean x:Key="ImgurUploadToAlbum">False</s:Boolean>
-    <!--<s:String x:Key="ImgurSelectedAlbum"></s:String>-->
-    <c:ArrayList x:Key="ImgurAlbumList"></c:ArrayList>
-
-    <!--<s:String x:Key="YandexDiskOAuthToken"></s:String>-->
-
     <!--Startup-->
     <s:Double x:Key="StartupTop">NaN</s:Double>
     <s:Double x:Key="StartupLeft">NaN</s:Double>
@@ -121,19 +95,6 @@
     <s:Int32 x:Key="LatestFps">15</s:Int32>
     <Rect x:Key="SelectedRegion">Empty</Rect>
     <s:Int32 x:Key="RecorderModeIndex">0</s:Int32>
-    
-    <!--Board-->
-    <s:Int32 x:Key="BoardWidth">616</s:Int32>
-    <s:Int32 x:Key="BoardHeight">447</s:Int32>
-    <Color x:Key="BoardColor">#FF000000</Color>
-    <s:Int32 x:Key="BoardStylusHeight">10</s:Int32>
-    <s:Int32 x:Key="BoardStylusWidth">10</s:Int32>
-    <StylusTip x:Key="BoardStylusTip">Ellipse</StylusTip>
-    <s:Boolean x:Key="BoardFitToCurve">False</s:Boolean>
-    <s:Boolean x:Key="BoardIsHighlighter">False</s:Boolean>
-    <s:Int32 x:Key="BoardEraserHeight">10</s:Int32>
-    <s:Int32 x:Key="BoardEraserWidth">10</s:Int32>
-    <StylusTip x:Key="BoardEraserStylusTip">Rectangle</StylusTip>
 
     <!--Editor-->
     <s:Double x:Key="EditorTop">NaN</s:Double>

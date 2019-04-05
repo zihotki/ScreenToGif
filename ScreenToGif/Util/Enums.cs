@@ -1,22 +1,6 @@
 ﻿namespace ScreenToGif.Util
 {
     /// <summary>
-    /// Determines how the past bahaves.
-    /// </summary>
-    public enum PasteBehavior
-    {
-        /// <summary>
-        /// It will paste before the selected frame.
-        /// </summary>
-        BeforeSelected,
-
-        /// <summary>
-        /// It will paste after the selected frame.
-        /// </summary>
-        AfterSelected
-    }
-
-    /// <summary>
     /// Animation export type.
     /// </summary>
     public enum Export
@@ -34,22 +18,7 @@
         /// <summary>
         /// Any type of video.
         /// </summary>
-        Video,
-
-        /// <summary>
-        /// Portable Network Graphics.
-        /// </summary>
-        Images,
-
-        /// <summary>
-        /// Project file, .stg or .zip.
-        /// </summary>
-        Project,
-
-        /// <summary>
-        /// PSD file.
-        /// </summary>
-        Photoshop,
+        Video
     }
 
     /// <summary>
@@ -58,31 +27,6 @@
     /// </summary>
     public enum PanelType
     {
-        /// <summary>
-        /// Save As Panel.
-        /// </summary>
-        SaveAs = 1,
-
-        /// <summary>
-        /// New Animation Panel.
-        /// </summary>
-        NewAnimation = 2,
-
-        /// <summary>
-        /// Clipboard Panel.
-        /// </summary>
-        Clipboard = 3,
-
-        /// <summary>
-        /// Resize Panel.
-        /// </summary>
-        Resize = 4,
-
-        /// <summary>
-        /// Flip/Rotate Panel.
-        /// </summary>
-        FlipRotate = 5,
-
         /// <summary>
         /// Override Delay Panel.
         /// </summary>
@@ -96,79 +40,20 @@
         ScaleDelay = 8,
 
         /// <summary>
-        /// Fade Transition Panel.
-        /// </summary>
-        Fade = 9,
-
-        /// <summary>
-        /// Slide Transition Panel.
-        /// </summary>
-        Slide = 10,
-
-        /// <summary>
         /// Reduce Frame Count Panel.
         /// </summary>
         ReduceFrames = 11,
-
-        /// <summary>
-        /// Load Recent Panel.
-        /// </summary>
-        LoadRecent = 12,
-
-        /// <summary>
-        /// Remove Duplicates Panel.
-        /// </summary>
-        RemoveDuplicates = 13,
 
         /// <summary>
         /// Mouse Clicks Panel.
         /// </summary>
         MouseClicks = 14,
 
-        /// <summary>
-        /// Crop Panel.
-        /// </summary>
-        Crop = -1,
-
-        /// <summary>
-        /// Caption Panel.
-        /// </summary>
-        Caption = -2,
-
-        /// <summary>
-        /// Free Text Panel.
-        /// </summary>
-        FreeText = -3,
-
-        /// <summary>
-        /// Title Frame Panel.
-        /// </summary>
-        TitleFrame = -4,
-
-        /// <summary>
-        /// Free Drawing Panel.
-        /// </summary>
-        FreeDrawing = -5,
-
-        /// <summary>
-        /// Shapes Panel.
-        /// </summary>
-        Shapes = -6,
-
-        /// <summary>
-        /// Watermark Panel.
-        /// </summary>
-        Watermark = -7,
-
+        
         /// <summary>
         /// Border Panel.
         /// </summary>
         Border = -8,
-
-        /// <summary>
-        /// Cinemagraph Panel.
-        /// </summary>
-        Cinemagraph = -9,
 
         /// <summary>
         /// Progress Panel.
@@ -180,37 +65,6 @@
         /// </summary>
         KeyStrokes = -11,
 
-        /// <summary>
-        /// Obfuscate Panel.
-        /// </summary>
-        Obfuscate = -12,
-    }
-
-    /// <summary>
-    /// The type of fade transition.
-    /// </summary>
-    public enum FadeToType
-    {
-        /// <summary>
-        /// The next frame of the recording.
-        /// </summary>
-        NextFrame,
-
-        /// <summary>
-        /// A solid color.
-        /// </summary>
-        Color
-    }
-
-    /// <summary>
-    /// Transition animation.
-    /// </summary>
-    public enum SlideFrom
-    {
-        Right,
-        Top,
-        Left,
-        Bottom
     }
 
     /// <summary>
@@ -286,17 +140,6 @@
     }
 
     /// <summary>
-    /// Type of the Flip/Rotate action.
-    /// </summary>
-    public enum FlipRotateType
-    {
-        FlipHorizontal,
-        FlipVertical,
-        RotateRight90,
-        RotateLeft90
-    }
-
-    /// <summary>
     /// Exit actions after closing the Recording Window.
     /// </summary>
     public enum ExitAction
@@ -324,8 +167,8 @@
     {
         Override,
         IncreaseDecrease,
-      Scale
-   }
+        Scale
+    }
 
     /// <summary>
     /// Type of the gif encoder.
@@ -413,8 +256,6 @@
         Video,
         Gif,
         Apng,
-        Image,
-        Project
     }
 
     /// <summary>
@@ -447,25 +288,6 @@
         Processing,
         Ready,
         Error
-    }
-
-    /// <summary>
-    /// Specifies the type of frame removal.
-    /// </summary>
-    public enum DuplicatesRemovalType
-    {
-        First = 0,
-        Last = 1
-    }
-
-    /// <summary>
-    /// Specifies the type of frame delay adjustment.
-    /// </summary>
-    public enum DuplicatesDelayType
-    {
-        DontAdjust = 0,
-        Average = 1,
-        Sum = 2
     }
 
     /// <summary>
@@ -515,29 +337,6 @@
         Question,
     }
 
-    /// <summary>
-    /// The proxy method, used for uploading files.
-    /// </summary>
-    public enum ProxyType
-    {
-        Disabled = 0,
-        Manual = 1,
-        System = 2
-    }
-
-    /// <summary>
-    /// The upload service.
-    /// </summary>
-    public enum UploadService
-    {
-        None = 0,
-        ImgurAnonymous = 1,
-        Imgur = 2,
-        GyfcatAnonymous = 3,
-        Gyfcat = 4,
-        Yandex = 5,
-    }
-
     public enum StatusType : int
     {
         None = 0,
@@ -554,25 +353,6 @@
     {
         Unknown = 0,
         ScreenRecorder = 1,
-        WebcamRecorder = 2,
-        BoardRecorder = 3,
         Editor = 4,
-    }
-
-    /// <summary>
-    /// The types of drawings.
-    /// </summary>
-    public enum DrawingModeType
-    {
-        None = 0,
-        Ink,
-        Select,
-        EraseByPoint,
-        EraseByObject,
-        Rectangle,
-        Circle,
-        Triangle,
-        Arrow,
-        Baloon,
     }
 }
