@@ -1,17 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+using ScreenToGif.Util;
+using ScreenToGif.Windows.Other;
+using OpenFileDialog = Microsoft.Win32.OpenFileDialog;
+using SaveFileDialog = Microsoft.Win32.SaveFileDialog;
 
 namespace ScreenToGif.Windows.UserControls
 {
@@ -51,16 +48,6 @@ namespace ScreenToGif.Windows.UserControls
                     }
 
                     break;
-                case Export.Images:
-                    UserSettings.All.LatestImageExtension = UserSettings.All.ZipImages ? ".zip" : ".png";
-                    break;
-                case Export.Project:
-                    if (UserSettings.All.LatestProjectExtension != ".stg" && UserSettings.All.LatestProjectExtension != ".zip")
-                        UserSettings.All.LatestProjectExtension = ".stg";
-                    break;
-                case Export.Photoshop:
-                    UserSettings.All.LatestPhotoshopExtension = ".psd";
-                    break;
             }
 
             FilenameTextBox_TextChanged(null, null);
@@ -78,11 +65,17 @@ namespace ScreenToGif.Windows.UserControls
 
         private void TransparentColorButton_Click(object sender, RoutedEventArgs e)
         {
-            var colorDialog = new ColorSelector(UserSettings.All.ChromaKey, false) { Owner = this };
+            var window = Window.GetWindow(this);
+            var colorDialog = new ColorSelector(UserSettings.All.ChromaKey, false)
+            {
+                Owner = window
+            };
             var result = colorDialog.ShowDialog();
 
             if (result.HasValue && result.Value)
+            {
                 UserSettings.All.ChromaKey = colorDialog.SelectedColor;
+            }
         }
 
         private void ChooseLocation_Click(object sender, RoutedEventArgs e)
@@ -122,18 +115,6 @@ namespace ScreenToGif.Windows.UserControls
                         sfd.Filter = FfmpegEncoderRadioButton.IsChecked == true ? "Avi video (.avi)|*.avi|Mp4 video (.mp4)|*.mp4|WebM video|*.webm|Windows media video|*.wmv" : "Avi video (.avi)|*.avi";
                         sfd.DefaultExt = FfmpegEncoderRadioButton.IsChecked == true ? FileTypeVideoComboBox.SelectedItem as string : ".avi";
                         sfd.FilterIndex = FfmpegEncoderRadioButton.IsChecked == true ? FileTypeVideoComboBox.SelectedIndex + 1 : 0;
-                        break;
-                    case Export.Images:
-                        sfd.Filter = UserSettings.All.ZipImages ? "Zip, all selected images (.zip)|*.zip" : "Png image, all selected images (.png)|*.png";
-                        sfd.DefaultExt = UserSettings.All.ZipImages ? ".zip" : ".png";
-                        break;
-                    case Export.Project:
-                        sfd.Filter = "Project (.stg)|*.stg|Project as Zip (.zip)|*.zip";
-                        sfd.DefaultExt = ".stg";
-                        break;
-                    case Export.Photoshop:
-                        sfd.Filter = "PSD File (.psd)|*.psd";
-                        sfd.DefaultExt = ".psd";
                         break;
                 }
 
@@ -194,12 +175,10 @@ namespace ScreenToGif.Windows.UserControls
                 var exists = File.Exists(Path.Combine(GetOutputFolder(), GetOutputFilename() + GetOutputExtension()));
 
                 FileExistsGrid.Visibility = exists && GetPickLocation() ? Visibility.Visible : Visibility.Collapsed;
-                StatusList.Remove(StatusType.Warning);
             }
             catch (Exception ex)
             {
                 LogWriter.Log(ex, "Check if exists");
-                StatusList.Warning("Filename inconsistency: " + ex.Message);
                 FileExistsGrid.Visibility = Visibility.Collapsed;
             }
         }
@@ -215,5 +194,327 @@ namespace ScreenToGif.Windows.UserControls
                 LogWriter.Log(ex, "Open file that already exists using the hyperlink");
             }
         }
+
+        #region helper methods
+
+        private string GetOutputFolder()
+        {
+            if (!GetPickLocation())
+                return Path.GetTempPath();
+
+            switch (UserSettings.All.SaveType)
+            {
+                case Export.Gif:
+                    return UserSettings.All.LatestOutputFolder ?? "";
+                case Export.Apng:
+                    return UserSettings.All.LatestApngOutputFolder ?? "";
+                case Export.Video:
+                    return UserSettings.All.LatestVideoOutputFolder ?? "";
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
+
+
+        private string StringResource(string key)
+        {
+            return FindResource(key).ToString().Replace("\n", " ").Replace("\\n", " ").Replace("\r", " ").Replace("&#10;", " ").Replace("&#x0d;", " ");
+        }
+
+        private string DispatcherStringResource(string key)
+        {
+            return Dispatcher.Invoke(() => FindResource(key).ToString().Replace("\n", " ").Replace("\\n", " ").Replace("\r", " ").Replace("&#10;", " ").Replace("&#x0d;", " "));
+        }
+
+        private void ChangeFileNumber(int change)
+        {
+            //If there's no filename declared, show the default one.
+            if (string.IsNullOrWhiteSpace(GetOutputFilename()))
+            {
+                SetOutputFilename(StringResource("S.SaveAs.File.Animation"));
+                return;
+            }
+
+            var index = GetOutputFilename().Length;
+            int start = -1, end = -1;
+
+            //Detects the last number in a string.
+            foreach (var c in GetOutputFilename().Reverse())
+            {
+                if (char.IsNumber(c))
+                {
+                    if (end == -1)
+                        end = index;
+
+                    start = index - 1;
+                }
+                else if (start == index)
+                    break;
+
+                index--;
+            }
+
+            //If there's no number.
+            if (end == -1)
+            {
+                SetOutputFilename(GetOutputFilename() + $" ({change})");
+                return;
+            }
+
+            //If it's a negative number, include the signal.
+            if (start > 0 && GetOutputFilename().Substring(start - 1, 1).Equals("-"))
+                start--;
+
+            //Cut, convert, merge.
+            if (int.TryParse(GetOutputFilename().Substring(start, end - start), out var number))
+            {
+                var offset = start + number.ToString().Length;
+
+                SetOutputFilename(GetOutputFilename().Substring(0, start) + (number + change) + GetOutputFilename().Substring(offset, GetOutputFilename().Length - end));
+            }
+        }
+
+        private void ChangeProgressText(long cumulative, long total, int current)
+        {
+            switch (ProgressPrecisionComboBox.SelectedIndex)
+            {
+                case 0: //Minutes
+                    ProgressHorizontalTextBlock.Text = UserSettings.All.ProgressShowTotal ? TimeSpan.FromMilliseconds(cumulative).ToString(@"m\:ss") + "/" + TimeSpan.FromMilliseconds(total).ToString(@"m\:ss")
+                        : TimeSpan.FromMilliseconds(cumulative).ToString(@"m\:ss");
+                    break;
+                case 1: //Seconds
+                    ProgressHorizontalTextBlock.Text = UserSettings.All.ProgressShowTotal ? (int)TimeSpan.FromMilliseconds(cumulative).TotalSeconds + "/" + TimeSpan.FromMilliseconds(total).TotalSeconds + " s"
+                        : (int)TimeSpan.FromMilliseconds(cumulative).TotalSeconds + " s";
+                    break;
+                case 2: //Milliseconds
+                    ProgressHorizontalTextBlock.Text = UserSettings.All.ProgressShowTotal ? cumulative + "/" + total + " ms" : cumulative + " ms";
+                    break;
+                case 3: //Percentage
+                    var count = (double)Project.Frames.Count;
+                    ProgressHorizontalTextBlock.Text = (current / count * 100).ToString("##0.#", CultureInfo.CurrentUICulture) + (UserSettings.All.ProgressShowTotal ? "/100%" : " %");
+                    break;
+                case 4: //Frame number
+                    ProgressHorizontalTextBlock.Text = UserSettings.All.ProgressShowTotal ? current + "/" + Project.Frames.Count
+                        : current.ToString();
+                    break;
+                case 5: //Custom
+                    ProgressHorizontalTextBlock.Text = CustomProgressTextBox.Text
+                        .Replace("$ms", cumulative.ToString())
+                        .Replace("$s", ((int)TimeSpan.FromMilliseconds(cumulative).TotalSeconds).ToString())
+                        .Replace("$m", TimeSpan.FromMilliseconds(cumulative).ToString())
+                        .Replace("$p", (current / (double)Project.Frames.Count * 100).ToString("##0.#", CultureInfo.CurrentUICulture))
+                        .Replace("$f", current.ToString())
+                        .Replace("@ms", total.ToString())
+                        .Replace("@s", ((int)TimeSpan.FromMilliseconds(total).TotalSeconds).ToString())
+                        .Replace("@m", TimeSpan.FromMilliseconds(total).ToString(@"m\:ss"))
+                        .Replace("@p", "100")
+                        .Replace("@f", Project.Frames.Count.ToString());
+                    break;
+            }
+        }
+
+        private void ChangeProgressTextToCurrent()
+        {
+            var total = Project.Frames.Sum(y => y.Delay);
+            var cumulative = 0L;
+
+            for (var j = 0; j < FrameListView.SelectedIndex; j++)
+                cumulative += Project.Frames[j].Delay;
+
+            ChangeProgressText(cumulative, total, FrameListView.SelectedIndex);
+        }
+
+
+
+        private string GetOutputFilename()
+        {
+            if (!GetPickLocation())
+                return Guid.NewGuid() + "";
+
+            switch (UserSettings.All.SaveType)
+            {
+                case Export.Gif:
+                    return UserSettings.All.LatestFilename ?? "";
+                case Export.Apng:
+                    return UserSettings.All.LatestApngFilename ?? "";
+                case Export.Video:
+                    return UserSettings.All.LatestVideoFilename ?? "";
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
+
+        private string GetOutputFilenameNoRegExp(ref string name)
+        {
+            //put datetime into filename which is saved between two questions marks
+            string dateTimeFileNameRegEx = @"[?]([dyhms]+[-_ ]*)+[?]";
+            if (Regex.IsMatch(name, dateTimeFileNameRegEx, RegexOptions.IgnoreCase))
+            {
+                var dateTimeRegExp = Regex.Match(name, dateTimeFileNameRegEx, RegexOptions.IgnoreCase);
+                var dateTimeConverted = DateTime.Now.ToString(Regex.Replace(dateTimeRegExp.Value, "[?]", ""));
+                name = name.Replace(dateTimeRegExp.ToString(), dateTimeConverted);
+            }
+            return name;
+        }
+
+        private string GetOutputExtension()
+        {
+            switch (UserSettings.All.SaveType)
+            {
+                case Export.Gif:
+                    return UserSettings.All.LatestExtension ?? ".gif";
+                case Export.Apng:
+                    return UserSettings.All.LatestApngExtension ?? ".png";
+                case Export.Video:
+                    return UserSettings.All.LatestVideoExtension ?? ".mp4";
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
+
+        private void SetOutputFolder(string folder)
+        {
+            switch (UserSettings.All.SaveType)
+            {
+                case Export.Gif:
+                    UserSettings.All.LatestOutputFolder = folder;
+                    break;
+                case Export.Apng:
+                    UserSettings.All.LatestApngOutputFolder = folder;
+                    break;
+                case Export.Video:
+                    UserSettings.All.LatestVideoOutputFolder = folder;
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
+
+        private void SetOutputFilename(string filename)
+        {
+            switch (UserSettings.All.SaveType)
+            {
+                case Export.Gif:
+                    UserSettings.All.LatestFilename = filename;
+                    break;
+                case Export.Apng:
+                    UserSettings.All.LatestApngFilename = filename;
+                    break;
+                case Export.Video:
+                    UserSettings.All.LatestVideoFilename = filename;
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
+
+        private void SetOutputExtension(string extension)
+        {
+            switch (UserSettings.All.SaveType)
+            {
+                case Export.Gif:
+                    UserSettings.All.LatestExtension = extension;
+                    break;
+                case Export.Apng:
+                    UserSettings.All.LatestApngExtension = extension;
+                    break;
+                case Export.Video:
+                    UserSettings.All.LatestVideoExtension = extension;
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
+
+        private bool GetPickLocation()
+        {
+            switch (UserSettings.All.SaveType)
+            {
+                case Export.Gif:
+                    return UserSettings.All.PickLocation;
+                case Export.Apng:
+                    return UserSettings.All.PickLocationApng;
+                case Export.Video:
+                    return UserSettings.All.PickLocationVideo;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
+
+        private bool GetOverwriteOnSave()
+        {
+            switch (UserSettings.All.SaveType)
+            {
+                case Export.Gif:
+                    return UserSettings.All.OverwriteOnSave;
+                case Export.Apng:
+                    return UserSettings.All.OverwriteOnSaveApng;
+                case Export.Video:
+                    return UserSettings.All.OverwriteOnSaveVideo;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
+
+        private bool GetSaveAsProjectToo()
+        {
+            switch (UserSettings.All.SaveType)
+            {
+                case Export.Gif:
+                    return UserSettings.All.SaveAsProjectToo;
+                case Export.Apng:
+                    return UserSettings.All.SaveAsProjectTooApng;
+                case Export.Video:
+                    return UserSettings.All.SaveAsProjectTooVideo;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
+
+        private CopyType GetCopyType()
+        {
+            switch (UserSettings.All.SaveType)
+            {
+                case Export.Gif:
+                    return UserSettings.All.LatestCopyType;
+                case Export.Apng:
+                    return UserSettings.All.LatestCopyTypeApng;
+                case Export.Video:
+                    return UserSettings.All.LatestCopyTypeVideo;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
+
+        private bool GetExecuteCustomCommands()
+        {
+            switch (UserSettings.All.SaveType)
+            {
+                case Export.Gif:
+                    return UserSettings.All.ExecuteCustomCommands;
+                case Export.Apng:
+                    return UserSettings.All.ExecuteCustomCommandsApng;
+                case Export.Video:
+                    return UserSettings.All.ExecuteCustomCommandsVideo;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
+
+        private string GetCustomCommands()
+        {
+            switch (UserSettings.All.SaveType)
+            {
+                case Export.Gif:
+                    return UserSettings.All.CustomCommands;
+                case Export.Apng:
+                    return UserSettings.All.CustomCommandsApng;
+                case Export.Video:
+                    return UserSettings.All.CustomCommandsVideo;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
+        #endregion
     }
 }

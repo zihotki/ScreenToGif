@@ -3152,29 +3152,7 @@ namespace ScreenToGif.Windows
             ChangeProgressText(cumulative, total, FrameListView.SelectedIndex);
         }
 
-        private string GetOutputFolder()
-        {
-            if (!GetPickLocation())
-                return Path.GetTempPath();
 
-            switch (UserSettings.All.SaveType)
-            {
-                case Export.Gif:
-                    return UserSettings.All.LatestOutputFolder ?? "";
-                case Export.Apng:
-                    return UserSettings.All.LatestApngOutputFolder ?? "";
-                case Export.Video:
-                    return UserSettings.All.LatestVideoOutputFolder ?? "";
-                case Export.Images:
-                    return UserSettings.All.LatestImageOutputFolder ?? "";
-                case Export.Project:
-                    return UserSettings.All.LatestProjectOutputFolder ?? "";
-                case Export.Photoshop:
-                    return UserSettings.All.LatestPhotoshopOutputFolder ?? "";
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
-        }
 
         private string GetOutputFilename()
         {
