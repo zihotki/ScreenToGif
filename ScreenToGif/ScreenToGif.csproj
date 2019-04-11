@@ -292,7 +292,6 @@
     <Compile Include="Util\DataGridHelper.cs" />
     <Compile Include="Util\DynamicResourceBinding.cs" />
     <Compile Include="Util\Framerate.cs" />
-    <Compile Include="Util\Clipboard.cs" />
     <Compile Include="Util\ColorExtensions.cs" />
     <Compile Include="Util\Commands.cs" />
     <Compile Include="Util\Constants.cs" />

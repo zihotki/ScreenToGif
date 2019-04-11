@@ -7,7 +7,6 @@ using ScreenToGif.ImageUtil.Video;
 using ScreenToGif.Util;
 using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
@@ -21,9 +20,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
-using ScreenToGif.ImageUtil.Psd;
 using ScreenToGif.Model;
-using Clipboard = System.Windows.Clipboard;
 using Point = System.Windows.Point;
 
 namespace ScreenToGif.Windows.Other
@@ -802,42 +799,7 @@ namespace ScreenToGif.Windows.Other
                         #endregion
 
                         break;
-                    case Export.Photoshop:
 
-                        #region Psd
-
-                        using (var stream = new MemoryStream())
-                        {
-                            using (var encoder = new Psd(stream, param.RepeatCount, param.Height, param.Width, param.Compress, param.SaveTimeline))
-                            {
-                                for (var i = 0; i < listFrames.Count; i++)
-                                {
-                                    if (listFrames[i].Delay == 0)
-                                        listFrames[i].Delay = 10;
-
-                                    encoder.AddFrame(i, listFrames[i].Path, listFrames[i].Delay);
-
-                                    Update(id, i, string.Format(processing, i));
-
-                                    #region Cancellation
-
-                                    if (tokenSource.Token.IsCancellationRequested)
-                                    {
-                                        SetStatus(Status.Canceled, id);
-                                        break;
-                                    }
-
-                                    #endregion
-                                }
-                            }
-
-                            using (var fileStream = new FileStream(param.Filename, FileMode.Create, FileAccess.Write, FileShare.None, 4096))
-                                stream.WriteTo(fileStream);
-                        }
-
-                        #endregion
-
-                        break;
                     case Export.Video:
 
                         #region Video

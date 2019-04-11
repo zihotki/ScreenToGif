@@ -546,7 +546,7 @@ namespace ScreenToGif.Windows
             WindowState = WindowState.Minimized;
             ShowInTaskbar = false;
             Encoder.Minimize();
-            ClosePanel(removeEvent: true);
+            //ClosePanel(removeEvent: true);
 
             if (UserSettings.All.NewRecorder)
             {
@@ -941,7 +941,7 @@ namespace ScreenToGif.Windows
         private void Undo_Executed(object sender, ExecutedRoutedEventArgs e)
         {
             Pause();
-            ClosePanel();
+            //ClosePanel();
 
             Project.Frames = ActionStack.Undo(Project.Frames.CopyList());
             LoadProject(Project, false, false);
@@ -952,7 +952,7 @@ namespace ScreenToGif.Windows
         private void Reset_Executed(object sender, ExecutedRoutedEventArgs e)
         {
             Pause();
-            ClosePanel();
+            //ClosePanel();
 
             Project.Frames = ActionStack.Reset(Project.Frames.CopyList());
             LoadProject(Project, false, false);
@@ -963,7 +963,7 @@ namespace ScreenToGif.Windows
         private void Redo_Executed(object sender, ExecutedRoutedEventArgs e)
         {
             Pause();
-            ClosePanel();
+            //ClosePanel();
 
             Project.Frames = ActionStack.Redo(Project.Frames.CopyList());
             LoadProject(Project, false, false);
@@ -1137,7 +1137,7 @@ namespace ScreenToGif.Windows
         private void DeselectAll_Executed(object sender, ExecutedRoutedEventArgs e)
         {
             Pause();
-            ClosePanel();
+            //ClosePanel();
 
             FrameListView.SelectedIndex = -1;
 
@@ -1210,236 +1210,6 @@ namespace ScreenToGif.Windows
 
         #endregion
 
-        #region Edit Tab
-
-        #region Frames
-
-        private void Delete_CanExecute(object sender, CanExecuteRoutedEventArgs e)
-        {
-            e.CanExecute = FrameListView != null && FrameListView.SelectedItem != null && !IsLoading;
-        }
-
-        private void DeletePrevious_CanExecute(object sender, CanExecuteRoutedEventArgs e)
-        {
-            e.CanExecute = FrameListView != null && FrameListView.SelectedItem != null && !IsLoading &&
-                FrameListView.SelectedIndex > 0;
-        }
-
-        private void DeleteNext_CanExecute(object sender, CanExecuteRoutedEventArgs e)
-        {
-            e.CanExecute = FrameListView != null && FrameListView.SelectedItem != null && !IsLoading &&
-                FrameListView.SelectedIndex < FrameListView.Items.Count - 1;
-        }
-
-        
-        private void Delete_Executed(object sender, ExecutedRoutedEventArgs e)
-        {
-            Pause();
-
-            try
-            {
-                #region Validation
-
-                if (Project.Frames.Count == FrameListView.SelectedItems.Count)
-                {
-                    //If the user wants to delete all frames, discard the project.
-                    if (!UserSettings.All.NotifyProjectDiscard ||
-                        Dialog.Ask(this.TextResource("Editor.DeleteAll.Title"), this.TextResource("Editor.DeleteAll.Instruction"), this.TextResource("Editor.DeleteAll.Message"), false))
-                        Discard(false);
-
-                    return;
-                }
-
-                if (UserSettings.All.NotifyFrameDeletion)
-                {
-                    if (!Dialog.Ask(this.TextResource("Editor.DeleteFrames.Title"), this.TextResource("Editor.DeleteFrames.Instruction"),
-                        string.Format(this.TextResource("Editor.DeleteFrames.Message"), FrameListView.SelectedItems.Count)))
-                        return;
-                }
-
-                #endregion
-
-                var selected = FrameListView.SelectedItems.OfType<FrameListBoxItem>().ToList();
-                var selectedOrdered = selected.OrderByDescending(x => x.FrameNumber).ToList();
-                var list = selectedOrdered.Select(item => Project.Frames[item.FrameNumber]).ToList();
-
-                ActionStack.SaveState(ActionStack.EditAction.Remove, Project.Frames, SelectedFramesIndex());
-
-                FrameListView.SelectedItem = null;
-
-                list.ForEach(x => File.Delete(x.Path));
-                selectedOrdered.ForEach(x => Project.Frames.RemoveAt(x.FrameNumber));
-                selectedOrdered.ForEach(x => FrameListView.Items.Remove(x));
-
-                AdjustFrameNumbers(selectedOrdered.Last().FrameNumber);
-
-                SelectNear(selectedOrdered.Last().FrameNumber);
-
-                Project.Persist();
-                UpdateStatistics();
-                ShowHint("Hint.DeleteFrames", false, selected.Count);
-            }
-            catch (Exception ex)
-            {
-                LogWriter.Log(ex, "Error While Trying to Delete Frames");
-
-                ErrorDialog.Ok(FindResource("Editor.Title") as string, "Error while trying to delete frames", ex.Message, ex);
-            }
-        }
-
-        private void DeletePrevious_Executed(object sender, ExecutedRoutedEventArgs e)
-        {
-            Pause();
-
-            if (UserSettings.All.NotifyFrameDeletion)
-            {
-                if (!Dialog.Ask(this.TextResource("Editor.DeleteFrames.Title"), this.TextResource("Editor.DeleteFrames.Instruction"),
-                    string.Format(this.TextResource("Editor.DeleteFrames.Message"), FrameListView.SelectedIndex)))
-                    return;
-            }
-
-            ActionStack.SaveState(ActionStack.EditAction.Remove, Project.Frames, Util.Other.CreateIndexList(0, FrameListView.SelectedIndex - 1));
-
-            var count = FrameListView.SelectedIndex;
-
-            for (var index = FrameListView.SelectedIndex - 1; index >= 0; index--)
-                DeleteFrame(index);
-
-            AdjustFrameNumbers(0);
-            SelectNear(0);
-
-            Project.Persist();
-            UpdateStatistics();
-            ShowHint("Hint.DeleteFrames", false, count);
-        }
-
-        private void DeleteNext_Executed(object sender, ExecutedRoutedEventArgs e)
-        {
-            Pause();
-
-            if (UserSettings.All.NotifyFrameDeletion)
-            {
-                if (!Dialog.Ask(this.TextResource("Editor.DeleteFrames.Title"), this.TextResource("Editor.DeleteFrames.Instruction"),
-                    string.Format(this.TextResource("Editor.DeleteFrames.Message"), FrameListView.Items.Count - FrameListView.SelectedIndex - 1)))
-                    return;
-            }
-
-            var countList = FrameListView.Items.Count - 1; //So we have a fixed value.
-
-            ActionStack.SaveState(ActionStack.EditAction.Remove, Project.Frames, Util.Other.CreateIndexList2(FrameListView.SelectedIndex + 1, FrameListView.Items.Count - FrameListView.SelectedIndex - 1));
-
-            var count = FrameListView.Items.Count - FrameListView.SelectedIndex - 1;
-
-            for (var i = countList; i > FrameListView.SelectedIndex; i--) //From the end to the middle.
-            {
-                DeleteFrame(i);
-            }
-
-            SelectNear(FrameListView.Items.Count - 1);
-
-            Project.Persist();
-            UpdateStatistics();
-            ShowHint("Hint.DeleteFrames", false, count);
-        }
-
-
-
-        private void Reduce_CanExecute(object sender, CanExecuteRoutedEventArgs e)
-        {
-            e.CanExecute = FrameListView != null && !IsLoading && FrameListView.Items.Count > 5;
-        }
-
-        private void Reduce_Executed(object sender, ExecutedRoutedEventArgs e)
-        {
-            Pause();
-            ShowPanel(PanelType.ReduceFrames, StringResource("Editor.Edit.Frames.Reduce"), "Vector.RemoveImage", ApplyReduceFrameCountButton_Click);
-        }
-
-        private void ApplyReduceFrameCountButton_Click(object sender, RoutedEventArgs e)
-        {
-            Cursor = Cursors.AppStarting;
-
-            _reduceFrameDel = ReduceFrameCount;
-            _reduceFrameDel.BeginInvoke(ReduceFactorIntegerUpDown.Value, ReduceCountIntegerUpDown.Value, ReduceFrameCountCallback, null);
-
-            ClosePanel();
-        }
-
-        #endregion
-
-        #region Delay (Duration)
-
-        private void OverrideDelay_Executed(object sender, ExecutedRoutedEventArgs e)
-        {
-            Pause();
-            ShowPanel(PanelType.OverrideDelay, StringResource("Editor.Edit.Delay.Override"), "Vector.OverrideDelay", ApplyOverrideDelayButton_Click);
-        }
-
-        private void ApplyOverrideDelayButton_Click(object sender, RoutedEventArgs e)
-        {
-            ActionStack.SaveState(ActionStack.EditAction.Properties, Project.Frames, SelectedFramesIndex());
-
-            Cursor = Cursors.AppStarting;
-
-            _delayFramesDel = Delay;
-            _delayFramesDel.BeginInvoke(DelayChangeType.Override, NewDelayIntegerUpDown.Value, DelayCallback, null);
-
-            ClosePanel();
-        }
-
-
-        private void IncreaseDecreaseDelay_Executed(object sender, ExecutedRoutedEventArgs e)
-        {
-            Pause();
-            ShowPanel(PanelType.IncreaseDecreaseDelay, StringResource("Editor.Edit.Delay.IncreaseDecrease"), "Vector.IncreaseDecreaseDelay", ApplyIncreaseDecreaseDelayButtonClick);
-        }
-
-        private void ApplyIncreaseDecreaseDelayButtonClick(object sender, RoutedEventArgs e)
-        {
-            if (IncreaseDecreaseDelayIntegerUpDown.Value == 0)
-            {
-                ClosePanel();
-                return;
-            }
-
-            ActionStack.SaveState(ActionStack.EditAction.Properties, Project.Frames, SelectedFramesIndex());
-
-            Cursor = Cursors.AppStarting;
-
-            _delayFramesDel = Delay;
-            _delayFramesDel.BeginInvoke(DelayChangeType.IncreaseDecrease, IncreaseDecreaseDelayIntegerUpDown.Value, DelayCallback, null);
-
-            ClosePanel();
-        }
-
-        private void ScaleDelay_Executed(object sender, ExecutedRoutedEventArgs e)
-        {
-            Pause();
-            ShowPanel(PanelType.ScaleDelay, StringResource("Editor.Edit.Delay.Scale"), "Vector.ScaleDelay", ApplyScaleDelayButtonClick);
-        }
-
-        private void ApplyScaleDelayButtonClick(object sender, RoutedEventArgs e)
-        {
-            if (ScaleDelayIntegerUpDown.Value == 0 || ScaleDelayIntegerUpDown.Value == 100)
-            {
-                ClosePanel();
-                return;
-            }
-
-            ActionStack.SaveState(ActionStack.EditAction.Properties, Project.Frames, SelectedFramesIndex());
-
-            Cursor = Cursors.AppStarting;
-
-            _delayFramesDel = Delay;
-            _delayFramesDel.BeginInvoke(DelayChangeType.Scale, ScaleDelayIntegerUpDown.Value, DelayCallback, null);
-
-            ClosePanel();
-        }
-
-      #endregion
-
-      #endregion
-
 
         #region Other Events
 
@@ -1508,7 +1278,7 @@ namespace ScreenToGif.Windows
 
         private void ExportImages_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-            ImagesRadioButton.IsChecked = true;
+            //ImagesRadioButton.IsChecked = true;
 
             SaveAs_Executed(sender, e);
         }
@@ -1557,72 +1327,6 @@ namespace ScreenToGif.Windows
             GC.Collect(2);
         }
 
-        private void Control_DragEnter(object sender, DragEventArgs e)
-        {
-            Pause();
-
-            e.Effects = e.Data.GetDataPresent(DataFormats.FileDrop)
-                ? DragDropEffects.Copy
-                : DragDropEffects.None;
-        }
-
-        private void Control_Drop(object sender, DragEventArgs e)
-        {
-            Pause();
-
-            var fileNames = e.Data.GetData(DataFormats.FileDrop) as string[];
-
-            if (fileNames == null) return;
-            if (fileNames.Length == 0) return;
-
-            #region Validation
-
-            var extensionList = fileNames.Select(s => Path.GetExtension(s).ToLowerInvariant()).ToList();
-
-            var media = new[] { ".jpg", ".jpeg", ".gif", ".bmp", ".png", ".avi", ".mp4", ".wmv" };
-
-            var projectCount = extensionList.Count(x => !string.IsNullOrEmpty(x) && (x.Equals(".stg") || x.Equals(".zip")));
-            var mediaCount = extensionList.Count(x => !string.IsNullOrEmpty(x) && media.Contains(Path.GetExtension(x)));
-
-            if (projectCount != 0 && mediaCount != 0)
-            {
-                Dialog.Ok(StringResource("Editor.DragDrop.Invalid.Title"),
-                    StringResource("Editor.DragDrop.MultipleFiles.Instruction"),
-                    StringResource("Editor.DragDrop.MultipleFiles.Message"), Icons.Warning);
-                return;
-            }
-
-            if (mediaCount == 0 && projectCount == 0)
-            {
-                Dialog.Ok(StringResource("Editor.DragDrop.Invalid.Title"),
-                    StringResource("Editor.DragDrop.Invalid.Instruction"),
-                    StringResource("Editor.DragDrop.Invalid.Message"), Icons.Warning);
-                return;
-            }
-
-            //if (projectCount > 0)
-            //{
-            //    Dialog.Ok(StringResource("Editor.DragDrop.Invalid.Title"),
-            //        StringResource("Editor.DragDrop.InvalidProject.Instruction"),
-            //        StringResource("Editor.DragDrop.InvalidProject.Message"), Dialog.Icons.Warning);
-            //    return;
-            //}
-
-            #endregion
-
-            #region Importing options
-
-            //If inserted into new recording or forced into new one.
-            if (Project == null || !Project.Any || e.KeyStates == DragDropKeyStates.ControlKey || projectCount > 0)
-                _importFramesDel = ImportFrom;
-            else
-                _importFramesDel = InsertImportFrom;
-
-            #endregion
-
-            _importFramesDel.BeginInvoke(fileNames.ToList(), ImportFromCallback, null);
-        }
-
         private void CancelLoadingButton_Click(object sender, RoutedEventArgs e)
         {
             _abortLoading = true;
@@ -1668,13 +1372,6 @@ namespace ScreenToGif.Windows
             ZoomBoxControl.Zoom = 1;
 
             #region Discard
-
-            if (clear || isNew)
-            {
-                //Clear clipboard data.
-                ClipboardListBox.Items.Clear();
-                Util.Clipboard.Items?.Clear();
-            }
 
             //TODO: Settings to choose if the project will be discarded.
             if (clear && Project != null && Project.Any)
@@ -1823,12 +1520,12 @@ namespace ScreenToGif.Windows
                                         {
                                             Dispatcher.Invoke(() =>
                                             {
-                                                KeyStrokesGrid.Visibility = Visibility.Visible;
+                                                //KeyStrokesGrid.Visibility = Visibility.Visible;
                                                 KeyStrokesLabel.Text = "Ctrl + C";
                                                 KeyStrokesLabel.MinHeight = 0;
                                             });
                                             KeyStrokesAsync(task as KeyStrokesModel ?? KeyStrokesModel.FromSettings());
-                                            Dispatcher.Invoke(() => KeyStrokesGrid.Visibility = Visibility.Collapsed);
+                                            //Dispatcher.Invoke(() => KeyStrokesGrid.Visibility = Visibility.Collapsed);
                                         }
                                         break;
                                 }
@@ -2643,271 +2340,6 @@ namespace ScreenToGif.Windows
             }
         }
 
-        private void ShowPanel(PanelType type, string title, string vector, Action<object, RoutedEventArgs> apply = null)
-        {
-            #region Hide all visible grids
-
-            foreach (var child in ActionInternalGrid.Children.OfType<Grid>().Where(x => x.Visibility == Visibility.Visible))
-                child.Visibility = Visibility.Collapsed;
-
-            #endregion
-
-            #region Overlay
-
-            if (Project != null && Project.Any && type < 0)
-            {
-                ZoomBoxControl.Zoom = 1.0;
-                var size = ZoomBoxControl.GetElementSize();
-
-                CaptionOverlayGrid.Width = size.Width;
-                CaptionOverlayGrid.Height = size.Height;
-            }
-
-            #endregion
-
-            #region Commons
-
-            ActionTitleLabel.Content = title;
-            ActionViewBox.Child = FindResource(vector) as Canvas;
-
-            Util.Other.RemoveRoutedEventHandlers(ApplyButton, ButtonBase.ClickEvent);
-
-            if (apply != null)
-            {
-                ApplyButton.Text = StringResource("Action.Apply");
-                ApplyButton.Content = FindResource("Vector.Ok") as Canvas;
-                _applyAction = apply;
-
-                ActionLowerGrid.Visibility = Visibility.Visible;
-            }
-            else
-            {
-                ActionLowerGrid.Visibility = Visibility.Collapsed;
-            }
-
-            #endregion
-
-            #region Type
-
-            switch (type)
-            {
-                case PanelType.NewAnimation:
-                    NewGrid.Visibility = Visibility.Visible;
-                    break;
-                case PanelType.SaveAs:
-                    ApplyButton.Text = StringResource("Action.Save");
-                    ApplyButton.Content = FindResource("Vector.Save") as Canvas;
-                    SaveGrid.Visibility = Visibility.Visible;
-                    break;
-                case PanelType.LoadRecent:
-                    ApplyButton.Text = StringResource("Action.Open");
-                    ApplyButton.Content = FindResource("Vector.Open") as Canvas;
-                    LoadRecentGrid.Visibility = Visibility.Visible;
-
-                    //Load list.
-                    _loadRecentDel = LoadRecentAsync;
-                    _loadRecentDel.BeginInvoke(LoadRecentCallback, null);
-                    break;
-                case PanelType.Clipboard:
-                    ClipboardGrid.Visibility = Visibility.Visible;
-                    break;
-                case PanelType.Resize:
-                    ResizeGrid.Visibility = Visibility.Visible;
-                    ShowHint("Hint.ApplyAll", true);
-                    break;
-                case PanelType.FlipRotate:
-                    FlipRotateGrid.Visibility = Visibility.Visible;
-                    ShowHint("Hint.FlipRotate2", true);
-                    break;
-                case PanelType.Crop:
-
-                    #region Crop
-
-                    CropGrid.Visibility = Visibility.Visible;
-
-                    AddCropToElement(CropAreaGrid);
-
-                    BottomCropNumericUpDown.Scale = TopCropNumericUpDown.Scale = RightCropNumericUpDown.Scale = LeftCropNumericUpDown.Scale = this.Scale();
-
-                    BottomCropNumericUpDown.Value = (int)(CaptionOverlayGrid.Height - (CaptionOverlayGrid.Height * .1));
-                    TopCropNumericUpDown.Value = (int)(CaptionOverlayGrid.Height * .1);
-
-                    RightCropNumericUpDown.Value = (int)(CaptionOverlayGrid.Width - (CaptionOverlayGrid.Width * .1));
-                    LeftCropNumericUpDown.Value = (int)(CaptionOverlayGrid.Width * .1);
-
-                    ShowHint("Hint.ApplyAll", true);
-
-                    #endregion
-
-                    break;
-                case PanelType.Caption:
-                    CaptionGrid.Visibility = Visibility.Visible;
-                    ShowHint("Hint.ApplySelected", true);
-                    break;
-                case PanelType.FreeText:
-                    FreeTextGrid.Visibility = Visibility.Visible;
-                    ShowHint("Hint.ApplySelected", true);
-                    break;
-                case PanelType.TitleFrame:
-                    TitleFrameGrid.Visibility = Visibility.Visible;
-                    ShowHint("Hint.TitleFrame2", true);
-                    break;
-                case PanelType.KeyStrokes:
-                    KeyStrokesLabel.MinHeight = 0;
-                    KeyStrokesLabel.Text = "Ctrl + c";
-                    KeyStrokesGrid.Visibility = Visibility.Visible;
-                    ShowHint("Hint.ApplyAll", true);
-                    break;
-                case PanelType.FreeDrawing:
-                    FreeDrawingGrid.Visibility = Visibility.Visible;
-                    ShowHint("Hint.ApplySelected", true);
-                    break;
-                case PanelType.Shapes:
-                    ShapesGrid.Visibility = Visibility.Visible;
-                    ShowHint("Hint.ApplySelected", true);
-
-                    ShapeProperties_Changed(this, null);
-                    ShapeType_SelectionChanged(ShapesListBox, null);
-                    break;
-                case PanelType.Watermark:
-
-                    #region Watermark
-
-                    //#region Arrange
-
-                    //if (UserSettings.All.WatermarkLeft < 0)
-                    //    UserSettings.All.WatermarkLeft = 10;
-
-                    //if (UserSettings.All.WatermarkLeft + 10 > CaptionOverlayGrid.Width)
-                    //    UserSettings.All.WatermarkLeft = 10;
-
-                    //if (UserSettings.All.WatermarkTop < 0)
-                    //    UserSettings.All.WatermarkTop = 10;
-
-                    //if (UserSettings.All.WatermarkTop + 10 > CaptionOverlayGrid.Height)
-                    //    UserSettings.All.WatermarkTop = 10;
-
-                    //#endregion
-
-                    WatermarkGrid.Visibility = Visibility.Visible;
-                    ShowHint("Hint.ApplySelected", true);
-
-                    #endregion
-
-                    break;
-                case PanelType.Border:
-                    BorderGrid.Visibility = Visibility.Visible;
-                    ShowHint("Hint.ApplySelected", true);
-                    break;
-                case PanelType.Obfuscate:
-                    ObfuscateOverlaySelectControl.Scale = this.Scale();
-                    ObfuscateOverlaySelectControl.Retry();
-                    ObfuscateGrid.Visibility = Visibility.Visible;
-                    ShowHint("Hint.ApplySelected", true);
-                    break;
-
-                case PanelType.Progress:
-                    ProgressGrid.Visibility = Visibility.Visible;
-
-                    ChangeProgressTextToCurrent();
-                    ShowHint("Hint.ApplyAll", true);
-                    break;
-                case PanelType.OverrideDelay:
-                    OverrideDelayGrid.Visibility = Visibility.Visible;
-                    ShowHint("Hint.ApplySelected", true);
-                    break;
-                case PanelType.IncreaseDecreaseDelay:
-                    IncreaseDecreaseDelayGrid.Visibility = Visibility.Visible;
-                    ShowHint("Hint.ApplySelected", true);
-                    break;
-                case PanelType.ScaleDelay:
-                    ScaleDelayGrid.Visibility = Visibility.Visible;
-                    ShowHint("Hint.ApplySelected", true);
-                    break;
-                case PanelType.Cinemagraph:
-                    CinemagraphGrid.Visibility = Visibility.Visible;
-                    ShowHint("Hint.Cinemagraph", true);
-                    break;
-                case PanelType.Fade:
-                    FadeGrid.Visibility = Visibility.Visible;
-                    ShowHint("Transitions.Info", true);
-                    break;
-                case PanelType.Slide:
-                    SlideGrid.Visibility = Visibility.Visible;
-                    ShowHint("Transitions.Info", true);
-                    break;
-                case PanelType.ReduceFrames:
-                    ReduceGrid.Visibility = Visibility.Visible;
-                    ShowHint("Hint.ApplyAll", true);
-                    break;
-                case PanelType.RemoveDuplicates:
-                    RemoveDuplicatesGrid.Visibility = Visibility.Visible;
-                    ShowHint("Hint.ApplyAll", true);
-                    break;
-                case PanelType.MouseClicks:
-                    MouseClicksGrid.Visibility = Visibility.Visible;
-                    ShowHint("Hint.ApplyAll", true);
-                    break;
-            }
-
-            #endregion
-
-            #region Focus
-
-            var visible = ActionInternalGrid.Children.OfType<Grid>().FirstOrDefault(x => x.Visibility == Visibility.Visible);
-
-            if (visible != null)
-            {
-                visible.Focus();
-                visible.MoveFocus(new TraversalRequest(FocusNavigationDirection.Next));
-            }
-
-            #endregion
-
-            #region Animate
-
-            if ((type == PanelType.SaveAs || type == PanelType.LoadRecent) && ActionGrid.Width < 300)
-                ActionGrid.BeginStoryboard(this.FindStoryboard("ShowExtendedPanelStoryboard"), HandoffBehavior.Compose);
-            else if (type != PanelType.SaveAs && type != PanelType.LoadRecent && (ActionGrid.Width < 5 || ActionGrid.Width > 280))
-                ActionGrid.BeginStoryboard(this.FindStoryboard("ShowPanelStoryboard"), HandoffBehavior.Compose);
-
-            #endregion
-
-            #region Overlay Grid
-
-            if (OverlayGrid.Opacity < 1 && type < 0)
-                OverlayGrid.BeginStoryboard(this.FindStoryboard("ShowOverlayGridStoryboard"), HandoffBehavior.Compose);
-            else if (OverlayGrid.Opacity > 0 && type > 0)
-                OverlayGrid.BeginStoryboard(this.FindStoryboard("HideOverlayGridStoryboard"), HandoffBehavior.Compose);
-
-            //For when panels don't need to show an overlay.
-            if (type > 0)
-                ZoomBoxControl.SetZoomAsPrevious();
-
-            #endregion
-
-            CommandManager.InvalidateRequerySuggested();
-        }
-
-        private void ClosePanel(bool isCancel = false, bool removeEvent = false)
-        {
-            StatusList.Remove(StatusType.Warning);
-
-            if (ActionGrid.ActualWidth > 0)
-                ZoomBoxControl.ResetToPrevious();
-
-            HideHint();
-
-            if (isCancel)
-                SetFocusOnCurrentFrame();
-
-            if (removeEvent)
-                _applyAction = null;
-
-            BeginStoryboard(this.FindStoryboard("HidePanelStoryboard"), HandoffBehavior.Compose);
-            BeginStoryboard(this.FindStoryboard("HideOverlayGridStoryboard"), HandoffBehavior.Compose);
-        }
-
         private List<int> SelectedFramesIndex()
         {
             return FrameListView.SelectedItems.OfType<FrameListBoxItem>().Select(x => FrameListView.Items.IndexOf(x)).OrderBy(y => y).ToList();
@@ -2971,14 +2403,14 @@ namespace ScreenToGif.Windows
 
             #region Prepare UI
 
-            ClosePanel();
+            //ClosePanel();
 
             FrameListView.SelectedIndex = -1;
             FrameListView.SelectionChanged -= FrameListView_SelectionChanged;
 
             FrameListView.Items.Clear();
-            ClipboardListBox.Items.Clear();
-            Util.Clipboard.Items.Clear();
+            //ClipboardListBox.Items.Clear();
+            //Util.Clipboard.Items.Clear();
             ZoomBoxControl.Clear();
 
             #endregion
@@ -3167,12 +2599,6 @@ namespace ScreenToGif.Windows
                     return UserSettings.All.LatestApngFilename ?? "";
                 case Export.Video:
                     return UserSettings.All.LatestVideoFilename ?? "";
-                case Export.Images:
-                    return UserSettings.All.LatestImageFilename ?? "";
-                case Export.Project:
-                    return UserSettings.All.LatestProjectFilename ?? "";
-                case Export.Photoshop:
-                    return UserSettings.All.LatestPhotoshopFilename ?? "";
                 default:
                     throw new ArgumentOutOfRangeException();
             }
@@ -3201,12 +2627,6 @@ namespace ScreenToGif.Windows
                     return UserSettings.All.LatestApngExtension ?? ".png";
                 case Export.Video:
                     return UserSettings.All.LatestVideoExtension ?? ".mp4";
-                case Export.Images:
-                    return UserSettings.All.LatestImageExtension ?? ".png";
-                case Export.Project:
-                    return UserSettings.All.LatestProjectExtension ?? ".stg";
-                case Export.Photoshop:
-                    return UserSettings.All.LatestPhotoshopExtension ?? ".psd";
                 default:
                     throw new ArgumentOutOfRangeException();
             }
@@ -3223,16 +2643,7 @@ namespace ScreenToGif.Windows
                     UserSettings.All.LatestApngOutputFolder = folder;
                     break;
                 case Export.Video:
-                    UserSettings.All.LatestVideoOutputFolder = folder;
-                    break;
-                case Export.Images:
-                    UserSettings.All.LatestImageOutputFolder = folder;
-                    break;
-                case Export.Project:
-                    UserSettings.All.LatestProjectOutputFolder = folder;
-                    break;
-                case Export.Photoshop:
-                    UserSettings.All.LatestPhotoshopOutputFolder = folder;
+                    UserSettings.All.LatestVideoOutputFolder = folder;                    
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -3252,15 +2663,6 @@ namespace ScreenToGif.Windows
                 case Export.Video:
                     UserSettings.All.LatestVideoFilename = filename;
                     break;
-                case Export.Images:
-                    UserSettings.All.LatestImageFilename = filename;
-                    break;
-                case Export.Project:
-                    UserSettings.All.LatestProjectFilename = filename;
-                    break;
-                case Export.Photoshop:
-                    UserSettings.All.LatestPhotoshopFilename = filename;
-                    break;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
@@ -3279,15 +2681,6 @@ namespace ScreenToGif.Windows
                 case Export.Video:
                     UserSettings.All.LatestVideoExtension = extension;
                     break;
-                case Export.Images:
-                    UserSettings.All.LatestImageExtension = extension;
-                    break;
-                case Export.Project:
-                    UserSettings.All.LatestProjectExtension = extension;
-                    break;
-                case Export.Photoshop:
-                    UserSettings.All.LatestPhotoshopExtension = extension;
-                    break;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
@@ -3303,11 +2696,6 @@ namespace ScreenToGif.Windows
                     return UserSettings.All.PickLocationApng;
                 case Export.Video:
                     return UserSettings.All.PickLocationVideo;
-                case Export.Photoshop:
-                    return UserSettings.All.PickLocationPhotoshop;
-                case Export.Project:
-                case Export.Images:
-                    return true;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
@@ -3323,12 +2711,6 @@ namespace ScreenToGif.Windows
                     return UserSettings.All.OverwriteOnSaveApng;
                 case Export.Video:
                     return UserSettings.All.OverwriteOnSaveVideo;
-                case Export.Project:
-                    return UserSettings.All.OverwriteOnSaveProject;
-                case Export.Images:
-                    return UserSettings.All.OverwriteOnSaveImages;
-                case Export.Photoshop:
-                    return UserSettings.All.OverwriteOnSavePhotoshop;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
@@ -3344,11 +2726,6 @@ namespace ScreenToGif.Windows
                     return UserSettings.All.SaveAsProjectTooApng;
                 case Export.Video:
                     return UserSettings.All.SaveAsProjectTooVideo;
-                case Export.Photoshop:
-                    return UserSettings.All.SaveAsProjectTooPhotoshop;
-                case Export.Project:
-                case Export.Images:
-                    return false;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
@@ -3364,12 +2741,6 @@ namespace ScreenToGif.Windows
                     return UserSettings.All.LatestCopyTypeApng;
                 case Export.Video:
                     return UserSettings.All.LatestCopyTypeVideo;
-                case Export.Project:
-                    return UserSettings.All.LatestCopyTypeProject;
-                case Export.Photoshop:
-                    return UserSettings.All.LatestCopyTypePhotoshop;
-                case Export.Images:
-                    return CopyType.File;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
@@ -3385,11 +2756,6 @@ namespace ScreenToGif.Windows
                     return UserSettings.All.ExecuteCustomCommandsApng;
                 case Export.Video:
                     return UserSettings.All.ExecuteCustomCommandsVideo;
-                case Export.Photoshop:
-                    return UserSettings.All.ExecuteCustomCommandsPhotoshop;
-                case Export.Project:
-                case Export.Images:
-                    return false;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
@@ -3405,11 +2771,6 @@ namespace ScreenToGif.Windows
                     return UserSettings.All.CustomCommandsApng;
                 case Export.Video:
                     return UserSettings.All.CustomCommandsVideo;
-                case Export.Photoshop:
-                    return UserSettings.All.CustomCommandsPhotoshop;
-                case Export.Project:
-                case Export.Images:
-                    return "";
                 default:
                     throw new ArgumentOutOfRangeException();
             }
@@ -3429,6 +2790,7 @@ namespace ScreenToGif.Windows
 
         private void LoadRecentAsync()
         {
+            /*
             ShowProgress(DispatcherStringResource("Recent.EnumeratingProjects"), 100, true);
 
             Dispatcher.Invoke(() => IsLoading = true);
@@ -3439,7 +2801,7 @@ namespace ScreenToGif.Windows
 
             try
             {
-                Dispatcher.Invoke(() => RecentDataGrid.ItemsSource = null);
+                //Dispatcher.Invoke(() => RecentDataGrid.ItemsSource = null);
 
                 var path = Path.Combine(UserSettings.All.TemporaryFolder, "ScreenToGif", "Recording");
 
@@ -3491,8 +2853,8 @@ namespace ScreenToGif.Windows
 
                 Dispatcher.Invoke(() => ErrorDialog.Ok("ScreenToGif", "Error while enumerating recent projects", ex.Message, ex));
             }
-
-            #endregion
+           
+            #endregion */
         }
 
         private void LoadRecentCallback(IAsyncResult ar)

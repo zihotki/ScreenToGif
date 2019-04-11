@@ -155,16 +155,6 @@ namespace ScreenToGif.Windows.UserControls
             }
         }
 
-        private void IncreaseNumber_Click(object sender, RoutedEventArgs e)
-        {
-            ChangeFileNumber(1);
-        }
-
-        private void DecreaseNumber_Click(object sender, RoutedEventArgs e)
-        {
-            ChangeFileNumber(-1);
-        }
-
         private void FilenameTextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
             if (!IsLoaded)
@@ -224,104 +214,6 @@ namespace ScreenToGif.Windows.UserControls
         private string DispatcherStringResource(string key)
         {
             return Dispatcher.Invoke(() => FindResource(key).ToString().Replace("\n", " ").Replace("\\n", " ").Replace("\r", " ").Replace("&#10;", " ").Replace("&#x0d;", " "));
-        }
-
-        private void ChangeFileNumber(int change)
-        {
-            //If there's no filename declared, show the default one.
-            if (string.IsNullOrWhiteSpace(GetOutputFilename()))
-            {
-                SetOutputFilename(StringResource("S.SaveAs.File.Animation"));
-                return;
-            }
-
-            var index = GetOutputFilename().Length;
-            int start = -1, end = -1;
-
-            //Detects the last number in a string.
-            foreach (var c in GetOutputFilename().Reverse())
-            {
-                if (char.IsNumber(c))
-                {
-                    if (end == -1)
-                        end = index;
-
-                    start = index - 1;
-                }
-                else if (start == index)
-                    break;
-
-                index--;
-            }
-
-            //If there's no number.
-            if (end == -1)
-            {
-                SetOutputFilename(GetOutputFilename() + $" ({change})");
-                return;
-            }
-
-            //If it's a negative number, include the signal.
-            if (start > 0 && GetOutputFilename().Substring(start - 1, 1).Equals("-"))
-                start--;
-
-            //Cut, convert, merge.
-            if (int.TryParse(GetOutputFilename().Substring(start, end - start), out var number))
-            {
-                var offset = start + number.ToString().Length;
-
-                SetOutputFilename(GetOutputFilename().Substring(0, start) + (number + change) + GetOutputFilename().Substring(offset, GetOutputFilename().Length - end));
-            }
-        }
-
-        private void ChangeProgressText(long cumulative, long total, int current)
-        {
-            switch (ProgressPrecisionComboBox.SelectedIndex)
-            {
-                case 0: //Minutes
-                    ProgressHorizontalTextBlock.Text = UserSettings.All.ProgressShowTotal ? TimeSpan.FromMilliseconds(cumulative).ToString(@"m\:ss") + "/" + TimeSpan.FromMilliseconds(total).ToString(@"m\:ss")
-                        : TimeSpan.FromMilliseconds(cumulative).ToString(@"m\:ss");
-                    break;
-                case 1: //Seconds
-                    ProgressHorizontalTextBlock.Text = UserSettings.All.ProgressShowTotal ? (int)TimeSpan.FromMilliseconds(cumulative).TotalSeconds + "/" + TimeSpan.FromMilliseconds(total).TotalSeconds + " s"
-                        : (int)TimeSpan.FromMilliseconds(cumulative).TotalSeconds + " s";
-                    break;
-                case 2: //Milliseconds
-                    ProgressHorizontalTextBlock.Text = UserSettings.All.ProgressShowTotal ? cumulative + "/" + total + " ms" : cumulative + " ms";
-                    break;
-                case 3: //Percentage
-                    var count = (double)Project.Frames.Count;
-                    ProgressHorizontalTextBlock.Text = (current / count * 100).ToString("##0.#", CultureInfo.CurrentUICulture) + (UserSettings.All.ProgressShowTotal ? "/100%" : " %");
-                    break;
-                case 4: //Frame number
-                    ProgressHorizontalTextBlock.Text = UserSettings.All.ProgressShowTotal ? current + "/" + Project.Frames.Count
-                        : current.ToString();
-                    break;
-                case 5: //Custom
-                    ProgressHorizontalTextBlock.Text = CustomProgressTextBox.Text
-                        .Replace("$ms", cumulative.ToString())
-                        .Replace("$s", ((int)TimeSpan.FromMilliseconds(cumulative).TotalSeconds).ToString())
-                        .Replace("$m", TimeSpan.FromMilliseconds(cumulative).ToString())
-                        .Replace("$p", (current / (double)Project.Frames.Count * 100).ToString("##0.#", CultureInfo.CurrentUICulture))
-                        .Replace("$f", current.ToString())
-                        .Replace("@ms", total.ToString())
-                        .Replace("@s", ((int)TimeSpan.FromMilliseconds(total).TotalSeconds).ToString())
-                        .Replace("@m", TimeSpan.FromMilliseconds(total).ToString(@"m\:ss"))
-                        .Replace("@p", "100")
-                        .Replace("@f", Project.Frames.Count.ToString());
-                    break;
-            }
-        }
-
-        private void ChangeProgressTextToCurrent()
-        {
-            var total = Project.Frames.Sum(y => y.Delay);
-            var cumulative = 0L;
-
-            for (var j = 0; j < FrameListView.SelectedIndex; j++)
-                cumulative += Project.Frames[j].Delay;
-
-            ChangeProgressText(cumulative, total, FrameListView.SelectedIndex);
         }
 
 
