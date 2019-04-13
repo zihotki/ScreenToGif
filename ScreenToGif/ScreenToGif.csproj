@@ -105,6 +105,12 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.WindowsAPICodePack, Version=1.1.3.3, Culture=neutral, PublicKeyToken=8985beaab7ea3f04, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft-WindowsAPICodePack-Core.1.1.3.3\lib\net452\Microsoft.WindowsAPICodePack.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.WindowsAPICodePack.Shell, Version=1.1.3.3, Culture=neutral, PublicKeyToken=8985beaab7ea3f04, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft-WindowsAPICodePack-Shell.1.1.3.3\lib\net452\Microsoft.WindowsAPICodePack.Shell.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
@@ -159,7 +165,6 @@
     <Compile Include="Controls\LabelSeparator.cs" />
     <Compile Include="Controls\ElementAdorner.cs" />
     <Compile Include="Controls\NotificationListControl.cs" />
-    <Compile Include="Controls\NotifyIcon.cs" />
     <Compile Include="Controls\RecorderWindow.cs" />
     <Compile Include="Controls\Shapes\Arrow.cs" />
     <Compile Include="Controls\Shapes\Triangle.cs" />
@@ -266,9 +271,7 @@
     <Compile Include="ImageUtil\Psd\Psd.cs" />
     <Compile Include="Model\BindableBase.cs" />
     <Compile Include="Model\DefaultTaskModel.cs" />
-    <Compile Include="Model\KeyStrokesModel.cs" />
     <Compile Include="Model\ManipulatedEventArgs.cs" />
-    <Compile Include="Model\MouseClicksModel.cs" />
     <Compile Include="UserControls\KeyStrokesPanel.xaml.cs">
       <DependentUpon>KeyStrokesPanel.xaml</DependentUpon>
     </Compile>
@@ -280,7 +283,6 @@
     <Compile Include="Util\ActivityHook\CustomKeyPressEventArgs.cs" />
     <Compile Include="Util\ActivityHook\CustomMouseEventArgs.cs" />
     <Compile Include="Util\ActivityHook\UserActivityHook.cs" />
-    <Compile Include="Util\Argument.cs" />
     <Compile Include="Util\BitHelper.cs" />
     <Compile Include="Util\Converters\BoolAndToVisibility.cs" />
     <Compile Include="Util\Converters\BoolOrAndToVisibility.cs" />
@@ -342,7 +344,6 @@
     <Compile Include="Util\FastRandom.cs" />
     <Compile Include="Util\HotKey.cs" />
     <Compile Include="Util\HotKeyCollection.cs" />
-    <Compile Include="Model\UpdateModel.cs" />
     <Compile Include="Util\MutexList.cs" />
     <Compile Include="Util\NotificationManager.cs" />
     <Compile Include="Model\ApplicationModel.cs" />
@@ -376,9 +377,6 @@
     <Compile Include="Windows\Editor.xaml.cs">
       <DependentUpon>Editor.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Windows\Other\AutomatedTask.xaml.cs">
-      <DependentUpon>AutomatedTask.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Windows\Other\ExceptionDialog.xaml.cs">
       <DependentUpon>ExceptionDialog.xaml</DependentUpon>
     </Compile>
@@ -400,17 +398,11 @@
     <Compile Include="Windows\Other\GoTo.xaml.cs">
       <DependentUpon>GoTo.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Windows\Other\Insert.xaml.cs">
-      <DependentUpon>Insert.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Windows\Other\KeyStrokes.xaml.cs">
       <DependentUpon>KeyStrokes.xaml</DependentUpon>
     </Compile>
     <Compile Include="Windows\Options.xaml.cs">
       <DependentUpon>Options.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Windows\Other\SelectFolderDialog.xaml.cs">
-      <DependentUpon>SelectFolderDialog.xaml</DependentUpon>
     </Compile>
     <Compile Include="Windows\Other\TextDialog.xaml.cs">
       <DependentUpon>TextDialog.xaml</DependentUpon>
@@ -604,10 +596,6 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Windows\Other\AutomatedTask.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="Windows\Other\ExceptionDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -636,10 +624,6 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Windows\Other\Insert.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="Windows\Other\KeyStrokes.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -647,10 +631,6 @@
     <Page Include="Windows\Options.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Windows\Other\SelectFolderDialog.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
     </Page>
     <Page Include="Windows\Other\TextDialog.xaml">
       <SubType>Designer</SubType>
@@ -714,6 +694,7 @@
       <SubType>Code</SubType>
     </Compile>
     <AppDesigner Include="Properties\" />
+    <None Include="packages.config" />
     <None Include="Readme.md" />
   </ItemGroup>
   <ItemGroup>

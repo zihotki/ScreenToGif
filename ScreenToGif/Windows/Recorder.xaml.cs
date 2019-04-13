@@ -506,21 +506,11 @@ namespace ScreenToGif.Windows
 
                 UnregisterEvents();
 
-                if (UserSettings.All.ShowCursor)
-                {
-                    if (UserSettings.All.AsyncRecording)
-                        _capture.Tick += CursorAsync_Elapsed;
-                    else
-                        _capture.Tick += Cursor_Elapsed;
-                }
+                if (UserSettings.All.AsyncRecording)
+                    _capture.Tick += NormalAsync_Elapsed;
                 else
-                {
-                    if (UserSettings.All.AsyncRecording)
-                        _capture.Tick += NormalAsync_Elapsed;
-                    else
-                        _capture.Tick += Normal_Elapsed;
-                }
-
+                    _capture.Tick += Normal_Elapsed;
+                
                 #endregion
 
                 #endregion
@@ -590,52 +580,22 @@ namespace ScreenToGif.Windows
                 RecordPauseButton.IsEnabled = true;
                 Title = "Screen To Gif";
                 IsRecording = true;
-
-                if (UserSettings.All.ShowCursor)
+                
+                if (UserSettings.All.AsyncRecording)
                 {
-                    #region If Show Cursor
-
-                    if (UserSettings.All.AsyncRecording)
-                    {
-                        _capture.Tick += CursorAsync_Elapsed;
-                        CursorAsync_Elapsed(null, null);
-                    }
-                    else
-                    {
-                        _capture.Tick += Cursor_Elapsed;
-                        Cursor_Elapsed(null, null);
-                    }
-
-                    _capture.Start();
-
-                    Stage = Stage.Recording;
-
-                    AutoFitButtons();
-
-                    #endregion
+                    _capture.Tick += NormalAsync_Elapsed;
+                    NormalAsync_Elapsed(null, null);
                 }
                 else
                 {
-                    #region If Not
-
-                    if (UserSettings.All.AsyncRecording)
-                    {
-                        _capture.Tick += NormalAsync_Elapsed;
-                        NormalAsync_Elapsed(null, null);
-                    }
-                    else
-                    {
-                        _capture.Tick += Normal_Elapsed;
-                        Normal_Elapsed(null, null);
-                    }
-
-                    _capture.Start();
-
-                    Stage = Stage.Recording;
-                    AutoFitButtons();
-
-                    #endregion
+                    _capture.Tick += Normal_Elapsed;
+                    Normal_Elapsed(null, null);
                 }
+
+                _capture.Start();
+
+                Stage = Stage.Recording;
+                AutoFitButtons();
             }
         }
 
@@ -661,37 +621,6 @@ namespace ScreenToGif.Windows
             FrameCount++;
         }
 
-        private async void CursorAsync_Elapsed(object sender, EventArgs e)
-        {
-            if (_stopRequested)
-                return;
-
-            if (_captureTask != null && !_captureTask.IsCompleted)
-                _captureTask.Wait();
-
-            int cursorPosX = 0, cursorPosY = 0;
-            _captureTask = Task.Factory.StartNew(() => Native.CaptureWithCursor(_size, _left, _top, out cursorPosX, out cursorPosY), TaskCreationOptions.PreferFairness);
-
-            var bt = await _captureTask;
-
-            if (bt == null || !IsLoaded)
-                return;
-
-            var fileName = $"{Project.FullPath}{FrameCount}.png";
-
-            if (!OutterGrid.IsVisible)
-                return;
-
-            Project.Frames.Add(new FrameInfo(fileName, FrameRate.GetMilliseconds(_snapDelay), cursorPosX, cursorPosY, _recordClicked, _keyList));
-
-            _keyList.Clear();
-
-            ThreadPool.QueueUserWorkItem(delegate { AddFrames(fileName, new Bitmap(bt)); });
-
-            FrameCount++;
-        }
-
-
         private void Normal_Elapsed(object sender, EventArgs e)
         {
             //Take a screenshot of the area.
@@ -710,25 +639,6 @@ namespace ScreenToGif.Windows
 
             FrameCount++;
         }
-
-        private void Cursor_Elapsed(object sender, EventArgs e)
-        {
-            var bt = Native.CaptureWithCursor(_size, _left, _top, out var cursorPosX, out var cursorPosY);
-
-            if (bt == null || !IsLoaded)
-                return;
-
-            var fileName = $"{Project.FullPath}{FrameCount}.png";
-
-            Project.Frames.Add(new FrameInfo(fileName, FrameRate.GetMilliseconds(_snapDelay), cursorPosX, cursorPosY, _recordClicked, _keyList));
-
-            _keyList.Clear();
-
-            ThreadPool.QueueUserWorkItem(delegate { AddFrames(fileName, new Bitmap(bt)); });
-
-            FrameCount++;
-        }
-
 
         private void GarbageTimer_Tick(object sender, EventArgs e)
         {
@@ -787,40 +697,20 @@ namespace ScreenToGif.Windows
                     }
                     else
                     {
-                        if (UserSettings.All.ShowCursor)
-                        {
-                            #region If Show Cursor
+                        #region If Not
 
-                            if (UserSettings.All.AsyncRecording)
-                                _capture.Tick += CursorAsync_Elapsed;
-                            else
-                                _capture.Tick += Cursor_Elapsed;
-
-                            _capture.Start();
-
-                            Stage = Stage.Recording;
-
-                            AutoFitButtons();
-
-                            #endregion
-                        }
+                        if (UserSettings.All.AsyncRecording)
+                            _capture.Tick += NormalAsync_Elapsed;
                         else
-                        {
-                            #region If Not
+                            _capture.Tick += Normal_Elapsed;
 
-                            if (UserSettings.All.AsyncRecording)
-                                _capture.Tick += NormalAsync_Elapsed;
-                            else
-                                _capture.Tick += Normal_Elapsed;
+                        _capture.Start();
 
-                            _capture.Start();
+                        Stage = Stage.Recording;
 
-                            Stage = Stage.Recording;
+                        AutoFitButtons();
 
-                            AutoFitButtons();
-
-                            #endregion
-                        }
+                        #endregion
                     }
                     break;
 
@@ -881,24 +771,10 @@ namespace ScreenToGif.Windows
 
             _snapDelay = UserSettings.All.SnapshotDefaultDelay;
 
-            #region Take Screenshot (All possibles types)
-
-            if (UserSettings.All.ShowCursor)
-            {
-                if (UserSettings.All.AsyncRecording)
-                    CursorAsync_Elapsed(null, null);
-                else
-                    Cursor_Elapsed(null, null);
-            }
+            if (UserSettings.All.AsyncRecording)
+                NormalAsync_Elapsed(null, null);
             else
-            {
-                if (UserSettings.All.AsyncRecording)
-                    NormalAsync_Elapsed(null, null);
-                else
-                    Normal_Elapsed(null, null);
-            }
-
-            #endregion
+                Normal_Elapsed(null, null);
         }
 
         /// <summary>
@@ -1000,9 +876,6 @@ namespace ScreenToGif.Windows
         {
             _capture.Tick -= Normal_Elapsed;
             _capture.Tick -= NormalAsync_Elapsed;
-
-            _capture.Tick -= Cursor_Elapsed;
-            _capture.Tick -= CursorAsync_Elapsed;
         }
 
         private void UpdateScreenDpi()

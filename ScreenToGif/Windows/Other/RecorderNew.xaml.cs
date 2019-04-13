@@ -474,21 +474,11 @@ namespace ScreenToGif.Windows.Other
 
                 UnregisterEvents();
 
-                if (UserSettings.All.ShowCursor)
-                {
-                    if (UserSettings.All.AsyncRecording)
-                        _capture.Tick += CursorAsync_Elapsed;
-                    else
-                        _capture.Tick += Cursor_Elapsed;
-                }
+                if (UserSettings.All.AsyncRecording)
+                    _capture.Tick += NormalAsync_Elapsed;
                 else
-                {
-                    if (UserSettings.All.AsyncRecording)
-                        _capture.Tick += NormalAsync_Elapsed;
-                    else
-                        _capture.Tick += Normal_Elapsed;
-                }
-
+                    _capture.Tick += Normal_Elapsed;
+                
                 #endregion
 
                 #endregion
@@ -741,25 +731,7 @@ namespace ScreenToGif.Windows.Other
                     }
                     else
                     {
-                        if (UserSettings.All.ShowCursor)
-                        {
-                            #region If Show Cursor
-
-                            if (UserSettings.All.AsyncRecording)
-                                _capture.Tick += CursorAsync_Elapsed;
-                            else
-                                _capture.Tick += Cursor_Elapsed;
-
-                            _capture.Start();
-
-
-                            Stage = Stage.Recording;
-
-                            #endregion
-                        }
-                        else
-                        {
-                            #region If Not
+                        #region If Not
 
                             if (UserSettings.All.AsyncRecording)
                                 _capture.Tick += NormalAsync_Elapsed;
@@ -771,7 +743,6 @@ namespace ScreenToGif.Windows.Other
                             Stage = Stage.Recording;
 
                             #endregion
-                        }
                     }
                     break;
 
@@ -841,20 +812,11 @@ namespace ScreenToGif.Windows.Other
 
             #region Take Screenshot (All possibles types)
 
-            if (UserSettings.All.ShowCursor)
-            {
-                if (UserSettings.All.AsyncRecording)
-                    CursorAsync_Elapsed(null, null);
-                else
-                    Cursor_Elapsed(null, null);
-            }
+            if (UserSettings.All.AsyncRecording)
+                NormalAsync_Elapsed(null, null);
             else
-            {
-                if (UserSettings.All.AsyncRecording)
-                    NormalAsync_Elapsed(null, null);
-                else
-                    Normal_Elapsed(null, null);
-            }
+                Normal_Elapsed(null, null);
+            
 
             #endregion
         }
@@ -1197,48 +1159,24 @@ namespace ScreenToGif.Windows.Other
                 Title = "ScreenToGif";
                 IsRecording = true;
 
-                if (UserSettings.All.ShowCursor)
+                #region If Not
+
+                if (UserSettings.All.AsyncRecording)
                 {
-                    #region If Show Cursor
-
-                    if (UserSettings.All.AsyncRecording)
-                    {
-                        _capture.Tick += CursorAsync_Elapsed;
-                        CursorAsync_Elapsed(null, null);
-                    }
-                    else
-                    {
-                        _capture.Tick += Cursor_Elapsed;
-                        Cursor_Elapsed(null, null);
-                    }
-
-                    _capture.Start();
-
-                    Stage = Stage.Recording;
-
-                    #endregion
+                    _capture.Tick += NormalAsync_Elapsed;
+                    NormalAsync_Elapsed(null, null);
                 }
                 else
                 {
-                    #region If Not
-
-                    if (UserSettings.All.AsyncRecording)
-                    {
-                        _capture.Tick += NormalAsync_Elapsed;
-                        NormalAsync_Elapsed(null, null);
-                    }
-                    else
-                    {
-                        _capture.Tick += Normal_Elapsed;
-                        Normal_Elapsed(null, null);
-                    }
-
-                    _capture.Start();
-
-                    Stage = Stage.Recording;
-
-                    #endregion
+                    _capture.Tick += Normal_Elapsed;
+                    Normal_Elapsed(null, null);
                 }
+
+                _capture.Start();
+
+                Stage = Stage.Recording;
+
+                #endregion
             }
         }
 

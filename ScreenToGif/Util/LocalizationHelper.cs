@@ -93,10 +93,7 @@ namespace ScreenToGif.Util
             #endregion
 
             GC.Collect(0);
-
-            if (!UserSettings.All.CheckForTranslationUpdates)
-                return;
-        }       
+        }
 
         public static void SaveDefaultResource(string path)
         {

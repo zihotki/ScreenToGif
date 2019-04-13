@@ -23,35 +23,6 @@ namespace ScreenToGif.Model
     {
         #region Commands
 
-        public ICommand OpenLauncher
-        {
-            get
-            {
-                return new RelayCommand
-                {
-                    ExecuteAction = a =>
-                    {
-                        var startup = Application.Current.Windows.OfType<Startup>().FirstOrDefault();
-
-                        if (startup == null)
-                        {
-                            startup = new Startup();
-                            startup.Closed += (sender, args) => { CloseOrNot(); };
-
-                            startup.Show();
-                        }
-                        else
-                        {
-                            if (startup.WindowState == WindowState.Minimized)
-                                startup.WindowState = WindowState.Normal;
-
-                            startup.Activate();
-                        }
-                    }
-                };
-            }
-        }
-
         public ICommand OpenRecorder
         {
             get
@@ -68,31 +39,6 @@ namespace ScreenToGif.Model
                         var caller = a as Window;
                         caller?.Hide();
 
-                        if (UserSettings.All.NewRecorder)
-                        {
-                            var recorderNew = new RecorderNew();
-                            recorderNew.Closed += (sender, args) =>
-                            {
-                                var window = sender as RecorderNew;
-
-                                if (window?.Project != null && window.Project.Any)
-                                {
-                                    ShowEditor(window.Project);
-                                    caller?.Close();
-                                }
-                                else
-                                {
-                                    caller?.Show();
-                                    CloseOrNot();
-                                }
-                            };
-
-                            Application.Current.MainWindow = recorderNew;
-                            recorderNew.Show();
-
-                            return;
-                        }
-
                         var recorder = new Recorder();
                         recorder.Closed += (sender, args) =>
                         {
@@ -106,7 +52,6 @@ namespace ScreenToGif.Model
                             else
                             {
                                 caller?.Show();
-                                CloseOrNot();
                             }
                         };
 
@@ -117,20 +62,17 @@ namespace ScreenToGif.Model
             }
         }
 
-      
-
         public ICommand OpenEditor
         {
             get
             {
                 return new RelayCommand
                 {
-                    CanExecutePredicate = a => true, //TODO: Always let this window opens or check if there's any other recorder active?
+                    CanExecutePredicate = a => true,
                     ExecuteAction = a =>
                     {
                         var caller = a as Window;
 
-                        //TODO: Should it behave the same way as it does after a recording? Always open a new one or simply show all/one that was already opened?
                         ShowEditor();
 
                         caller?.Close();
@@ -145,31 +87,12 @@ namespace ScreenToGif.Model
             {
                 return new RelayCommand
                 {
-                    CanExecutePredicate = a => true, //TODO: Always let this window opens or check if there's any other recorder active?
+                    CanExecutePredicate = a => true,
                     ExecuteAction = a =>
                     {
                         var options = Application.Current.Windows.OfType<Options>().FirstOrDefault();
-                        var tab = a as int? ?? 0; //Parameter that selects which tab to be displayed.
-
-                        if (options == null)
-                        {
-                            options = new Options(tab);
-                            options.Closed += (sender, args) =>
-                            {
-                                CloseOrNot();
-                            };
-
-                            //TODO: Open as dialog or not? Block other windows?
-                            options.Show();
-                        }
-                        else
-                        {
-                            if (options.WindowState == WindowState.Minimized)
-                                options.WindowState = WindowState.Normal;
-
-                            options.SelectTab(tab);
-                            options.Activate();
-                        }
+                        options = new Options();
+                        options.ShowDialog();
                     }
                 };
             }
@@ -203,43 +126,10 @@ namespace ScreenToGif.Model
 
         private void ShowEditor(ProjectInfo project = null)
         {
-            var editor = Application.Current.Windows.OfType<Editor>().FirstOrDefault(f => f.Project == null || !f.Project.Any);
-
-            if (editor == null)
-            {
-                editor = new Editor { Project = project };
-                editor.Closed += (sender, args) => CloseOrNot();
-                editor.Show();
-            }
-            else
-            {
-                //TODO: Three modes for opening the editor:
-                //Always open a new window.
-                //Open a new window if there's no window without any project loaded.
-                //Open a new window if there's no idle window (with a project loaded).
-
-                //TODO: Detect if the last state was normal/maximized.
-                if (editor.WindowState == WindowState.Minimized)
-                    editor.WindowState = WindowState.Normal;
-
-                if (project != null)
-                    editor.LoadProject(project, true, false);
-
-                editor.Activate();
-            }
+            var editor = new Editor { Project = project };
+            editor.Show();
 
             Application.Current.MainWindow = editor;
-        }
-
-        private void CloseOrNot()
-        {
-            //When closed, check if it's the last window, then close if it's the configured behavior.
-            if (!UserSettings.All.ShowNotificationIcon || !UserSettings.All.KeepOpen)
-            {
-                //We only need to check loaded windows that have content
-                if (Application.Current.Windows.Cast<Window>().Count(window => window.HasContent) == 0)
-                    Application.Current.Shutdown(2);
-            }
         }
 
         internal void ClearTemporaryFilesTask()

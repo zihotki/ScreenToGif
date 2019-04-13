@@ -176,38 +176,17 @@ namespace ScreenToGif.Windows
 
         private Action<object, RoutedEventArgs> _applyAction = null;
 
-        private bool _abortLoading;
-
         #endregion
 
         public Editor()
         {
             InitializeComponent();
 
-            #region Adjust the position
-
             //Tries to adjust the position/size of the window, centers on screen otherwise.
             if (!UpdatePositioning())
+            {
                 WindowStartupLocation = WindowStartupLocation.CenterScreen;
-
-            #endregion
-
-            #region UWP restrictions
-
-#if UWP
-
-            CustomCommandsCheckBox.Visibility = Visibility.Collapsed;
-            CustomCommandsTextBox.Visibility = Visibility.Collapsed;
-            CustomCommandsApngCheckBox.Visibility = Visibility.Collapsed;
-            CustomCommandsApngTextBox.Visibility = Visibility.Collapsed;
-            CustomCommandsVideoCheckBox.Visibility = Visibility.Collapsed;
-            CustomCommandsVideoTextBox.Visibility = Visibility.Collapsed;
-            CustomCommandsPsdCheckBox.Visibility = Visibility.Collapsed;
-            CustomCommandsPsdTextBox.Visibility = Visibility.Collapsed;
-
-#endif
-
-            #endregion
+            }
         }
 
         #region Main Events
@@ -221,15 +200,9 @@ namespace ScreenToGif.Windows
             ScrollSynchronizer.SetScrollGroup(ZoomBoxControl.GetScrollViewer(), "Canvas");
             ScrollSynchronizer.SetScrollGroup(MainScrollViewer, "Canvas");
 
-            #region Temporary folder
-
             //If never configurated.
             if (string.IsNullOrWhiteSpace(UserSettings.All.TemporaryFolder))
                 UserSettings.All.TemporaryFolder = Path.GetTempPath();
-
-            #endregion
-
-            #region Load
 
             if (Project != null)
             {
@@ -241,48 +214,10 @@ namespace ScreenToGif.Windows
 
                 ActionStack.Project = Project;
 
-                _loadFramesDel = Load;
-                _loadFramesDel.BeginInvoke(LoadCallback, null);
+                //_loadFramesDel = Load;
+                //_loadFramesDel.BeginInvoke(LoadCallback, null);
                 return;
             }
-
-            #endregion
-
-            #region Open With...
-
-            if (Argument.FileNames.Any())
-            {
-                #region Validation
-
-                var extensionList = Argument.FileNames.Select(Path.GetExtension).ToList();
-
-                var media = new[] { "jpg", "jpeg", "gif", "bmp", "png", "avi", "mp4", "wmv" };
-
-                var projectCount = extensionList.Count(x => !string.IsNullOrEmpty(x) && (x.Equals("stg") || x.Equals("zip")));
-                var mediaCount = extensionList.Count(x => !string.IsNullOrEmpty(x) && media.Contains(x));
-
-                //TODO: Later I need to implement another validation for multiple video files.
-
-                if (projectCount != 0 && mediaCount != 0)
-                {
-                    Dispatcher.Invoke(() => StatusList.Warning(FindResource("Editor.InvalidLoadingFiles").ToString()));
-                    return;
-                }
-
-                if (projectCount > 0)
-                {
-                    Dispatcher.Invoke(() => StatusList.Warning(FindResource("Editor.InvalidLoadingProjects").ToString()));
-                    return;
-                }
-
-                #endregion
-
-                //_importFramesDel = ImportFrom;
-                //_importFramesDel.BeginInvoke(Argument.FileNames, ImportFromCallback, null);
-                return;
-            }
-
-            #endregion
 
             WelcomeTextBlock.Text = StringResource(Humanizer.WelcomeInfo());
             SymbolTextBlock.Text = Humanizer.Welcome();
@@ -301,7 +236,7 @@ namespace ScreenToGif.Windows
             if (WasPreviewing)
             {
                 WasPreviewing = false;
-                PlayPause();
+                PlaybackPlayPause();
             }
         }
 
@@ -313,7 +248,7 @@ namespace ScreenToGif.Windows
             if (_timerPreview.Enabled)
             {
                 WasPreviewing = true;
-                Pause();
+                PlaybackPause();
             }
         }
 
@@ -327,19 +262,10 @@ namespace ScreenToGif.Windows
         {
             //TODO: What if there's any processing happening? I need to try to stop.
 
-            Pause();
+            PlaybackPause();
 
             if (Project != null && Project.Any)
             {
-                Project.Persist();
-
-                if (UserSettings.All.NotifyWhileClosingEditor && !Dialog.Ask(LocalizationHelper.Get("Editor.Exiting.Title"), LocalizationHelper.Get("Editor.Exiting.Instruction"),
-                        LocalizationHelper.Get(UserSettings.All.AutomaticCleanUp ? "Editor.Exiting.Message2" : "Editor.Exiting.Message")))
-                {
-                    e.Cancel = true;
-                    return;
-                }
-
                 Project.Clear();
 
                 //Remove the ActionStack.
@@ -427,7 +353,7 @@ namespace ScreenToGif.Windows
             if (e.Mode == PowerModes.Suspend)
             {
                 Slept = true;
-                Pause();
+                PlaybackPause();
                 GC.Collect();
                 return;
             }
@@ -542,40 +468,12 @@ namespace ScreenToGif.Windows
         private void NewRecording_Executed(object sender, ExecutedRoutedEventArgs e)
         {
             e.Handled = true;
-            Pause();
-            WindowState = WindowState.Minimized;
-            ShowInTaskbar = false;
+            PlaybackPause();
             Encoder.Minimize();
-            //ClosePanel(removeEvent: true);
 
-            if (UserSettings.All.NewRecorder)
-            {
-                var recorder = new RecorderNew();
-                recorder.ShowDialog();
-
-                if (recorder.Project?.Any == true)
-                {
-                    LoadProject(recorder.Project);
-                    ShowHint("Hint.NewRecording");
-                }
-            }
-            else
-            {
-                var recorder = new Recorder();
-                recorder.ShowDialog();
-
-                if (recorder.Project?.Any == true)
-                {
-                    LoadProject(recorder.Project);
-                    ShowHint("Hint.NewRecording");
-                }
-            }
-
-            Encoder.Restore();
-            ShowInTaskbar = true;
-            WindowState = WindowState.Normal;
+            // TODO: let App know that a new recording should be created.
+            Close();
         }
-
         #endregion
 
 
@@ -588,7 +486,7 @@ namespace ScreenToGif.Windows
 
         private void SaveAs_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-            Pause();
+            PlaybackPause();
 
             // TODO: save
         }
@@ -908,13 +806,6 @@ namespace ScreenToGif.Windows
             */
         }
 
-
-
-        private void DiscardProject_Executed(object sender, ExecutedRoutedEventArgs e)
-        {
-            Discard(UserSettings.All.NotifyProjectDiscard);
-        }
-
         #endregion
 
         #endregion
@@ -940,33 +831,30 @@ namespace ScreenToGif.Windows
 
         private void Undo_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-            Pause();
-            //ClosePanel();
+            PlaybackPause();
 
             Project.Frames = ActionStack.Undo(Project.Frames.CopyList());
-            LoadProject(Project, false, false);
+            //LoadProject(Project, false, false);
 
             ShowHint("Hint.Undo");
         }
 
         private void Reset_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-            Pause();
-            //ClosePanel();
+            PlaybackPause();
 
             Project.Frames = ActionStack.Reset(Project.Frames.CopyList());
-            LoadProject(Project, false, false);
+            //LoadProject(Project, false, false);
 
             ShowHint("Hint.Reset");
         }
 
         private void Redo_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-            Pause();
-            //ClosePanel();
+            PlaybackPause();
 
             Project.Frames = ActionStack.Redo(Project.Frames.CopyList());
-            LoadProject(Project, false, false);
+            //LoadProject(Project, false, false);
 
             ShowHint("Hint.Redo");
         }
@@ -1093,7 +981,7 @@ namespace ScreenToGif.Windows
 
         private void SelectAll_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-            Pause();
+            PlaybackPause();
 
             FrameListView.SelectAll();
 
@@ -1102,7 +990,7 @@ namespace ScreenToGif.Windows
 
         private void GoTo_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-            Pause();
+            PlaybackPause();
 
             var go = new GoTo(Project.Frames.Count - 1) { Owner = this };
             var result = go.ShowDialog();
@@ -1124,7 +1012,7 @@ namespace ScreenToGif.Windows
 
         private void InverseSelection_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-            Pause();
+            PlaybackPause();
 
             foreach (ListViewItem item in FrameListView.Items)
             {
@@ -1136,7 +1024,7 @@ namespace ScreenToGif.Windows
 
         private void DeselectAll_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-            Pause();
+            PlaybackPause();
             //ClosePanel();
 
             FrameListView.SelectedIndex = -1;
@@ -1157,7 +1045,7 @@ namespace ScreenToGif.Windows
 
         private void FirstFrame_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-            Pause();
+            PlaybackPause();
 
             WasChangingSelection = true;
             FrameListView.SelectedIndex = 0;
@@ -1165,7 +1053,7 @@ namespace ScreenToGif.Windows
 
         private void PreviousFrame_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-            Pause();
+            PlaybackPause();
 
             WasChangingSelection = true;
 
@@ -1181,12 +1069,12 @@ namespace ScreenToGif.Windows
 
         private void Play_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-            PlayPause();
+            PlaybackPlayPause();
         }
 
         private void NextFrame_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-            Pause();
+            PlaybackPause();
 
             WasChangingSelection = true;
 
@@ -1202,7 +1090,7 @@ namespace ScreenToGif.Windows
 
         private void LastFrame_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-            Pause();
+            PlaybackPause();
 
             WasChangingSelection = true;
             FrameListView.SelectedIndex = FrameListView.Items.Count - 1;
@@ -1250,44 +1138,11 @@ namespace ScreenToGif.Windows
             e.CanExecute = FrameListView.SelectedIndex != -1 && !IsLoading;
         }
 
-        private void OpenImage_Executed(object sender, ExecutedRoutedEventArgs e)
-        {
-            try
-            {
-                Process.Start(Project.Frames[FrameListView.SelectedIndex].Path);
-            }
-            catch (Exception ex)
-            {
-                LogWriter.Log(ex, "Open Image");
-                Dialog.Ok("Open Image", "Impossible to open image.", ex.Message);
-            }
-        }
-
-        private void ExploreFolder_Executed(object sender, ExecutedRoutedEventArgs e)
-        {
-            try
-            {
-                Process.Start("explorer.exe", $"/select,\"{Project.Frames[FrameListView.SelectedIndex].Path}\"");
-            }
-            catch (Exception ex)
-            {
-                LogWriter.Log(ex, "Open Image Folder");
-                Dialog.Ok("Open Image", "Impossible to open the image folder.", ex.Message);
-            }
-        }
-
-        private void ExportImages_Executed(object sender, ExecutedRoutedEventArgs e)
-        {
-            //ImagesRadioButton.IsChecked = true;
-
-            SaveAs_Executed(sender, e);
-        }
-
         private void FrameListView_OnPreviewKeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Space)
             {
-                PlayPause();
+                PlaybackPlayPause();
 
                 //Avoids the selection of the frame by using the Space key.
                 e.Handled = true;
@@ -1327,27 +1182,12 @@ namespace ScreenToGif.Windows
             GC.Collect(2);
         }
 
-        private void CancelLoadingButton_Click(object sender, RoutedEventArgs e)
-        {
-            _abortLoading = true;
-            CancelLoadingButton.IsEnabled = false;
-        }
-
-        private void InkCanvas_PreviewKeyDown(object sender, KeyEventArgs e)
-        {
-            if (e.Key != Key.Escape || !(sender is InkCanvas canvas))
-                return;
-
-            //This event only exists because the InkPanel eats the Esc key used in Commands.
-            //if something is not selected, run the command to close the panel.
-            if (canvas.ActiveEditingMode != InkCanvasEditingMode.Select && canvas.GetSelectedStrokes().Any())
-                CancelCommandBinding.Command.Execute(null);
-        }
 
         #endregion
 
         #region Methods
 
+        /*
         #region Load
 
         #region Async Loading
@@ -2201,13 +2041,13 @@ namespace ScreenToGif.Windows
             #endregion
 
             return frameInfoList;
-        }*/
+        }
 
         #endregion
-
+*/
         #region Playback
 
-        private void PlayPause()
+        private void PlaybackPlayPause()
         {
             if (_timerPreview.Enabled)
             {
@@ -2257,7 +2097,7 @@ namespace ScreenToGif.Windows
             }
         }
 
-        private void Pause()
+        private void PlaybackPause()
         {
             if (!_timerPreview.Enabled)
                 return;
@@ -2396,7 +2236,7 @@ namespace ScreenToGif.Windows
 
         private void Discard(bool notify = true)
         {
-            Pause();
+            PlaybackPause();
 
             if (notify && !Dialog.Ask(LocalizationHelper.Get("Editor.DiscardProject.Title"), LocalizationHelper.Get("Editor.DiscardProject.Instruction"), LocalizationHelper.Get("Editor.DiscardProject.Message"), false))
                 return;
@@ -2415,7 +2255,10 @@ namespace ScreenToGif.Windows
 
             #endregion
 
-            if (Project == null || !Project.Any) return;
+            if (Project == null || !Project.Any)
+            {
+                return;
+            }
 
             _discardFramesDel = Discard;
             _discardFramesDel.BeginInvoke(Project, DiscardCallback, null);
@@ -2445,54 +2288,6 @@ namespace ScreenToGif.Windows
         private string DispatcherStringResource(string key)
         {
             return Dispatcher.Invoke(() => FindResource(key).ToString().Replace("\n", " ").Replace("\\n", " ").Replace("\r", " ").Replace("&#10;", " ").Replace("&#x0d;", " "));
-        }
-
-        private void ChangeFileNumber(int change)
-        {
-            //If there's no filename declared, show the default one.
-            if (string.IsNullOrWhiteSpace(GetOutputFilename()))
-            {
-                SetOutputFilename(StringResource("S.SaveAs.File.Animation"));
-                return;
-            }
-
-            var index = GetOutputFilename().Length;
-            int start = -1, end = -1;
-
-            //Detects the last number in a string.
-            foreach (var c in GetOutputFilename().Reverse())
-            {
-                if (char.IsNumber(c))
-                {
-                    if (end == -1)
-                        end = index;
-
-                    start = index - 1;
-                }
-                else if (start == index)
-                    break;
-
-                index--;
-            }
-
-            //If there's no number.
-            if (end == -1)
-            {
-                SetOutputFilename(GetOutputFilename() + $" ({change})");
-                return;
-            }
-
-            //If it's a negative number, include the signal.
-            if (start > 0 && GetOutputFilename().Substring(start - 1, 1).Equals("-"))
-                start--;
-
-            //Cut, convert, merge.
-            if (int.TryParse(GetOutputFilename().Substring(start, end - start), out var number))
-            {
-                var offset = start + number.ToString().Length;
-
-                SetOutputFilename(GetOutputFilename().Substring(0, start) + (number + change) + GetOutputFilename().Substring(offset, GetOutputFilename().Length - end));
-            }
         }
 
         private void UpdateStatistics()
@@ -2536,7 +2331,7 @@ namespace ScreenToGif.Windows
 
         private void ChangeProgressText(long cumulative, long total, int current)
         {
-            switch (ProgressPrecisionComboBox.SelectedIndex)
+            switch (UserSettings.All.ProgressPrecision)
             {
                 case 0: //Minutes
                     ProgressHorizontalTextBlock.Text = UserSettings.All.ProgressShowTotal ? TimeSpan.FromMilliseconds(cumulative).ToString(@"m\:ss") + "/" + TimeSpan.FromMilliseconds(total).ToString(@"m\:ss")
@@ -2558,7 +2353,7 @@ namespace ScreenToGif.Windows
                         : current.ToString();
                     break;
                 case 5: //Custom
-                    ProgressHorizontalTextBlock.Text = CustomProgressTextBox.Text
+                    ProgressHorizontalTextBlock.Text = UserSettings.All.ProgressFormat
                         .Replace("$ms", cumulative.ToString())
                         .Replace("$s", ((int)TimeSpan.FromMilliseconds(cumulative).TotalSeconds).ToString())
                         .Replace("$m", TimeSpan.FromMilliseconds(cumulative).ToString())
@@ -2584,24 +2379,9 @@ namespace ScreenToGif.Windows
             ChangeProgressText(cumulative, total, FrameListView.SelectedIndex);
         }
 
-
-
         private string GetOutputFilename()
         {
-            if (!GetPickLocation())
-                return Guid.NewGuid() + "";
-
-            switch (UserSettings.All.SaveType)
-            {
-                case Export.Gif:
-                    return UserSettings.All.LatestFilename ?? "";
-                case Export.Apng:
-                    return UserSettings.All.LatestApngFilename ?? "";
-                case Export.Video:
-                    return UserSettings.All.LatestVideoFilename ?? "";
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
+            return DateTime.Now.ToString("yyyy MMM dd HH-mm-ss");
         }
 
         private string GetOutputFilenameNoRegExp(ref string name)
@@ -2627,120 +2407,6 @@ namespace ScreenToGif.Windows
                     return UserSettings.All.LatestApngExtension ?? ".png";
                 case Export.Video:
                     return UserSettings.All.LatestVideoExtension ?? ".mp4";
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
-        }
-
-        private void SetOutputFolder(string folder)
-        {
-            switch (UserSettings.All.SaveType)
-            {
-                case Export.Gif:
-                    UserSettings.All.LatestOutputFolder = folder;
-                    break;
-                case Export.Apng:
-                    UserSettings.All.LatestApngOutputFolder = folder;
-                    break;
-                case Export.Video:
-                    UserSettings.All.LatestVideoOutputFolder = folder;                    
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
-        }
-
-        private void SetOutputFilename(string filename)
-        {
-            switch (UserSettings.All.SaveType)
-            {
-                case Export.Gif:
-                    UserSettings.All.LatestFilename = filename;
-                    break;
-                case Export.Apng:
-                    UserSettings.All.LatestApngFilename = filename;
-                    break;
-                case Export.Video:
-                    UserSettings.All.LatestVideoFilename = filename;
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
-        }
-
-        private void SetOutputExtension(string extension)
-        {
-            switch (UserSettings.All.SaveType)
-            {
-                case Export.Gif:
-                    UserSettings.All.LatestExtension = extension;
-                    break;
-                case Export.Apng:
-                    UserSettings.All.LatestApngExtension = extension;
-                    break;
-                case Export.Video:
-                    UserSettings.All.LatestVideoExtension = extension;
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
-        }
-
-        private bool GetPickLocation()
-        {
-            switch (UserSettings.All.SaveType)
-            {
-                case Export.Gif:
-                    return UserSettings.All.PickLocation;
-                case Export.Apng:
-                    return UserSettings.All.PickLocationApng;
-                case Export.Video:
-                    return UserSettings.All.PickLocationVideo;
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
-        }
-
-        private bool GetOverwriteOnSave()
-        {
-            switch (UserSettings.All.SaveType)
-            {
-                case Export.Gif:
-                    return UserSettings.All.OverwriteOnSave;
-                case Export.Apng:
-                    return UserSettings.All.OverwriteOnSaveApng;
-                case Export.Video:
-                    return UserSettings.All.OverwriteOnSaveVideo;
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
-        }
-
-        private bool GetSaveAsProjectToo()
-        {
-            switch (UserSettings.All.SaveType)
-            {
-                case Export.Gif:
-                    return UserSettings.All.SaveAsProjectToo;
-                case Export.Apng:
-                    return UserSettings.All.SaveAsProjectTooApng;
-                case Export.Video:
-                    return UserSettings.All.SaveAsProjectTooVideo;
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
-        }
-
-        private CopyType GetCopyType()
-        {
-            switch (UserSettings.All.SaveType)
-            {
-                case Export.Gif:
-                    return UserSettings.All.LatestCopyType;
-                case Export.Apng:
-                    return UserSettings.All.LatestCopyTypeApng;
-                case Export.Video:
-                    return UserSettings.All.LatestCopyTypeVideo;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
@@ -2780,101 +2446,138 @@ namespace ScreenToGif.Windows
 
         #endregion
 
-        #region Async
+        #region Frames
 
-        #region Async Load Recent
-
-        private delegate void LoadRecentDelegate();
-
-        private LoadRecentDelegate _loadRecentDel;
-
-        private void LoadRecentAsync()
+        private void Delete_CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
-            /*
-            ShowProgress(DispatcherStringResource("Recent.EnumeratingProjects"), 100, true);
+            e.CanExecute = FrameListView != null && FrameListView.SelectedItem != null && !IsLoading;
+        }
 
-            Dispatcher.Invoke(() => IsLoading = true);
+        private void DeletePrevious_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = FrameListView != null && FrameListView.SelectedItem != null && !IsLoading &&
+                FrameListView.SelectedIndex > 0;
+        }
 
-            #region Enumerate recent projects
-
-            var list = new List<ProjectInfo>();
+        private void DeleteNext_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = FrameListView != null && FrameListView.SelectedItem != null && !IsLoading &&
+                FrameListView.SelectedIndex < FrameListView.Items.Count - 1;
+        }
+        
+        private void Delete_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            PlaybackPause();
 
             try
             {
-                //Dispatcher.Invoke(() => RecentDataGrid.ItemsSource = null);
+                #region Validation
 
-                var path = Path.Combine(UserSettings.All.TemporaryFolder, "ScreenToGif", "Recording");
-
-                if (!Directory.Exists(path))
+                if (Project.Frames.Count == FrameListView.SelectedItems.Count)
                 {
-                    Dispatcher.BeginInvoke(DispatcherPriority.Background, new Action(() => RecentDataGrid.ItemsSource = null));
+                    Discard(false);
+                    // TODO: init App model that recording should open
+                    Close();
+
                     return;
                 }
 
-                var folderList = Directory.GetDirectories(path).Select(x => new DirectoryInfo(x)).ToList();
-
-                foreach (var folder in folderList)
+                if (UserSettings.All.NotifyFrameDeletion)
                 {
-                    var file = Path.Combine(folder.FullName, "Project.json");
-
-                    if (!File.Exists(file))
-                        continue;
-
-                    var json = File.ReadAllText(Path.Combine(file));
-
-                    using (var ms = new MemoryStream(Encoding.UTF8.GetBytes(json)))
-                    {
-                        var ser = new DataContractJsonSerializer(typeof(ProjectInfo));
-                        var project = ser.ReadObject(ms) as ProjectInfo;
-
-                        //Ignore empty projects.
-                        if (project == null || project.Frames.Count == 0 || !project.Frames.Any(x => File.Exists(x.Path)))
-                            continue;
-
-                        list.Add(project);
-                    }
+                    if (!Dialog.Ask(this.TextResource("Editor.DeleteFrames.Title"),
+                        this.TextResource("Editor.DeleteFrames.Instruction"),
+                        string.Format(this.TextResource("Editor.DeleteFrames.Message"), FrameListView.SelectedItems.Count)))
+                        return;
                 }
 
-                //Waits the animation to complete before filling the grid.
-                Dispatcher.BeginInvoke(DispatcherPriority.Background, new Action(() =>
-                {
-                    RecentDataGrid.ItemsSource = list;
+                #endregion
 
-                    if (RecentDataGrid.Items.Count > 0)
-                    {
-                        RecentDataGrid.Sort(ListSortDirection.Descending, "CreationDate");
-                        RecentDataGrid.FocusOnFirstCell();
-                    }
-                }));
+                var selected = FrameListView.SelectedItems.OfType<FrameListBoxItem>().ToList();
+                var selectedOrdered = selected.OrderByDescending(x => x.FrameNumber).ToList();
+                var list = selectedOrdered.Select(item => Project.Frames[item.FrameNumber]).ToList();
+
+                ActionStack.SaveState(ActionStack.EditAction.Remove, Project.Frames, SelectedFramesIndex());
+
+                FrameListView.SelectedItem = null;
+
+                list.ForEach(x => File.Delete(x.Path));
+                selectedOrdered.ForEach(x => Project.Frames.RemoveAt(x.FrameNumber));
+                selectedOrdered.ForEach(x => FrameListView.Items.Remove(x));
+
+                AdjustFrameNumbers(selectedOrdered.Last().FrameNumber);
+
+                SelectNear(selectedOrdered.Last().FrameNumber);
+
+                Project.Persist();
+                UpdateStatistics();
+                ShowHint("Hint.DeleteFrames", false, selected.Count);
             }
             catch (Exception ex)
             {
-                LogWriter.Log(ex, "Loading list of recent");
+                LogWriter.Log(ex, "Error While Trying to Delete Frames");
 
-                Dispatcher.Invoke(() => ErrorDialog.Ok("ScreenToGif", "Error while enumerating recent projects", ex.Message, ex));
+                ErrorDialog.Ok(FindResource("Editor.Title") as string, "Error while trying to delete frames", ex.Message, ex);
             }
-           
-            #endregion */
         }
 
-        private void LoadRecentCallback(IAsyncResult ar)
+        private void DeletePrevious_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-            _loadRecentDel.EndInvoke(ar);
+            PlaybackPause();
 
-            Dispatcher.Invoke(() =>
+            if (UserSettings.All.NotifyFrameDeletion)
             {
-                Cursor = Cursors.Arrow;
-                IsLoading = false;
+                if (!Dialog.Ask(this.TextResource("Editor.DeleteFrames.Title"), this.TextResource("Editor.DeleteFrames.Instruction"),
+                    string.Format(this.TextResource("Editor.DeleteFrames.Message"), FrameListView.SelectedIndex)))
+                    return;
+            }
 
-                HideProgress();
+            ActionStack.SaveState(ActionStack.EditAction.Remove, Project.Frames, Util.Other.CreateIndexList(0, FrameListView.SelectedIndex - 1));
 
-                CommandManager.InvalidateRequerySuggested();
-            });
+            var count = FrameListView.SelectedIndex;
 
-            GC.Collect();
+            for (var index = FrameListView.SelectedIndex - 1; index >= 0; index--)
+                DeleteFrame(index);
+
+            AdjustFrameNumbers(0);
+            SelectNear(0);
+
+            Project.Persist();
+            UpdateStatistics();
+            ShowHint("Hint.DeleteFrames", false, count);
+        }
+
+        private void DeleteNext_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            PlaybackPause();
+
+            if (UserSettings.All.NotifyFrameDeletion)
+            {
+                if (!Dialog.Ask(this.TextResource("Editor.DeleteFrames.Title"), this.TextResource("Editor.DeleteFrames.Instruction"),
+                    string.Format(this.TextResource("Editor.DeleteFrames.Message"), FrameListView.Items.Count - FrameListView.SelectedIndex - 1)))
+                    return;
+            }
+
+            var countList = FrameListView.Items.Count - 1; //So we have a fixed value.
+
+            ActionStack.SaveState(ActionStack.EditAction.Remove, Project.Frames, Util.Other.CreateIndexList2(FrameListView.SelectedIndex + 1, FrameListView.Items.Count - FrameListView.SelectedIndex - 1));
+
+            var count = FrameListView.Items.Count - FrameListView.SelectedIndex - 1;
+
+            for (var i = countList; i > FrameListView.SelectedIndex; i--) //From the end to the middle.
+            {
+                DeleteFrame(i);
+            }
+
+            SelectNear(FrameListView.Items.Count - 1);
+
+            Project.Persist();
+            UpdateStatistics();
+            ShowHint("Hint.DeleteFrames", false, count);
         }
 
         #endregion
+
+        #region Async
 
         #region Async Save
 
@@ -2882,13 +2585,11 @@ namespace ScreenToGif.Windows
 
         private SaveDelegate _saveDel;
 
-        private bool SaveAsync(List<FrameInfo> listFrames, Parameters param, double scale, bool projectToo, bool usePadding = false)
+        private void SaveAsync(List<FrameInfo> listFrames, Parameters param, double scale, bool usePadding = false)
         {
             ShowProgress(DispatcherStringResource("S.Editor.PreparingSaving"), Project.Frames.Count, true);
 
             Dispatcher.Invoke(() => IsLoading = true);
-
-            #region Save
 
             try
             {
@@ -2901,16 +2602,6 @@ namespace ScreenToGif.Windows
                 Dispatcher.Invoke(() => Dialog.Ok("Error While Saving", "Error while preparing to save", ex.Message));
             }
 
-            //Save as project too.
-            if (projectToo)
-            {
-                _saveProjectDel = SaveProjectAsync;
-                _saveProjectDel.BeginInvoke(Path.Combine(GetOutputFolder(), GetOutputFilename() + (UserSettings.All.LatestProjectExtension ?? ".stg")), SaveProjectCallback, null);
-            }
-
-            return projectToo;
-
-            #endregion
         }
 
         private void SaveCallback(IAsyncResult ar)
@@ -2927,109 +2618,6 @@ namespace ScreenToGif.Windows
 
                     CommandManager.InvalidateRequerySuggested();
                 });
-
-            GC.Collect();
-        }
-
-        #endregion
-
-        #region Async Project
-
-        private delegate void SaveProjectDelegate(string fileName);
-
-        private SaveProjectDelegate _saveProjectDel;
-
-        private void SaveProjectAsync(string fileName)
-        {
-            ShowProgress(DispatcherStringResource("Editor.ExportingRecording"), Project.Frames.Count);
-
-            Dispatcher.Invoke(() => IsLoading = true);
-
-            #region Export as Project
-
-            try
-            {
-                //Serialize the current list of frames.
-                Project.Persist();
-
-                if (File.Exists(fileName))
-                    File.Delete(fileName);
-
-                var exportDir = Path.Combine(Project.FullPath, "Export");
-
-                if (Directory.Exists(exportDir))
-                    Directory.Delete(exportDir, true);
-
-                var dir = Directory.CreateDirectory(exportDir);
-
-                File.Copy(Project.ProjectPath, Path.Combine(exportDir, "Project.json"));
-
-                var count = 0;
-                foreach (var frameInfo in Project.Frames)
-                {
-                    File.Copy(frameInfo.Path, Path.Combine(dir.FullName, Path.GetFileName(frameInfo.Path)), true);
-                    UpdateProgress(count++);
-                }
-
-                ZipFile.CreateFromDirectory(dir.FullName, fileName);
-
-                Directory.Delete(dir.FullName, true);
-
-                #region Copy
-
-                Dispatcher.Invoke(() =>
-                {
-                    try
-                    {
-                        var data = new DataObject();
-
-                        switch (UserSettings.All.LatestCopyTypeProject)
-                        {
-                            case CopyType.File:
-                                data.SetText(fileName, TextDataFormat.Text);
-                                data.SetFileDropList(new StringCollection { fileName });
-                                break;
-                            case CopyType.FolderPath:
-                                data.SetText(Path.GetDirectoryName(fileName) ?? fileName, TextDataFormat.Text);
-                                break;
-                            default:
-                                data.SetText(fileName, TextDataFormat.Text);
-                                break;
-                        }
-
-                        System.Windows.Clipboard.SetDataObject(data, true);
-                    }
-                    catch (Exception e)
-                    {
-                        LogWriter.Log(e, "It was not possible to copy the project.");
-                    }
-                });
-
-                #endregion
-            }
-            catch (Exception ex)
-            {
-                LogWriter.Log(ex, "Exporting Recording as a Project");
-
-                Dispatcher.Invoke(() => Dialog.Ok("Error While Saving", "Error while Saving as Project", ex.Message));
-            }
-
-            #endregion
-        }
-
-        private void SaveProjectCallback(IAsyncResult ar)
-        {
-            _saveProjectDel.EndInvoke(ar);
-
-            Dispatcher.Invoke(() =>
-            {
-                Cursor = Cursors.Arrow;
-                IsLoading = false;
-
-                HideProgress();
-
-                CommandManager.InvalidateRequerySuggested();
-            });
 
             GC.Collect();
         }
@@ -3113,97 +2701,6 @@ namespace ScreenToGif.Windows
             });
 
             GC.Collect();
-        }
-
-        private void DiscardAndLoadCallback(IAsyncResult ar)
-        {
-            _discardFramesDel.EndInvoke(ar);
-
-            Dispatcher.Invoke(() =>
-            {
-                FilledList = false;
-
-                FrameListView.SelectionChanged += FrameListView_SelectionChanged;
-            });
-
-            _loadFramesDel = Load;
-            _loadFramesDel.BeginInvoke(LoadCallback, null);
-
-            GC.Collect();
-        }
-
-        #endregion
-
-        #region Async Resize
-
-        private delegate void ResizeFrames(int width, int height, double dpi);
-
-        private ResizeFrames _resizeFramesDel;
-
-        private void Resize(int width, int height, double dpi)
-        {
-            ShowProgress(DispatcherStringResource("Editor.ResizingFrames"), Project.Frames.Count);
-
-            Dispatcher.Invoke(() => IsLoading = true);
-
-            var count = 0;
-            foreach (var frame in Project.Frames)
-            {
-                var png = new PngBitmapEncoder();
-                png.Frames.Add(ImageMethods.ResizeImage((BitmapImage)frame.Path.SourceFrom(), width, height, 0, dpi));
-
-                using (Stream stm = File.OpenWrite(frame.Path))
-                    png.Save(stm);
-
-                UpdateProgress(count++);
-            }
-        }
-
-        private void ResizeCallback(IAsyncResult ar)
-        {
-            _resizeFramesDel.EndInvoke(ar);
-
-            Dispatcher.Invoke(() =>
-            {
-                LoadSelectedStarter(0, Project.Frames.Count - 1);
-            });
-        }
-
-        #endregion
-
-        #region Async Crop
-
-        private delegate void CropFrames(Int32Rect rect);
-
-        private CropFrames _cropFramesDel;
-
-        private void Crop(Int32Rect rect)
-        {
-            ShowProgress(DispatcherStringResource("Editor.CroppingFrames"), Project.Frames.Count);
-
-            Dispatcher.Invoke(() => IsLoading = true);
-
-            var count = 0;
-            foreach (var frame in Project.Frames)
-            {
-                var png = new PngBitmapEncoder();
-                png.Frames.Add(BitmapFrame.Create(frame.Path.CropFrom(rect)));
-
-                using (Stream stm = File.OpenWrite(frame.Path))
-                    png.Save(stm);
-
-                UpdateProgress(count++);
-            }
-        }
-
-        private void CropCallback(IAsyncResult ar)
-        {
-            _cropFramesDel.EndInvoke(ar);
-
-            Dispatcher.Invoke(() =>
-            {
-                LoadSelectedStarter(0, Project.Frames.Count - 1);
-            });
         }
 
         #endregion
@@ -3294,447 +2791,6 @@ namespace ScreenToGif.Windows
             }
         }
 
-        private void ProgressCallback(IAsyncResult ar)
-        {
-            _progressDel.EndInvoke(ar);
-
-            Dispatcher.Invoke(() =>
-            {
-                LoadSelectedStarter(0, Project.Frames.Count - 1);
-            });
-        }
-
-        #endregion
-
-        #region Async Merge Frames
-
-        private delegate List<int> OverlayFrames(RenderTargetBitmap render, double dpi, bool forAll = false);
-
-        private OverlayFrames _overlayFramesDel;
-
-        private List<int> OverlayAsync(RenderTargetBitmap render, double dpi, bool forAll = false)
-        {
-            var frameList = forAll ? Project.Frames : SelectedFrames();
-            var selectedList = Dispatcher.Invoke(() =>
-            {
-                IsLoading = true;
-
-                return forAll ? Project.Frames.Select(x => Project.Frames.IndexOf(x)).ToList() : SelectedFramesIndex();
-            });
-
-            ShowProgress(DispatcherStringResource("Editor.ApplyingOverlay"), frameList.Count);
-
-            var count = 0;
-            foreach (var frame in frameList)
-            {
-                var image = frame.Path.SourceFrom();
-
-                var drawingVisual = new DrawingVisual();
-                using (var drawingContext = drawingVisual.RenderOpen())
-                {
-                    drawingContext.DrawImage(image, new Rect(0, 0, image.Width, image.Height));
-                    drawingContext.DrawImage(render, new Rect(0, 0, render.Width, render.Height));
-                }
-
-                //Converts the Visual (DrawingVisual) into a BitmapSource.
-                var bmp = new RenderTargetBitmap(image.PixelWidth, image.PixelHeight, dpi, dpi, PixelFormats.Pbgra32);
-                bmp.Render(drawingVisual);
-
-                //Creates a PngBitmapEncoder and adds the BitmapSource to the frames of the encoder.
-                var encoder = new PngBitmapEncoder();
-                encoder.Frames.Add(BitmapFrame.Create(bmp));
-
-                //Saves the image into a file using the encoder.
-                using (Stream stream = File.Create(frame.Path))
-                    encoder.Save(stream);
-
-                UpdateProgress(count++);
-            }
-
-            return selectedList;
-        }
-
-        private void OverlayCallback(IAsyncResult ar)
-        {
-            var selected = _overlayFramesDel.EndInvoke(ar);
-
-            Dispatcher.Invoke(() =>
-            {
-                ShowHint("Hint.Overlay");
-
-                LoadSelectedStarter(selected.Min(), selected.Max());
-            });
-        }
-
-
-        //Currently not being used.
-        private delegate List<int> OverlayMultipleFrames(List<RenderTargetBitmap> render, double dpi, bool forAll = false);
-
-        private OverlayMultipleFrames _overlayMultipleFramesDel;
-
-        private List<int> OverlayMultiple(List<RenderTargetBitmap> renderList, double dpi, bool forAll = false)
-        {
-            var frameList = forAll ? Project.Frames : SelectedFrames();
-            var selectedList = Dispatcher.Invoke(() =>
-            {
-                IsLoading = true;
-
-                return forAll ? Project.Frames.Select(x => Project.Frames.IndexOf(x)).ToList() : SelectedFramesIndex();
-            });
-
-            ShowProgress(DispatcherStringResource("Editor.ApplyingOverlay"), frameList.Count);
-
-            var count = 0;
-            foreach (var frame in frameList)
-            {
-                var image = frame.Path.SourceFrom();
-
-                var drawingVisual = new DrawingVisual();
-                using (var drawingContext = drawingVisual.RenderOpen())
-                {
-                    drawingContext.DrawImage(image, new Rect(0, 0, image.Width, image.Height));
-                    drawingContext.DrawImage(renderList[count], new Rect(0, 0, renderList[count].Width, renderList[count].Height));
-                }
-
-                // Converts the Visual (DrawingVisual) into a BitmapSource
-                var bmp = new RenderTargetBitmap(image.PixelWidth, image.PixelHeight, dpi, dpi, PixelFormats.Pbgra32);
-                bmp.Render(drawingVisual);
-
-                // Creates a PngBitmapEncoder and adds the BitmapSource to the frames of the encoder
-                var encoder = new PngBitmapEncoder();
-                encoder.Frames.Add(BitmapFrame.Create(bmp));
-
-                // Saves the image into a file using the encoder
-                using (Stream stream = File.Create(frame.Path))
-                    encoder.Save(stream);
-
-                UpdateProgress(count++);
-            }
-
-            return selectedList;
-        }
-
-        private void OverlayMultipleCallback(IAsyncResult ar)
-        {
-            var selected = _overlayMultipleFramesDel.EndInvoke(ar);
-
-            Dispatcher.Invoke(() =>
-            {
-                ShowHint("Hint.Overlay");
-
-                LoadSelectedStarter(selected.Min(), selected.Max());
-            });
-        }
-
-        #endregion
-
-        #region Async Title Frame
-
-        private delegate int TitleFrameAction(RenderTargetBitmap render, int selected, double dpi);
-
-        private TitleFrameAction _titleFrameDel;
-
-        private int TitleFrame(RenderTargetBitmap render, int selected, double dpi)
-        {
-            ShowProgress(DispatcherStringResource("Editor.CreatingTitleFrame"), 1, true);
-
-            Dispatcher.Invoke(() => IsLoading = true);
-
-            #region Save Image
-
-            var name = Path.GetFileNameWithoutExtension(Project.Frames[selected].Path);
-            var folder = Path.GetDirectoryName(Project.Frames[selected].Path);
-            var fileName = Path.Combine(folder, $"{name} TF {DateTime.Now:hh-mm-ss}.png");
-
-            var encoder = new PngBitmapEncoder();
-            encoder.Frames.Add(BitmapFrame.Create(render));
-
-            //Saves the image into a file using the encoder.
-            using (Stream stream = File.Create(fileName))
-                encoder.Save(stream);
-
-            GC.Collect();
-
-            #endregion
-
-            //Adds to the List
-            Project.Frames.Insert(selected, new FrameInfo(fileName, UserSettings.All.TitleFrameDelay));
-
-            return selected;
-        }
-
-        private void TitleFrameCallback(IAsyncResult ar)
-        {
-            var selected = _titleFrameDel.EndInvoke(ar);
-
-            Dispatcher.Invoke(() =>
-            {
-                ShowHint("Hint.TitleFrame");
-
-                LoadSelectedStarter(selected, Project.Frames.Count - 1);
-            });
-        }
-
-        #endregion
-
-        #region Async Keystrokes
-
-        private delegate void KeyStrokesDelegate(KeyStrokesModel model);
-
-        private KeyStrokesDelegate _keyStrokesDelegate;
-
-        private void KeyStrokesAsync(KeyStrokesModel model)
-        {
-            Dispatcher.Invoke(() =>
-            {
-                IsLoading = true;
-                KeyStrokesInternalGrid.MinHeight = model.KeyStrokesFontFamily.LineSpacing * model.KeyStrokesFontSize + model.KeyStrokesMargin * 2;
-            });
-
-            ShowProgress(DispatcherStringResource("Editor.ApplyingOverlay"), Project.Frames.Count);
-
-            var auxList = Project.Frames.CopyList();
-
-            #region Make the keystrokes start earlier
-
-            if (model.KeyStrokesEarlier)
-            {
-                //Checks if there is a key stroke that needs to be shown earlier, into the previous frames.
-                for (var outer = 0; outer < auxList.Count; outer++)
-                {
-                    //For each frame, check if any other key pressed later wants to be shown on this frame.
-
-                    var amount = 0;
-
-                    //If it's the last item of the list.
-                    //if (outer == auxList.Count - 1 && amount <= model.KeyStrokesEarlierBy)
-                    //    auxList[outer].KeyList.InsertRange(auxList[outer].KeyList.Count, auxList[0].KeyList);
-
-                    //Check next itens.
-                    for (var inner = outer + 1; inner < auxList.Count - 1; inner++)
-                    {
-                        //For each frame, check if a next frame needs to show their key strokes.
-                        amount += auxList[inner].Delay;
-
-                        //If next item bleeds into this frame, insert on the list.
-                        if (inner < auxList.Count - 1 && auxList[inner + 1].Delay <= model.KeyStrokesEarlierBy)
-                            auxList[outer].KeyList.InsertRange(auxList[outer].KeyList.Count, auxList[inner].KeyList);
-
-                        //Stops veryfying the previous frames if the delay sum is greater than the maximum.
-                        if (amount >= model.KeyStrokesEarlierBy)
-                            break;
-                    }
-                }
-            }
-
-            #endregion
-
-            #region Expand the keystrokes
-
-            if (model.KeyStrokesExtended)
-            {
-                //Checks from the end to the start, if there is a key stroke that needs to 'bleed'/'delayed' into the next frames.
-                //I need to check from the end to the start so the keystrokes stays in position. 
-                for (var outer = auxList.Count - 1; outer > 0; outer--)
-                {
-                    var amount = 0;
-
-                    if (outer == 1 && amount <= model.KeyStrokesDelay)
-                    {
-                        var listA = auxList[0].KeyList.TakeWhile((_, i) => !auxList[0].KeyList.Skip(i).SequenceEqual(auxList[1].KeyList.Take(auxList[0].KeyList.Count - i))).Concat(auxList[1].KeyList);
-
-                        auxList[1].KeyList = new List<SimpleKeyGesture>(listA);
-                    }
-
-                    //Check previous itens.
-                    for (var inner = outer - 1; inner >= 0; inner--)
-                    {
-                        //For each frame, check if a previous frame needs to show their key strokes.
-                        amount += auxList[inner].Delay;
-
-                        //If previous item bleeds into this frame, insert on the list.
-                        if (inner > 0 && auxList[inner - 1].Delay <= model.KeyStrokesDelay)
-                        {
-                            var listA = auxList[inner].KeyList.TakeWhile((_, i) => !auxList[inner].KeyList.Skip(i).SequenceEqual(auxList[outer].KeyList.Take(auxList[inner].KeyList.Count - i))).Concat(auxList[outer].KeyList);
-
-                            auxList[outer].KeyList = new List<SimpleKeyGesture>(listA);
-                        }
-
-                        //Stops veryfying the previous frames if the delay sum is greater than the maximum.
-                        if (amount >= model.KeyStrokesDelay)
-                            break;
-                    }
-                }
-            }
-
-            #endregion
-
-            var count = 0;
-            foreach (var frame in auxList)
-            {
-                if (!frame.KeyList.Any())
-                {
-                    UpdateProgress(count++);
-                    continue;
-                }
-
-                var image = frame.Path.SourceFrom();
-
-                var render = Dispatcher.Invoke(() =>
-                {
-                    #region Removes any duplicated modifier key
-
-                    var keyList = new List<SimpleKeyGesture>();
-                    for (var i = 0; i < frame.KeyList.Count; i++)
-                    {
-                        //Ignore Control, Shift, Alt and Windows keys if not acting as modifiers.
-                        if (model.KeyStrokesIgnoreNonModifiers && (frame.KeyList[i].Key >= Key.LeftShift && frame.KeyList[i].Key <= Key.RightAlt || frame.KeyList[i].Key == Key.LWin || frame.KeyList[i].Key == Key.RWin))
-                            continue;
-
-                        //If there's another key ahead on the same frame.
-                        if (frame.KeyList.Count > i + 1)
-                        {
-                            //If this frame being added will be repeated next, ignore.
-                            if (frame.KeyList[i + 1].Key == frame.KeyList[i].Key && frame.KeyList[i + 1].Modifiers == frame.KeyList[i].Modifiers)
-                                continue;
-
-                            //TODO: If there's a key between the current key and the one that is repeated, they are going to be shown.
-
-                            //If this frame being added will be repeated within the next key presses as a modifier, ignore.
-                            if ((frame.KeyList[i].Key == Key.LeftCtrl || frame.KeyList[i].Key == Key.RightCtrl) && (frame.KeyList[i + 1].Modifiers & ModifierKeys.Control) != 0)
-                                continue;
-
-                            if ((frame.KeyList[i].Key == Key.LeftShift || frame.KeyList[i].Key == Key.RightShift) && (frame.KeyList[i + 1].Modifiers & ModifierKeys.Shift) != 0)
-                                continue;
-
-                            if ((frame.KeyList[i].Key == Key.LeftAlt || frame.KeyList[i].Key == Key.RightAlt) && (frame.KeyList[i + 1].Modifiers & ModifierKeys.Alt) != 0)
-                                continue;
-
-                            if ((frame.KeyList[i].Key == Key.LWin || frame.KeyList[i].Key == Key.RWin) && (frame.KeyList[i + 1].Modifiers & ModifierKeys.Windows) != 0)
-                                continue;
-                        }
-
-                        //Removes the previous modifier key, if a combination is next to it: "LeftCtrl Control + A" will be "Control + A". (This checks if the next modifier is not present as a current key).
-                        if (i + 1 > frame.KeyList.Count - 1 || !(frame.KeyList[i].Key != Key.Left && frame.KeyList[i].Key != Key.Right && frame.KeyList[i + 1].Modifiers.ToString().Contains(frame.KeyList[i].Key.ToString().Remove("Left", "Right").Replace("Ctrl", "Control").TrimStart('L').TrimStart('R'))))
-                            keyList.Add(frame.KeyList[i]);
-                    }
-                    
-                    #endregion
-
-                    if (keyList.Count == 0)
-                        return null;
-
-                    //Update text with key strokes.
-                    KeyStrokesLabel.Text = keyList.Select(x => "" + Native.GetSelectKeyText(x.Key, x.Modifiers, x.IsUppercase)).Aggregate((p, n) => p + model.KeyStrokesSeparator + n);
-                    KeyStrokesLabel.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
-                    KeyStrokesLabel.Arrange(new Rect(KeyStrokesLabel.DesiredSize));
-                    KeyStrokesLabel.UpdateLayout();
-
-                    //Renders the current Visual.
-                    KeyStrokesOverlayGrid.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
-                    KeyStrokesOverlayGrid.Arrange(new Rect(KeyStrokesOverlayGrid.DesiredSize));
-                    KeyStrokesOverlayGrid.UpdateLayout();
-
-                    return KeyStrokesOverlayGrid.GetScaledRender(ZoomBoxControl.ScaleDiff, ZoomBoxControl.ImageDpi, ZoomBoxControl.GetImageSize());
-
-                    
-                }, DispatcherPriority.Normal);
-
-                if (render == null)
-                {
-                    UpdateProgress(count++);
-                    continue;
-                }
-
-                var drawingVisual = new DrawingVisual();
-                using (var drawingContext = drawingVisual.RenderOpen())
-                {
-                    drawingContext.DrawImage(image, new Rect(0, 0, image.Width, image.Height));
-                    drawingContext.DrawImage(render, new Rect(0, 0, render.Width, render.Height));
-                }
-
-                //Converts the Visual (DrawingVisual) into a BitmapSource.
-                var bmp = new RenderTargetBitmap(image.PixelWidth, image.PixelHeight, render.DpiX, render.DpiY, PixelFormats.Pbgra32);
-                bmp.Render(drawingVisual);
-
-                //Creates a PngBitmapEncoder and adds the BitmapSource to the frames of the encoder.
-                var encoder = new PngBitmapEncoder();
-                encoder.Frames.Add(BitmapFrame.Create(bmp));
-
-                //Saves the image into a file using the encoder.
-                using (Stream stream = File.Create(frame.Path))
-                    encoder.Save(stream);
-
-                //GC.Collect(1);
-                GC.WaitForPendingFinalizers();
-                GC.Collect(1);
-
-                UpdateProgress(count++);
-            }
-        }
-
-        private void KeyStrokesCallback(IAsyncResult ar)
-        {
-            _keyStrokesDelegate.EndInvoke(ar);
-
-            Dispatcher.Invoke(() =>
-            {
-                LoadSelectedStarter(0, Project.Frames.Count - 1);
-            });
-        }
-
-        #endregion
-
-        #region Async Reduce Frames
-
-        private delegate void ReduceFrame(int factor, int removeCount);
-
-        private ReduceFrame _reduceFrameDel;
-
-        private void ReduceFrameCount(int factor, int removeCount)
-        {
-            var removeList = new List<int>();
-
-            //Gets the list of frames to be removed.
-            for (var i = factor - 1; i < Project.Frames.Count - 1; i += factor + removeCount)
-                removeList.AddRange(Util.Other.CreateIndexList2(i + 1, removeCount));
-
-            //Only allow removing frames within the possible range.
-            removeList = removeList.Where(x => x < Project.Frames.Count).ToList();
-
-            var alterList = (from item in removeList where item - 1 >= 0 select item - 1).ToList(); //.Union(removeList)
-
-            ActionStack.SaveState(ActionStack.EditAction.RemoveAndAlter, Project.Frames, removeList, alterList);
-
-            for (var i = removeList.Count - 1; i >= 0; i--)
-            {
-                var removeIndex = removeList[i];
-
-                Project.Frames[removeIndex - 1].Delay += Project.Frames[removeIndex].Delay;
-
-                File.Delete(Project.Frames[removeIndex].Path);
-                Project.Frames.RemoveAt(removeIndex);
-            }
-        }
-
-        private void ReduceFrameCountCallback(IAsyncResult ar)
-        {
-            _reduceFrameDel.EndInvoke(ar);
-
-            Dispatcher.Invoke(() =>
-            {
-                for (var i = FrameListView.Items.Count - 1; i >= Project.Frames.Count; i--)
-                    FrameListView.Items.RemoveAt(i);
-
-                SelectNear(LastSelected);
-                Project.Persist();
-
-                LoadSelectedStarter(ReduceFactorIntegerUpDown.Value - 1, Project.Frames.Count - 1);
-
-                ShowHint("Hint.Reduce");
-            });
-        }
-
         #endregion
 
         #region Async Delay
@@ -3809,307 +2865,7 @@ namespace ScreenToGif.Windows
 
         #endregion
 
-        #region Async Transitions
-
-        private delegate int Transition(int selected, int frameCount, object optional);
-
-        private Transition _transitionDel;
-
-        private int Fade(int selected, int frameCount, object optional)
-        {
-            ShowProgress(DispatcherStringResource("Editor.ApplyingTransition"), Project.Frames.Count - selected + frameCount);
-
-            Dispatcher.Invoke(() => IsLoading = true);
-
-            //Calculate opacity increment.
-            var increment = 1F / (frameCount + 1);
-            var previousName = Path.GetFileNameWithoutExtension(Project.Frames[selected].Path);
-            var previousFolder = Path.GetDirectoryName(Project.Frames[selected].Path);
-
-            #region Images
-
-            //var size = Dispatcher.Invoke(() => FrameSize);
-            var dpi = Dispatcher.Invoke(this.Dpi);
-
-            var previousImage = Project.Frames[selected].Path.SourceFrom();
-            var nextImage = UserSettings.All.FadeToType == FadeToType.NextFrame ? Project.Frames[Project.Frames.Count - 1 == selected ? 0 : selected + 1].Path.SourceFrom() :
-                ImageMethods.CreateEmtpyBitmapSource(UserSettings.All.FadeToColor, previousImage.PixelWidth, previousImage.PixelHeight, dpi, PixelFormats.Indexed1);
-
-            var nextBrush = new ImageBrush
-            {
-                ImageSource = nextImage,
-                Stretch = Stretch.Uniform,
-                TileMode = TileMode.None,
-                Opacity = increment,
-                AlignmentX = AlignmentX.Center,
-                AlignmentY = AlignmentY.Center
-            };
-
-            #endregion
-
-            #region Creates and Save each Transition Frame
-
-            for (var index = 0; index < frameCount; index++)
-            {
-                var drawingVisual = new DrawingVisual();
-                using (var drawingContext = drawingVisual.RenderOpen())
-                {
-                    drawingContext.DrawImage(previousImage, new Rect(0, 0, previousImage.Width, previousImage.Height));
-                    drawingContext.DrawRectangle(nextBrush, null, new Rect(0, 0, nextImage.Width, nextImage.Height));
-                }
-
-                // Converts the Visual (DrawingVisual) into a BitmapSource
-                var bmp = new RenderTargetBitmap(previousImage.PixelWidth, previousImage.PixelHeight, previousImage.DpiX, previousImage.DpiY, PixelFormats.Pbgra32);
-                bmp.Render(drawingVisual);
-
-                //Increase the opacity for the next frame.
-                nextBrush.Opacity += increment;
-
-                //TODO: Fix filenaming.
-                //TODO: This transition doesn't preserve any other frame info, such as keys pressed and mouse clicks.
-                var fileName = Path.Combine(previousFolder, $"{previousName} T {index} {DateTime.Now:hh-mm-ss fff}.png");
-                Project.Frames.Insert(selected + index + 1, new FrameInfo(fileName, UserSettings.All.FadeTransitionDelay));
-
-                // Creates a PngBitmapEncoder and adds the BitmapSource to the frames of the encoder
-                var encoder = new PngBitmapEncoder();
-                encoder.Frames.Add(BitmapFrame.Create(bmp));
-
-                // Saves the image into a file using the encoder
-                using (Stream stream = File.Create(fileName))
-                    encoder.Save(stream);
-
-                UpdateProgress(index);
-            }
-
-            #endregion
-
-            return selected;
-        }
-
-        private int Slide(int selected, int frameCount, object optional)
-        {
-            ShowProgress(DispatcherStringResource("Editor.ApplyingTransition"), Project.Frames.Count - selected + frameCount);
-
-            Dispatcher.Invoke(() => IsLoading = true);
-
-            var previousName = Path.GetFileNameWithoutExtension(Project.Frames[selected].Path);
-            var previousFolder = Path.GetDirectoryName(Project.Frames[selected].Path);
-
-            #region Images
-
-            var previousImage = Project.Frames[selected].Path.SourceFrom();
-            var nextImage = Project.Frames[(Project.Frames.Count - 1) == selected ? 0 : selected + 1].Path.SourceFrom();
-
-            var nextBrush = new ImageBrush
-            {
-                ImageSource = nextImage,
-                Stretch = Stretch.Uniform,
-                TileMode = TileMode.None,
-                AlignmentX = AlignmentX.Center,
-                AlignmentY = AlignmentY.Center
-            };
-
-            #endregion
-
-            //Calculate Translate Transform increment.
-            var increment = previousImage.Width / (frameCount + 1);
-            var transf = increment;
-
-            //Calculate the Opacity increment.
-            var alphaIncrement = 1F / (frameCount + 1);
-            nextBrush.Opacity = alphaIncrement;
-
-            #region Creates and Save each Transition Frame
-
-            for (var index = 0; index < frameCount; index++)
-            {
-                var drawingVisual = new DrawingVisual();
-                using (var drawingContext = drawingVisual.RenderOpen())
-                {
-                    drawingContext.DrawImage(previousImage, new Rect(0, 0, previousImage.Width, previousImage.Height));
-                    drawingContext.DrawRectangle(nextBrush, null, new Rect(previousImage.Width - transf, 0, nextImage.Width, nextImage.Height));
-                }
-
-                // Converts the Visual (DrawingVisual) into a BitmapSource
-                var bmp = new RenderTargetBitmap(previousImage.PixelWidth, previousImage.PixelHeight, previousImage.DpiX, previousImage.DpiY, PixelFormats.Pbgra32);
-                bmp.Render(drawingVisual);
-
-                //Increase the translation and opacity for the next frame.
-                transf += increment;
-                nextBrush.Opacity += alphaIncrement;
-
-                //TODO: Fix filenaming.
-                //TODO: This transition doesn't preserve any other frame info, such as keys pressed and mouse clicks.
-                var fileName = Path.Combine(previousFolder, $"{previousName} T {index} {DateTime.Now:hh-mm-ss fff}.png");
-                Project.Frames.Insert(selected + index + 1, new FrameInfo(fileName, UserSettings.All.FadeTransitionDelay));
-
-                // Creates a PngBitmapEncoder and adds the BitmapSource to the frames of the encoder
-                var encoder = new PngBitmapEncoder();
-                encoder.Frames.Add(BitmapFrame.Create(bmp));
-
-                // Saves the image into a file using the encoder
-                using (Stream stream = File.Create(fileName))
-                    encoder.Save(stream);
-
-                UpdateProgress(index);
-            }
-
-            #endregion
-
-            return selected;
-        }
-
-        private void TransitionCallback(IAsyncResult ar)
-        {
-            var selected = _transitionDel.EndInvoke(ar);
-
-            Dispatcher.Invoke(() =>
-            {
-                LoadSelectedStarter(selected, Project.Frames.Count - 1);
-
-                ShowHint("Hint.Transition");
-            });
-        }
-
-        #endregion
-
-        #region Async Obfuscate
-
-        private delegate List<int> ObfuscateFrames(Rect rect, int pixelSize, bool useMedian, double dpi, double screenDpi, bool forAll = false);
-
-        private ObfuscateFrames _obfuscateFramesDel;
-
-        private List<int> ObfuscateAsync(Rect rect, int pixelSize, bool useMedian, double dpi, double screenScale, bool forAll = false)
-        {
-            var frameList = forAll ? Project.Frames : SelectedFrames();
-            var selectedList = Dispatcher.Invoke(() =>
-            {
-                IsLoading = true;
-
-                return forAll ? Project.Frames.Select(x => Project.Frames.IndexOf(x)).ToList() : SelectedFramesIndex();
-            });
-
-            ShowProgress(DispatcherStringResource("Editor.ApplyingOverlay"), frameList.Count);
-
-            var size = frameList[0].Path.ScaledSize();
-
-            rect = rect.Scale(screenScale).Limit(size.Width, size.Height);
-
-            var count = 0;
-            foreach (var frame in frameList)
-            {
-                var image = frame.Path.SourceFrom();
-                var render = ImageMethods.Pixelate(image, new Int32Rect((int)(rect.X + 1d * screenScale), (int)(rect.Y + 1 * screenScale),
-                    (int)(rect.Width - 1 * screenScale), (int)(rect.Height - 1 * screenScale)), pixelSize, useMedian);
-
-                var drawingVisual = new DrawingVisual();
-                using (var drawingContext = drawingVisual.RenderOpen())
-                {
-                    drawingContext.DrawImage(image, new Rect(0, 0, image.Width, image.Height));
-                    drawingContext.DrawImage(render, new Rect((rect.X + 1d) / screenScale * ZoomBoxControl.ScaleDiff, (rect.Y + 1d) / screenScale * ZoomBoxControl.ScaleDiff, render.Width, render.Height));
-                }
-
-                //Converts the Visual (DrawingVisual) into a BitmapSource.
-                var bmp = new RenderTargetBitmap(image.PixelWidth, image.PixelHeight, dpi, dpi, PixelFormats.Pbgra32);
-                bmp.Render(drawingVisual);
-
-                //Creates a PngBitmapEncoder and adds the BitmapSource to the frames of the encoder.
-                var encoder = new PngBitmapEncoder();
-                encoder.Frames.Add(BitmapFrame.Create(bmp));
-
-                //Saves the image into a file using the encoder.
-                using (Stream stream = File.Create(frame.Path))
-                    encoder.Save(stream);
-
-                UpdateProgress(count++);
-            }
-
-            return selectedList;
-        }
-
-        private void ObfuscateCallback(IAsyncResult ar)
-        {
-            var selected = _obfuscateFramesDel.EndInvoke(ar);
-
-            Dispatcher.Invoke(() =>
-            {
-                ShowHint("Hint.Overlay");
-
-                LoadSelectedStarter(selected.Min(), selected.Max());
-            });
-        }
-
-        #endregion
-
-        #region Async Mouse Clicks
-
-        private delegate void MouseClicksDelegate(MouseClicksModel model);
-
-        private MouseClicksDelegate _mouseClicksDelegate;
-
-        private void MouseClicksAsync(MouseClicksModel model)
-        {
-            Dispatcher.Invoke(() =>
-            {
-                IsLoading = true;
-            });
-
-            ShowProgress(DispatcherStringResource("Editor.ApplyingOverlay"), Project.Frames.Count);
-
-            var auxList = Project.Frames.CopyList();
-
-            var count = 0;
-            foreach (var frame in auxList)
-            {
-                if (!frame.WasClicked)
-                {
-                    UpdateProgress(count++);
-                    continue;
-                }
-
-                var image = frame.Path.SourceFrom();
-                var scale = Math.Round(image.DpiX / 96d, 2);
-
-                var drawingVisual = new DrawingVisual();
-                using (var drawingContext = drawingVisual.RenderOpen())
-                {
-                    drawingContext.DrawImage(image, new Rect(0, 0, image.Width, image.Height)); // - UserSettings.All.MouseClicksWidth/2d   // - UserSettings.All.MouseClicksHeight/2d
-                    drawingContext.DrawEllipse(new SolidColorBrush(model.ForegroundColor), null, new System.Windows.Point(frame.CursorX / scale, frame.CursorY / scale), model.Width, model.Height);
-                }
-
-                //KeyStrokesOverlayGrid.GetScaledRender(ZoomBoxControl.ScaleDiff, ZoomBoxControl.ImageDpi, ZoomBoxControl.GetImageSize());
-
-                //Converts the Visual (DrawingVisual) into a BitmapSource.
-                var bmp = new RenderTargetBitmap(image.PixelWidth, image.PixelHeight, image.DpiX, image.DpiY, PixelFormats.Pbgra32);
-                bmp.Render(drawingVisual);
-
-                //Creates a PngBitmapEncoder and adds the BitmapSource to the frames of the encoder.
-                var encoder = new PngBitmapEncoder();
-                encoder.Frames.Add(BitmapFrame.Create(bmp));
-
-                //Saves the image into a file using the encoder.
-                using (Stream stream = File.Create(frame.Path))
-                    encoder.Save(stream);
-
-                GC.WaitForPendingFinalizers();
-                GC.Collect(1);
-
-                UpdateProgress(count++);
-            }
-        }
-
-        private void MouseClicksCallback(IAsyncResult ar)
-        {
-            _mouseClicksDelegate.EndInvoke(ar);
-
-            Dispatcher.Invoke(() =>
-            {
-                LoadSelectedStarter(0, Project.Frames.Count - 1);
-            });
-        }
-
-        #endregion
-
+        
         #endregion
 
         public void NotificationUpdated()

@@ -219,38 +219,19 @@
     <Window.CommandBindings>
         <!--New-->
         <CommandBinding Command="u:Commands.NewRecording" CanExecute="NewRecording_CanExecute" Executed="NewRecording_Executed"/>
-
-        <!--Insert-->
-        <CommandBinding Command="u:Commands.InsertRecording" CanExecute="Insert_CanExecute" Executed="InsertRecording_Executed"/>
-
+        
         <!--File-->
         <CommandBinding Command="u:Commands.SaveAs" CanExecute="File_CanExecute" Executed="SaveAs_Executed"/>
-        <CommandBinding Command="u:Commands.Load" CanExecute="NewProject_CanExecute" Executed="Load_Executed"/>
-        <CommandBinding Command="u:Commands.LoadRecent" CanExecute="NewProject_CanExecute" Executed="LoadRecent_Executed"/>
-        <CommandBinding Command="u:Commands.DiscardProject" CanExecute="File_CanExecute" Executed="DiscardProject_Executed"/>
-
+        
         <!--Action Stack-->
         <CommandBinding Command="Undo" CanExecute="Undo_CanExecute" Executed="Undo_Executed"/>
         <CommandBinding Command="u:Commands.Reset" CanExecute="Reset_CanExecute" Executed="Reset_Executed"/>
         <CommandBinding Command="Redo" CanExecute="Redo_CanExecute" Executed="Redo_Executed"/>
 
-        <!--Clipboard-->
-        <CommandBinding Command="Cut" CanExecute="ClipBoard_CanExecute" Executed="Cut_Executed"/>
-        <CommandBinding Command="Copy" CanExecute="ClipBoard_CanExecute" Executed="Copy_Executed"/>
-        <CommandBinding Command="Paste" CanExecute="Paste_CanExecute" Executed="Paste_Executed"/>
-        <CommandBinding Command="u:Commands.ExploreClipboard" CanExecute="ClipBoardSelection_CanExecute" Executed="ExploreClipBoard_Executed"/>
-        <CommandBinding Command="u:Commands.RemoveClipboardEntry" CanExecute="ClipBoardSelection_CanExecute" Executed="RemoveClipboard_Executed"/>
-
         <!--Zoom-->
         <CommandBinding Command="u:Commands.Zoom100" CanExecute="Zoom_CanExecute" Executed="Zoom100_Executed"/>
         <CommandBinding x:Name="SizeToContentCommand" Command="u:Commands.SizeToContent" CanExecute="Zoom_CanExecute" Executed="SizeToContent_Executed"/>
         <CommandBinding x:Name="FitImageCommand" Command="u:Commands.FitImage" CanExecute="Zoom_CanExecute" Executed="FitImage_Executed"/>
-
-        <!--Select-->
-        <CommandBinding Command="u:Commands.SelectAll" CanExecute="Selection_CanExecute" Executed="SelectAll_Executed"/>
-        <CommandBinding Command="u:Commands.GoTo" CanExecute="Selection_CanExecute" Executed="GoTo_Executed"/>
-        <CommandBinding Command="u:Commands.InverseSelection" CanExecute="Selection_CanExecute" Executed="InverseSelection_Executed"/>
-        <CommandBinding Command="u:Commands.Unselect" CanExecute="Image_CanExecute" Executed="DeselectAll_Executed"/>
 
         <!--Playback-->
         <CommandBinding Command="u:Commands.FirstFrame" CanExecute="Playback_CanExecute" Executed="FirstFrame_Executed"/>
@@ -260,54 +241,9 @@
         <CommandBinding Command="u:Commands.LastFrame" CanExecute="Playback_CanExecute" Executed="LastFrame_Executed"/>
 
         <!--Frames-->
-        <CommandBinding Command="Delete" CanExecute="Delete_CanExecute" Executed="Delete_Executed"/>
         <CommandBinding Command="u:Commands.DeletePrevious" CanExecute="DeletePrevious_CanExecute" Executed="DeletePrevious_Executed"/>
         <CommandBinding Command="u:Commands.DeleteNext" CanExecute="DeleteNext_CanExecute" Executed="DeleteNext_Executed"/>
-        <CommandBinding Command="u:Commands.RemoveDuplicates" CanExecute="RemoveDuplicates_CanExecute" Executed="RemoveDuplicates_Executed"/>
-        <CommandBinding Command="u:Commands.Reduce" CanExecute="Reduce_CanExecute" Executed="Reduce_Executed"/>
-
-        <!--Reordering-->
-        <CommandBinding Command="u:Commands.Reverse" CanExecute="Reordering_CanExecute" Executed="Reverse_Executed"/>
-        <CommandBinding Command="u:Commands.Yoyo" CanExecute="Reordering_CanExecute" Executed="Yoyo_Executed"/>
-        <CommandBinding Command="u:Commands.MoveLeft" CanExecute="Reordering_CanExecute" Executed="MoveLeft_Executed"/>
-        <CommandBinding Command="u:Commands.MoveRight" CanExecute="Reordering_CanExecute" Executed="MoveRight_Executed"/>
-
-        <!--Delay (Duration)-->
-        <CommandBinding Command="u:Commands.OverrideDelay" CanExecute="Image_CanExecute" Executed="OverrideDelay_Executed"/>
-        <CommandBinding Command="u:Commands.ChangeDelay" CanExecute="Image_CanExecute" Executed="IncreaseDecreaseDelay_Executed"/>
-        <CommandBinding Command="u:Commands.ScaleDelay" CanExecute="Image_CanExecute" Executed="ScaleDelay_Executed"/>
-
-        <!--Image-->
-        <CommandBinding Command="u:Commands.Resize" CanExecute="Image_CanExecute" Executed="Resize_Executed"/>
-        <CommandBinding Command="u:Commands.Crop" CanExecute="Image_CanExecute" Executed="Crop_Executed"/>
-        <CommandBinding Command="u:Commands.FlipRotate" CanExecute="Image_CanExecute" Executed="FlipRotate_Executed"/>
-
-        <CommandBinding Command="u:Commands.Caption" CanExecute="Image_CanExecute" Executed="Caption_Executed"/>
-        <CommandBinding Command="u:Commands.FreeText" CanExecute="Image_CanExecute" Executed="FreeText_Executed"/>
-        <CommandBinding Command="u:Commands.TitleFrame" CanExecute="Image_CanExecute" Executed="TitleFrame_Executed"/>
-        <CommandBinding Command="u:Commands.KeyStrokes" CanExecute="Image_CanExecute" Executed="KeyStrokes_Executed"/>
-
-        <CommandBinding Command="u:Commands.FreeDrawing" CanExecute="Image_CanExecute" Executed="FreeDrawing_Executed"/>
-        <CommandBinding Command="u:Commands.Shapes" CanExecute="Image_CanExecute" Executed="Shapes_Executed"/>
-        <CommandBinding Command="u:Commands.MouseClicks" CanExecute="Image_CanExecute" Executed="MouseClicks_Executed"/>
-        <CommandBinding Command="u:Commands.Watermark" CanExecute="Image_CanExecute" Executed="Watermark_Executed"/>
-        <CommandBinding Command="u:Commands.Border" CanExecute="Image_CanExecute" Executed="Border_Executed"/>
-        <CommandBinding Command="u:Commands.Obfuscate" CanExecute="Image_CanExecute" Executed="Obfuscate_Executed"/>
-        <CommandBinding Command="u:Commands.Cinemagraph" CanExecute="Image_CanExecute" Executed="Cinemagraph_Executed"/>
-        <CommandBinding Command="u:Commands.Progress" CanExecute="Image_CanExecute" Executed="Progress_Executed"/>
-
-        <!--Transitions-->
-        <CommandBinding Command="u:Commands.Fade" CanExecute="Transition_CanExecute" Executed="Fade_Executed"/>
-        <CommandBinding Command="u:Commands.Slide" CanExecute="Transition_CanExecute" Executed="Slide_Executed"/>
-
-        <!--Apply and Cancel-->
-        <CommandBinding x:Name="OkCommandBinding2" Command="u:Commands.OkAction" CanExecute="PanelAction_CanExecute" Executed="Ok_Executed"/>
-        <CommandBinding x:Name="CancelCommandBinding" Command="u:Commands.CancelAction" CanExecute="PanelAction_CanExecute" Executed="Cancel_Executed"/>
-
-        <!--Frame list-->
-        <CommandBinding Command="u:Commands.OpenImage" CanExecute="ListFramesSelection_CanExecute" Executed="OpenImage_Executed"/>
-        <CommandBinding Command="u:Commands.ExploreFolder" CanExecute="ListFramesSelection_CanExecute" Executed="ExploreFolder_Executed"/>
-        <CommandBinding Command="u:Commands.ExportImages" CanExecute="ListFramesSelection_CanExecute" Executed="ExportImages_Executed"/>
+        
     </Window.CommandBindings>
     <Window.TaskbarItemInfo>
         <TaskbarItemInfo Description="{DynamicResource Editor.Title}">
@@ -336,8 +272,8 @@
 
             <n:StatusList Grid.Row="0" x:Name="StatusList"/>
 
-            <n:ZoomBox Grid.Row="1" x:Name="ZoomBoxControl" Background="Transparent" ClipToBounds="True" Focusable="False" IsTabStop="False"
-                       AllowDrop="True" Drop="Control_Drop" DragEnter="Control_DragEnter" PreviewMouseWheel="ZoomBox_MouseWheel">
+            <n:ZoomBox Grid.Row="1" x:Name="ZoomBoxControl" Background="Transparent" ClipToBounds="True" 
+                       Focusable="False" IsTabStop="False" PreviewMouseWheel="ZoomBox_MouseWheel">
                 <n:ZoomBox.ContextMenu>
                     <ContextMenu>
                         <n:ImageMenuItem x:Name="PlayMenuItem" Header="{DynamicResource Editor.Playback.Play}" Image="{StaticResource Vector.Play}" ContentHeight="16" ContentWidth="16" Command="u:Commands.Play"/>
@@ -570,7 +506,7 @@
                 </Grid>
             </ScrollViewer>
 
-            <Grid Grid.Row="1" x:Name="WelcomeGrid" Background="WhiteSmoke" Visibility="Visible" AllowDrop="True" Drop="Control_Drop" DragEnter="Control_DragEnter">
+            <Grid Grid.Row="1" x:Name="WelcomeGrid" Background="WhiteSmoke" Visibility="Visible">
                 <Grid.ContextMenu>
                     <ContextMenu>
                         <n:ImageMenuItem Header="{DynamicResource Context.NewRecording}" Image="{StaticResource Vector.Record.New}" ContentHeight="16" ContentWidth="16" Command="u:Commands.NewRecording"/>                        

@@ -10,7 +10,6 @@ using System.Windows.Interop;
 using System.Windows.Markup;
 using System.Windows.Media;
 using System.Windows.Threading;
-using ScreenToGif.Controls;
 using ScreenToGif.Model;
 using ScreenToGif.Util;
 using ScreenToGif.Windows.Other;
@@ -19,15 +18,7 @@ namespace ScreenToGif
 {
     public partial class App
     {
-        #region Properties
-
-        internal static NotifyIcon NotifyIcon { get; private set; }
-
         internal static ApplicationViewModel MainViewModel { get; set; }
-
-        #endregion
-
-        #region Events
 
         private void Application_Startup(object sender, StartupEventArgs e)
         {
@@ -39,11 +30,7 @@ namespace ScreenToGif
             //Increases the duration of the tooltip display.
             ToolTipService.ShowDurationProperty.OverrideMetadata(typeof(DependencyObject), new FrameworkPropertyMetadata(int.MaxValue));
 
-            //Parse arguments.
-            if (e.Args.Length > 0)
-                Argument.Prepare(e.Args);
-
-            LocalizationHelper.SelectCulture(UserSettings.All.LanguageCode);
+            LocalizationHelper.SelectCulture("en");
 
             if (UserSettings.All.DisableHardwareAcceleration)
                 RenderOptions.ProcessRenderMode = RenderMode.SoftwareOnly;
@@ -87,18 +74,9 @@ namespace ScreenToGif
 
             #endregion
 
-            #region Tray icon and view model
-
-            NotifyIcon = (NotifyIcon)FindResource("NotifyIcon");
-
-            if (NotifyIcon != null)
-                NotifyIcon.Visibility = UserSettings.All.ShowNotificationIcon || UserSettings.All.StartUp == 5 ? Visibility.Visible : Visibility.Collapsed;
-
             MainViewModel = (ApplicationViewModel)FindResource("AppViewModel") ?? new ApplicationViewModel();
 
             RegisterShortcuts();
-
-            #endregion
 
             //var select = new SelectFolderDialog(); select.ShowDialog(); return;
             //var select = new TestField(); select.ShowDialog(); return;
@@ -110,27 +88,7 @@ namespace ScreenToGif
 
             #endregion
 
-            #region Startup
-
-            if (UserSettings.All.StartUp == 4 || Argument.FileNames.Any())
-            {
-                MainViewModel.OpenEditor.Execute(null);
-                return;
-            }
-
-            if (UserSettings.All.StartUp == 0)
-            {
-                MainViewModel.OpenLauncher.Execute(null);
-                return;
-            }
-
-            if (UserSettings.All.StartUp == 1)
-            {
-                MainViewModel.OpenRecorder.Execute(null);
-                return;
-            }
-
-            #endregion
+            MainViewModel.OpenRecorder.Execute(null);
         }
 
         private void App_OnExit(object sender, ExitEventArgs e)
@@ -138,8 +96,6 @@ namespace ScreenToGif
             //TODO: Use a try catch for each one.
 
             MutexList.RemoveAll();
-
-            NotifyIcon?.Dispose();
 
             UserSettings.Save();
 
@@ -179,10 +135,6 @@ namespace ScreenToGif
             }
         }
 
-        #endregion
-
-        #region Methods
-
         internal static void RegisterShortcuts()
         {
             //TODO: If startup/editor is open and focused, should I let the hotkeys work? 
@@ -210,11 +162,13 @@ namespace ScreenToGif
         internal void ShowException(Exception exception)
         {
             if (Global.IsHotFix4055002Installed && exception is XamlParseException && exception.InnerException is TargetInvocationException)
+            {
                 ExceptionDialog.Ok(exception, "ScreenToGif", "Error while rendering visuals", exception.Message);
+            }
             else
+            {
                 ExceptionDialog.Ok(exception, "ScreenToGif", "Unhandled exception", exception.Message);
+            }
         }
-
-        #endregion
     }
 }

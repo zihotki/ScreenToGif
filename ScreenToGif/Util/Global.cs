@@ -31,11 +31,6 @@ namespace ScreenToGif.Util
         /// <summary>
         /// The available space on the disk that currently holds the data.
         /// </summary>
-        internal static double AvailableDiskSpace { get; set; }
-
-        /// <summary>
-        /// Holds the details of the latest update available.
-        /// </summary>
-        internal static UpdateModel UpdateModel { get; set; }
+        internal static double AvailableDiskSpace { get; set; }     
     }
 }

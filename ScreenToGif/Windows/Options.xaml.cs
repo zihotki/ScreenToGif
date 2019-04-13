@@ -54,23 +54,6 @@ namespace ScreenToGif.Windows
 #endif
         }
 
-        public Options(int index) : this()
-        {
-            SelectTab(index);
-        }
-
-        #region App Settings
-
-        private void NotificationIconCheckBox_CheckedChanged(object sender, RoutedEventArgs e)
-        {
-            if (App.NotifyIcon != null)
-            {
-                App.NotifyIcon.Visibility = UserSettings.All.ShowNotificationIcon ? Visibility.Visible : Visibility.Collapsed;
-            }
-        }
-
-        #endregion
-
         #region Shortcuts
 
         private void ShortcutsPanel_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
@@ -557,14 +540,6 @@ namespace ScreenToGif.Windows
                 TempPanel.LowSpaceTextBlock.Visibility = Visibility.Visible;
             else
                 TempPanel.LowSpaceTextBlock.Visibility = Visibility.Collapsed;
-        }
-
-        internal void SelectTab(int index)
-        {
-            if (index <= -1 || index >= OptionsStackPanel.Children.Count - 1) return;
-
-            if (OptionsStackPanel.Children[index] is RadioButton radio)
-                radio.IsChecked = true;
         }
     }
 }

@@ -376,8 +376,6 @@
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
 
                     <n:ExtendedCheckBox Grid.Row="0" x:Name="SaveFileCheckBox" Text="{DynamicResource S.SaveAs.SaveOptions.PickFolder}" Margin="10,3,3,3"
@@ -400,28 +398,11 @@
                     <n:ExtendedCheckBox Grid.Row="2" x:Name="UploadFileCheckBox" Text="{DynamicResource S.SaveAs.SaveOptions.UploadFile}" Margin="10,3,3,3"
                                                         IsChecked="{Binding Source={x:Static u:UserSettings.All}, Path=UploadFile, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
 
-                    <Grid Grid.Row="3">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition/>
-                            <ColumnDefinition Width="30"/>
-                        </Grid.ColumnDefinitions>
-
-                        <ComboBox Grid.Column="0" Name="UploadComboBox" Margin="20,3,3,3" Height="23" SelectedValuePath="Tag"
-                                                    SelectedValue="{Binding Source={x:Static u:UserSettings.All}, Path=LatestUploadService, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                                    Visibility="{Binding IsChecked, ElementName=UploadFileCheckBox, Converter={StaticResource Bool2Visibility}}" ToolTip="{DynamicResource S.SaveAs.SaveOptions.UploadDestination}">
-                            <ComboBoxItem Tag="{x:Static u:UploadService.None}" Content="{DynamicResource S.Upload.Pick.Destination}"/>
-                            <ComboBoxItem Tag="{x:Static u:UploadService.ImgurAnonymous}" Content="{DynamicResource S.Upload.Imgur.Anonymous}"/>
-                            <ComboBoxItem Tag="{x:Static u:UploadService.Imgur}" Content="Imgur"/>
-                            <ComboBoxItem Tag="{x:Static u:UploadService.GyfcatAnonymous}" Content="{DynamicResource S.Upload.Gyfcat.Anonymous}"/>
-                            <ComboBoxItem Tag="{x:Static u:UploadService.Yandex}" Content="YandexDisk"/>
-                        </ComboBox>
-                    </Grid>
-
-                    <n:ExtendedCheckBox Grid.Row="4" x:Name="CopyFileCheckBox" Text="{DynamicResource S.SaveAs.SaveOptions.CopyToClipboard}" Margin="10,3,3,3"
+                    <n:ExtendedCheckBox Grid.Row="3" x:Name="CopyFileCheckBox" Text="{DynamicResource S.SaveAs.SaveOptions.CopyToClipboard}" Margin="10,3,3,3"
                                                         IsChecked="{Binding Source={x:Static u:UserSettings.All}, Path=SaveToClipboard}" 
                                                         Checked="SaveToClipboard_CheckedChanged"/>
 
-                    <WrapPanel Grid.Row="5" Margin="20,0,0,0" Visibility="{Binding IsChecked, ElementName=CopyFileCheckBox, Converter={StaticResource Bool2Visibility}}">
+                    <WrapPanel Grid.Row="4" Margin="20,0,0,0" Visibility="{Binding IsChecked, ElementName=CopyFileCheckBox, Converter={StaticResource Bool2Visibility}}">
                         <n:ImageRadioButton x:Name="CopyFileRadioButton" MaxSize="0" Padding="0,2" Text="{DynamicResource S.SaveAs.SaveOptions.CopyToClipboard.File}" 
                                                             IsChecked="{Binding LatestCopyType, Source={x:Static u:UserSettings.All}, Converter={StaticResource EnumToBool}, ConverterParameter={x:Static u:CopyType.File}}"
                                                             ToolTip="{DynamicResource S.SaveAs.SaveOptions.CopyToClipboard.File.Info}"/>
@@ -439,10 +420,10 @@
                                                             ToolTip="{DynamicResource S.SaveAs.SaveOptions.CopyToClipboard.Link.Info}"/>
                     </WrapPanel>
 
-                    <n:ExtendedCheckBox Grid.Row="6" x:Name="CustomCommandsCheckBox" Text="{DynamicResource S.SaveAs.SaveOptions.ExecuteCommands}" Margin="10,3,3,3"
+                    <n:ExtendedCheckBox Grid.Row="5" x:Name="CustomCommandsCheckBox" Text="{DynamicResource S.SaveAs.SaveOptions.ExecuteCommands}" Margin="10,3,3,3"
                                                         IsChecked="{Binding Source={x:Static u:UserSettings.All}, Path=ExecuteCustomCommands, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
 
-                    <n:ExtendedTextBox Grid.Row="7" x:Name="CustomCommandsTextBox" MinHeight="23" Margin="20,3,3,3" VerticalContentAlignment="Top" TextWrapping="WrapWithOverflow" 
+                    <n:ExtendedTextBox Grid.Row="6" x:Name="CustomCommandsTextBox" MinHeight="23" Margin="20,3,3,3" VerticalContentAlignment="Top" TextWrapping="WrapWithOverflow" 
                                                         AcceptsReturn="True" Text="{Binding Source={x:Static u:UserSettings.All}, Path=CustomCommands, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                                         Visibility="{Binding IsChecked, ElementName=CustomCommandsCheckBox, Converter={StaticResource Bool2Visibility}}"
                                                         ToolTip="{DynamicResource S.SaveAs.SaveOptions.ExecuteCommands.Info}"/>
@@ -681,11 +662,8 @@
 
             <Viewbox Grid.Row="0" Grid.Column="0" MinWidth="15" MaxHeight="15" Stretch="Uniform" Child="{StaticResource Vector.Warning}" />
             <TextBlock Grid.Row="0" Grid.Column="1" Foreground="#FF289746" 
-                                        FontStyle="Italic" FontSize="11" Padding="3" TextWrapping="WrapWithOverflow">
-                                    
-                                <Hyperlink Click="FileHyperlink_OnClick" ToolTip="{DynamicResource Encoder.OpenFile}" Cursor="Hand">
-                                    <Run Text="{DynamicResource S.SaveAs.File.Exists}"/>
-                                </Hyperlink>
+                                        FontStyle="Italic" FontSize="11" Padding="3" TextWrapping="WrapWithOverflow">                                    
+                <Run Text="{DynamicResource S.SaveAs.File.Exists}"/>
             </TextBlock>
         </Grid>
     </Grid>
