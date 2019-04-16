@@ -32,7 +32,6 @@
         <c:FormatConverter x:Key="FormatConverter"/>
         <c:BoolOrToVisibility x:Key="BoolOrToVisibility"/>
         <c:BoolAndToVisibility x:Key="BoolAndToVisibility"/>
-        <c:BoolOrAndToVisibility x:Key="BoolOrAndToVisibility"/>
     </UserControl.Resources>
     <Grid>
         <Grid.ColumnDefinitions>

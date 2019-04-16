@@ -524,6 +524,7 @@ namespace ScreenToGif.Windows
             var wasSnapshot = UserSettings.All.SnapshotMode;
 
             var options = new Options();
+            options.Owner = this;
             options.ShowDialog();
 
             //Enables or disables the snapshot mode.

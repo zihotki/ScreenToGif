@@ -13,10 +13,6 @@
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>
@@ -30,35 +26,11 @@
                                       KeyChanged="Globals_OnKeyChanged"/>
             <TextBlock Grid.Row="0" Grid.Column="2" Text="{DynamicResource S.Shortcuts.Global.ScreenRecorder.Info}" Padding="0" Margin="5,0,0,0" VerticalAlignment="Center" TextWrapping="Wrap" Foreground="#FF969696"/>
 
-            <Label Grid.Row="1" Grid.Column="0" Content="{DynamicResource S.Shortcuts.Global.WebcamRecorder}" Foreground="#FF444444" Padding="5,4" VerticalAlignment="Center"/>
-            <n:KeyBox Grid.Row="1" Grid.Column="1" x:Name="WebcamKeyBox" Height="23" Margin="3" VerticalAlignment="Center" 
-                                      MainKey="{Binding WebcamRecorderShortcut, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" ModifierKeys="{Binding WebcamRecorderModifiers, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
-                                      KeyChanged="Globals_OnKeyChanged"/>
-            <TextBlock Grid.Row="1" Grid.Column="2" Text="{DynamicResource S.Shortcuts.Global.WebcamRecorder.Info}" Padding="0" Margin="5,0,0,0" VerticalAlignment="Center" TextWrapping="Wrap" Foreground="#FF969696"/>
-
-            <Label Grid.Row="2" Grid.Column="0" Content="{DynamicResource S.Shortcuts.Global.BoardRecorder}" Foreground="#FF444444" Padding="5,4" VerticalAlignment="Center"/>
-            <n:KeyBox Grid.Row="2" Grid.Column="1" x:Name="BoardKeyBox" Height="23" Margin="3" VerticalAlignment="Center" 
-                                      MainKey="{Binding BoardRecorderShortcut, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" ModifierKeys="{Binding BoardRecorderModifiers, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
-                                      KeyChanged="Globals_OnKeyChanged"/>
-            <TextBlock Grid.Row="2" Grid.Column="2" Text="{DynamicResource S.Shortcuts.Global.BoardRecorder.Info}" Padding="0" Margin="5,0,0,0" VerticalAlignment="Center" TextWrapping="Wrap" Foreground="#FF969696"/>
-
-            <Label Grid.Row="3" Grid.Column="0" Content="{DynamicResource S.Shortcuts.Global.OpenEditor}" Foreground="#FF444444" Padding="5,4" VerticalAlignment="Center"/>
-            <n:KeyBox Grid.Row="3" Grid.Column="1" x:Name="EditorKeyBox" Height="23" Margin="3" VerticalAlignment="Center" 
-                                      MainKey="{Binding EditorShortcut, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" ModifierKeys="{Binding EditorModifiers, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
-                                      KeyChanged="Globals_OnKeyChanged"/>
-            <TextBlock Grid.Row="3" Grid.Column="2" Text="{DynamicResource S.Shortcuts.Global.OpenEditor.Info}" Padding="0" Margin="5,0,0,0" VerticalAlignment="Center" TextWrapping="Wrap" Foreground="#FF969696"/>
-
-            <Label Grid.Row="4" Grid.Column="0" Content="{DynamicResource S.Shortcuts.Global.OpenOptions}" Foreground="#FF444444" Padding="5,4" VerticalAlignment="Center"/>
-            <n:KeyBox Grid.Row="4" Grid.Column="1" x:Name="OptionsKeyBox" Height="23" Margin="3" VerticalAlignment="Center" 
-                                      MainKey="{Binding OptionsShortcut, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" ModifierKeys="{Binding OptionsModifiers, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
-                                      KeyChanged="Globals_OnKeyChanged"/>
-            <TextBlock Grid.Row="4" Grid.Column="2" Text="{DynamicResource S.Shortcuts.Global.OpenOptions.Info}" Padding="0" Margin="5,0,0,0" VerticalAlignment="Center" TextWrapping="Wrap" Foreground="#FF969696"/>
-
-            <Label Grid.Row="5" Grid.Column="0" Content="{DynamicResource S.Shortcuts.Global.Exit}" Foreground="#FF444444" Padding="5,4" VerticalAlignment="Center"/>
-            <n:KeyBox Grid.Row="5" Grid.Column="1" x:Name="ExitKeyBox" Height="23" Margin="3" VerticalAlignment="Center" 
+            <Label Grid.Row="1" Grid.Column="0" Content="{DynamicResource S.Shortcuts.Global.Exit}" Foreground="#FF444444" Padding="5,4" VerticalAlignment="Center"/>
+            <n:KeyBox Grid.Row="1" Grid.Column="1" x:Name="ExitKeyBox" Height="23" Margin="3" VerticalAlignment="Center" 
                                       MainKey="{Binding ExitShortcut, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" ModifierKeys="{Binding ExitModifiers, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
                                       KeyChanged="Globals_OnKeyChanged"/>
-            <TextBlock Grid.Row="5" Grid.Column="2" Text="{DynamicResource S.Shortcuts.Global.Exit.Info}" Padding="0" Margin="5,0,0,0" VerticalAlignment="Center" TextWrapping="Wrap" Foreground="#FF969696"/>
+            <TextBlock Grid.Row="1" Grid.Column="2" Text="{DynamicResource S.Shortcuts.Global.Exit.Info}" Padding="0" Margin="5,0,0,0" VerticalAlignment="Center" TextWrapping="Wrap" Foreground="#FF969696"/>
         </Grid>
 
         <n:LabelSeparator Text="{DynamicResource S.Shortcuts.Recorders}"/>

@@ -23,26 +23,6 @@
                 <ResourceDictionary Source="/Themes/ComboBox.xaml"/>
 
                 <!--Localizations-->
-                <ResourceDictionary Source="/Resources/Localization/StringResources.ar.xaml"/>
-                <ResourceDictionary Source="/Resources/Localization/StringResources.cs.xaml"/>
-                <ResourceDictionary Source="/Resources/Localization/StringResources.da.xaml"/>
-                <ResourceDictionary Source="/Resources/Localization/StringResources.de.xaml"/>
-                <ResourceDictionary Source="/Resources/Localization/StringResources.es-AR.xaml"/>
-                <ResourceDictionary Source="/Resources/Localization/StringResources.es.xaml"/>
-                <ResourceDictionary Source="/Resources/Localization/StringResources.fr.xaml"/>
-                <ResourceDictionary Source="/Resources/Localization/StringResources.ja.xaml"/>
-                <ResourceDictionary Source="/Resources/Localization/StringResources.ko.xaml"/>
-                <ResourceDictionary Source="/Resources/Localization/StringResources.it.xaml"/>
-                <ResourceDictionary Source="/Resources/Localization/StringResources.nl.xaml"/>
-                <ResourceDictionary Source="/Resources/Localization/StringResources.pl.xaml"/>
-                <ResourceDictionary Source="/Resources/Localization/StringResources.pt.xaml"/>
-                <ResourceDictionary Source="/Resources/Localization/StringResources.pt-PT.xaml"/>
-                <ResourceDictionary Source="/Resources/Localization/StringResources.ru.xaml"/>
-                <ResourceDictionary Source="/Resources/Localization/StringResources.sv.xaml"/>
-                <ResourceDictionary Source="/Resources/Localization/StringResources.tr.xaml"/>
-                <ResourceDictionary Source="/Resources/Localization/StringResources.uk.xaml"/>
-                <ResourceDictionary Source="/Resources/Localization/StringResources.zh.xaml"/>
-                <ResourceDictionary Source="/Resources/Localization/StringResources.zh-Hant.xaml"/>
                 <ResourceDictionary Source="/Resources/Localization/StringResources.en.xaml"/>
             </ResourceDictionary.MergedDictionaries>
 

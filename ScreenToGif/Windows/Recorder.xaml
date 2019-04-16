@@ -108,8 +108,6 @@
             <StackPanel Grid.Column="1" x:Name="ControlStackPanel" Height="31" Orientation="Horizontal" HorizontalAlignment="Right"
                         ScrollViewer.VerticalScrollBarVisibility="Disabled">
 
-                <!--<TextBlock x:Name="TestTextBlock" Text="0;0" VerticalAlignment="Center" Margin="5"/>-->
-
                 <n:ImageButton x:Name="SnapButton" Content="{StaticResource Vector.Crosshair}" Margin="0" Style="{StaticResource Style.Button.NoText}" 
                                HorizontalContentAlignment="Center" Effect="{StaticResource Shadow.Foreground.Small}" ContentHeight="20" ContentWidth="20"
                                Command="u:Commands.EnableSnapToWindow" Padding="3" TabIndex="2" PreviewMouseDown="SnapButton_PreviewMouseDown">

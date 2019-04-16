@@ -729,11 +729,6 @@ namespace ScreenToGif.Util
         }
 
         //Gif > Save options.
-        public bool PickLocation
-        {
-            get => (bool)GetValue();
-            set => SetValue(value);
-        }
 
         public bool ExecuteCustomCommands
         {
@@ -797,11 +792,6 @@ namespace ScreenToGif.Util
         }
 
         //Apng > Save options.
-        public bool PickLocationApng
-        {
-            get => (bool)GetValue();
-            set => SetValue(value);
-        }
 
         public bool ExecuteCustomCommandsApng
         {
@@ -853,11 +843,6 @@ namespace ScreenToGif.Util
         }
 
         //Video > Save options.
-        public bool PickLocationVideo
-        {
-            get => (bool)GetValue();
-            set => SetValue(value);
-        }
 
         public bool ExecuteCustomCommandsVideo
         {

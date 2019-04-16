@@ -115,8 +115,6 @@
     <s:String x:Key="LatestExtension">.gif</s:String>
 
     <!--Editor • Save As > Gif > Save options-->
-    <s:Boolean x:Key="PickLocation">True</s:Boolean>
-    <u:CopyType x:Key="LatestCopyType">FilePath</u:CopyType>
     <s:Boolean x:Key="ExecuteCustomCommands">False</s:Boolean>
     <s:String x:Key="CustomCommands">{p}</s:String>
 
@@ -132,7 +130,6 @@
     <s:String x:Key="LatestApngExtension">.png</s:String>
 
     <!--Editor • Save As > Apng > Save options-->
-    <s:Boolean x:Key="PickLocationApng">True</s:Boolean>
     <s:Boolean x:Key="ExecuteCustomCommandsApng">False</s:Boolean>
     <s:String x:Key="CustomCommandsApng">{p}</s:String>
 
@@ -146,7 +143,6 @@
     <s:String x:Key="LatestVideoExtension">.mp4</s:String>
 
     <!--Editor • Save As > Video > Save options-->
-    <s:Boolean x:Key="PickLocationVideo">True</s:Boolean>
     <s:Boolean x:Key="ExecuteCustomCommandsVideo">False</s:Boolean>
     <s:String x:Key="CustomCommandsVideo">{p}</s:String>
 

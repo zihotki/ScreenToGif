@@ -33,15 +33,18 @@ namespace ScreenToGif.Windows.UserControls
 
                     if (SystemEncoderRadioButton.IsChecked == true)
                     {
-                        UserSettings.All.LatestVideoExtension = ".avi";
                         FileTypeVideoComboBox.IsEnabled = false;
+
+                        UserSettings.All.LatestVideoExtension = ".avi";
                     }
                     else
                     {
                         FileTypeVideoComboBox.IsEnabled = true;
 
                         if (FileTypeVideoComboBox.Items == null || !FileTypeVideoComboBox.Items.OfType<string>().Contains(UserSettings.All.LatestVideoExtension))
+                        {
                             UserSettings.All.LatestVideoExtension = ".mp4";
+                        }
                     }
 
                     break;
@@ -78,7 +81,8 @@ namespace ScreenToGif.Windows.UserControls
                 var output = GetOutputFolder();
 
                 if (output.ToCharArray().Any(x => Path.GetInvalidPathChars().Contains(x)))
-                    output = "";
+                {
+                    output = ""; }
 
                 //It's only a relative path if not null/empty and there's no root folder declared.
                 var isRelative = !string.IsNullOrWhiteSpace(output) && !Path.IsPathRooted(output);
@@ -113,13 +117,8 @@ namespace ScreenToGif.Windows.UserControls
             }
         }
 
-        #region helper methods
-
         private string GetOutputFolder()
         {
-            if (!GetPickLocation())
-                return Path.GetTempPath();
-
             switch (UserSettings.All.SaveType)
             {
                 case Export.Gif:
@@ -128,32 +127,6 @@ namespace ScreenToGif.Windows.UserControls
                     return UserSettings.All.LatestApngOutputFolder ?? "";
                 case Export.Video:
                     return UserSettings.All.LatestVideoOutputFolder ?? "";
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
-        }
-
-
-        private string StringResource(string key)
-        {
-            return FindResource(key).ToString().Replace("\n", " ").Replace("\\n", " ").Replace("\r", " ").Replace("&#10;", " ").Replace("&#x0d;", " ");
-        }
-
-        private string DispatcherStringResource(string key)
-        {
-            return Dispatcher.Invoke(() => FindResource(key).ToString().Replace("\n", " ").Replace("\\n", " ").Replace("\r", " ").Replace("&#10;", " ").Replace("&#x0d;", " "));
-        }
-
-        private string GetOutputExtension()
-        {
-            switch (UserSettings.All.SaveType)
-            {
-                case Export.Gif:
-                    return UserSettings.All.LatestExtension ?? ".gif";
-                case Export.Apng:
-                    return UserSettings.All.LatestApngExtension ?? ".png";
-                case Export.Video:
-                    return UserSettings.All.LatestVideoExtension ?? ".mp4";
                 default:
                     throw new ArgumentOutOfRangeException();
             }
@@ -176,69 +149,5 @@ namespace ScreenToGif.Windows.UserControls
                     throw new ArgumentOutOfRangeException();
             }
         }
-
-        private void SetOutputExtension(string extension)
-        {
-            switch (UserSettings.All.SaveType)
-            {
-                case Export.Gif:
-                    UserSettings.All.LatestExtension = extension;
-                    break;
-                case Export.Apng:
-                    UserSettings.All.LatestApngExtension = extension;
-                    break;
-                case Export.Video:
-                    UserSettings.All.LatestVideoExtension = extension;
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
-        }
-
-        private bool GetPickLocation()
-        {
-            switch (UserSettings.All.SaveType)
-            {
-                case Export.Gif:
-                    return UserSettings.All.PickLocation;
-                case Export.Apng:
-                    return UserSettings.All.PickLocationApng;
-                case Export.Video:
-                    return UserSettings.All.PickLocationVideo;
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
-        }
-
-        private bool GetExecuteCustomCommands()
-        {
-            switch (UserSettings.All.SaveType)
-            {
-                case Export.Gif:
-                    return UserSettings.All.ExecuteCustomCommands;
-                case Export.Apng:
-                    return UserSettings.All.ExecuteCustomCommandsApng;
-                case Export.Video:
-                    return UserSettings.All.ExecuteCustomCommandsVideo;
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
-        }
-
-        private string GetCustomCommands()
-        {
-            switch (UserSettings.All.SaveType)
-            {
-                case Export.Gif:
-                    return UserSettings.All.CustomCommands;
-                case Export.Apng:
-                    return UserSettings.All.CustomCommandsApng;
-                case Export.Video:
-                    return UserSettings.All.CustomCommandsVideo;
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
-        }
-        #endregion
     }
 }

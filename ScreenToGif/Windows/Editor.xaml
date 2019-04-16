@@ -39,7 +39,6 @@
         <c:FormatConverter x:Key="FormatConverter"/>
         <c:BoolOrToVisibility x:Key="BoolOrToVisibility"/>
         <c:BoolAndToVisibility x:Key="BoolAndToVisibility"/>
-        <c:BoolOrAndToVisibility x:Key="BoolOrAndToVisibility"/>
 
         <Storyboard x:Key="ShowPanelStoryboard">
             <BooleanAnimationUsingKeyFrames Storyboard.TargetName="ActionGrid" Storyboard.TargetProperty="IsHitTestVisible" Duration="0:0:0" >

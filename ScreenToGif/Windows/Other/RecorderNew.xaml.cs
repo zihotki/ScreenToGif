@@ -427,11 +427,14 @@ namespace ScreenToGif.Windows.Other
             var wasSnapshot = UserSettings.All.SnapshotMode;
 
             var options = new Options();
+            options.Owner = this;
             options.ShowDialog();
 
             //Enables or disables the snapshot mode.
             if (wasSnapshot != UserSettings.All.SnapshotMode)
+            {
                 EnableSnapshot_Executed(sender, e);
+            }
         }
 
         private void EnableSnapshot_Executed(object sender, ExecutedRoutedEventArgs e)
