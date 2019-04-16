@@ -380,9 +380,6 @@
     <Compile Include="Windows\Other\ExceptionDialog.xaml.cs">
       <DependentUpon>ExceptionDialog.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Windows\Other\FeedbackPreview.xaml.cs">
-      <DependentUpon>FeedbackPreview.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Windows\Other\ErrorDialog.xaml.cs">
       <DependentUpon>ErrorDialog.xaml</DependentUpon>
     </Compile>
@@ -404,29 +401,11 @@
     <Compile Include="Windows\Options.xaml.cs">
       <DependentUpon>Options.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Windows\Other\TextDialog.xaml.cs">
-      <DependentUpon>TextDialog.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Windows\Other\Troubleshoot.xaml.cs">
-      <DependentUpon>Troubleshoot.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Windows\Other\VideoSource.xaml.cs">
-      <DependentUpon>VideoSource.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Windows\Other\Feedback.xaml.cs">
-      <DependentUpon>Feedback.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Windows\Other\TestField.xaml.cs">
-      <DependentUpon>TestField.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Windows\Other\RecorderNew.xaml.cs">
       <DependentUpon>RecorderNew.xaml</DependentUpon>
     </Compile>
     <Compile Include="Windows\Recorder.xaml.cs">
       <DependentUpon>Recorder.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Windows\Other\Startup.xaml.cs">
-      <DependentUpon>Startup.xaml</DependentUpon>
     </Compile>
     <Compile Include="Windows\UserControls\EditorMenu.xaml.cs">
       <DependentUpon>EditorMenu.xaml</DependentUpon>
@@ -600,10 +579,6 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Windows\Other\FeedbackPreview.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="Windows\Other\ErrorDialog.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -632,35 +607,11 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Windows\Other\TextDialog.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Windows\Other\Troubleshoot.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Windows\Other\VideoSource.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Windows\Other\Feedback.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Windows\Other\TestField.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="Windows\Other\RecorderNew.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Windows\Recorder.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Windows\Other\Startup.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

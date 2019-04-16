@@ -1,15 +1,11 @@
 ﻿using System;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using ScreenToGif.Util;
 using ScreenToGif.Windows.Other;
-using OpenFileDialog = Microsoft.Win32.OpenFileDialog;
-using SaveFileDialog = Microsoft.Win32.SaveFileDialog;
 
 namespace ScreenToGif.Windows.UserControls
 {
@@ -67,9 +63,9 @@ namespace ScreenToGif.Windows.UserControls
             {
                 Owner = window
             };
-            var result = colorDialog.ShowDialog();
 
-            if (result.HasValue && result.Value)
+            var result = colorDialog.ShowDialog();
+            if (result == true)
             {
                 UserSettings.All.ChromaKey = colorDialog.SelectedColor;
             }

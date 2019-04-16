@@ -7,7 +7,7 @@
              xmlns:n="clr-namespace:ScreenToGif.Controls"
              xmlns:u="clr-namespace:ScreenToGif.Util"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
+             d:DesignHeight="450" d:DesignWidth="800" IsVisibleChanged="TempPanel_IsVisibleChanged">
     <UserControl.CommandBindings>
         <CommandBinding Command="u:Commands.CreateLocalSettings" CanExecute="CreateLocalSettings_CanExecute" Executed="CreateLocalSettings_Execute"/>
         <CommandBinding Command="u:Commands.OpenLocalSettings" CanExecute="RemoveLocalSettings_CanExecute" Executed="OpenLocalSettings_Execute"/>

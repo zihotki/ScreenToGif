@@ -449,12 +449,6 @@ namespace ScreenToGif.Controls
 
             var cancelButton = Template.FindName("CancelButton", this) as ImageButton;
 
-            var copyFailedHyperlink = Template.FindName("CopyFailedHyperlink", this) as Hyperlink;
-            var executedHyperlink = Template.FindName("ExecutedHyperlink", this) as Hyperlink;
-            var executionFailedHyperlink = Template.FindName("ExecutionFailedHyperlink", this) as Hyperlink;
-            var uploadHyperlink = Template.FindName("UploadHyperlink", this) as Hyperlink;
-            var uploadFailedHyperlink = Template.FindName("UploadFailedHyperlink", this) as Hyperlink;
-
             var fileButton = Template.FindName("FileButton", this) as ImageButton;
             var folderButton = Template.FindName("FolderButton", this) as ImageButton;
             var detailsButton = Template.FindName("DetailsButton", this) as ImageButton;
@@ -467,61 +461,7 @@ namespace ScreenToGif.Controls
             if (cancelButton != null)
                 cancelButton.Click += (s, a) => RaiseCancelClickedEvent();
 
-            //Copy failed.
-            if (copyFailedHyperlink != null)
-                copyFailedHyperlink.Click += (s, a) =>
-                {
-                    if (CopyTaskException == null) return;
-
-                    var viewer = new ExceptionViewer(CopyTaskException);
-                    viewer.ShowDialog();
-                };
-
-            //Command executed.
-            if (executedHyperlink != null)
-                executedHyperlink.Click += (s, a) =>
-                {
-                    var dialog = new TextDialog { Command = Command, Output = CommandOutput };
-                    dialog.ShowDialog();
-                };
-
-            //Command execution failed.
-            if (executionFailedHyperlink != null)
-                executionFailedHyperlink.Click += (s, a) =>
-                {
-                    if (CommandTaskException == null) return;
-
-                    var viewer = new ExceptionViewer(CommandTaskException);
-                    viewer.ShowDialog();
-                };
-
-            //Upload done.
-            if (uploadHyperlink != null)
-                uploadHyperlink.Click += (s, a) =>
-                {
-                    try
-                    {
-                        if (string.IsNullOrWhiteSpace(UploadLink))
-                            return;
-
-                        Process.Start(Keyboard.Modifiers != ModifierKeys.Control || string.IsNullOrWhiteSpace(DeletionLink) ? UploadLink : DeletionLink);
-                    }
-                    catch (Exception e)
-                    {
-                        LogWriter.Log(e, "Error while openning the upload link");
-                    }
-                };
-
-            //Upload failed.
-            if (uploadFailedHyperlink != null)
-                uploadFailedHyperlink.Click += (s, a) =>
-                {
-                    if (UploadTaskException == null) return;
-
-                    var viewer = new ExceptionViewer(UploadTaskException);
-                    viewer.ShowDialog();
-                };
-
+            
             //Open file.
             if (fileButton != null)
                 fileButton.Click += (s, a) =>

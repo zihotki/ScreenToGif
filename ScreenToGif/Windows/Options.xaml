@@ -62,14 +62,11 @@
                 <Grid>
                     <uc:OptionsApplication x:Name="ApplicationPanel" Visibility="{Binding IsChecked, ElementName=AppRadio, Converter={StaticResource Bool2Visibility}}" />
 
-                    <uc:OptionsShortcuts x:Name="ShortcutsPanel" Visibility="{Binding IsChecked, ElementName=ShortcutsRadio, Converter={StaticResource Bool2Visibility}}"
-                                IsVisibleChanged="ShortcutsPanel_IsVisibleChanged"/>
+                    <uc:OptionsShortcuts x:Name="ShortcutsPanel" Visibility="{Binding IsChecked, ElementName=ShortcutsRadio, Converter={StaticResource Bool2Visibility}}" />
 
-                    <uc:OptionsTempFiles  x:Name="TempPanel" Visibility="{Binding IsChecked, Converter={StaticResource Bool2Visibility}, ElementName=TempRadio}" 
-                          IsVisibleChanged="TempPanel_IsVisibleChanged"/>
+                    <uc:OptionsTempFiles  x:Name="TempPanel" Visibility="{Binding IsChecked, Converter={StaticResource Bool2Visibility}, ElementName=TempRadio}" />
 
-                    <uc:OptionsExtras  x:Name="ExtrasPanel" Visibility="{Binding IsChecked, Converter={StaticResource Bool2Visibility}, ElementName=ExtrasRadioButton}"
-                                       Loaded="ExtrasPanel_Loaded" />
+                    <uc:OptionsExtras  x:Name="ExtrasPanel" Visibility="{Binding IsChecked, Converter={StaticResource Bool2Visibility}, ElementName=ExtrasRadioButton}" />
 
                     <uc:OptionsSave x:Name="SavePanel" Visibility="{Binding IsChecked, Converter={StaticResource Bool2Visibility}, ElementName=SaveRadioButton}"
                                     />

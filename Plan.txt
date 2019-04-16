@@ -21,5 +21,8 @@ The editor will be closed.
 
 Tasks:
 
-1. Move save options to config window
-2. Remove redundant toolbar buttons
+1. Move save options to config window - Done
+2. Remove redundant toolbar buttons - Done
+3. Make application runnable - Done
+4. Polish settings window
+5. Embed save progress into the Editor

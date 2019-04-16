@@ -67,8 +67,6 @@
             <TextBlock Grid.Column="2" Text="{DynamicResource S.Application.Other.Homepage.Info}" Padding="0" Margin="5,0,0,0" VerticalAlignment="Center" TextWrapping="WrapWithOverflow" Foreground="#FF969696"/>
         </Grid>
 
-        <n:ExtendedCheckBox Text="{DynamicResource Application.Other.SystemTray}" Margin="15,3,5,3" IsChecked="{Binding Path=ShowNotificationIcon, Mode=TwoWay}"
-                                            CheckedChanged="NotificationIconCheckBox_CheckedChanged"/>
         <n:ExtendedCheckBox Text="{DynamicResource Application.Other.LeaveOpen}" Margin="30,3,5,3" IsChecked="{Binding Path=KeepOpen, Mode=TwoWay}"
                                             Visibility="{Binding ShowNotificationIcon, Converter={StaticResource Bool2Visibility}}"/>
         <n:ExtendedCheckBox Text="{DynamicResource Application.Other.NotifyFrameDeletion}" Margin="15,3,5,3" 

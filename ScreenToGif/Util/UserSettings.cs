@@ -649,30 +649,6 @@ namespace ScreenToGif.Util
             set => SetValue(value);
         }
 
-        public bool IsGifOptionsExpanded
-        {
-            get => (bool)GetValue();
-            set => SetValue(value);
-        }
-
-        public bool IsApngOptionsExpanded
-        {
-            get => (bool)GetValue();
-            set => SetValue(value);
-        }
-
-        public bool IsVideoOptionsExpanded
-        {
-            get => (bool)GetValue();
-            set => SetValue(value);
-        }
-
-        public bool IsSaveOptionsExpanded
-        {
-            get => (bool)GetValue();
-            set => SetValue(value);
-        }
-
         //Gif.
         public int Quality
         {

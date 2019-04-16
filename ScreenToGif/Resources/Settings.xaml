@@ -99,7 +99,7 @@
     <u:GifEncoderType x:Key="GifEncoder">Legacy</u:GifEncoderType>
     <u:ApngEncoderType x:Key="ApngEncoder">ScreenToGif</u:ApngEncoderType>
     <u:VideoEncoderType x:Key="VideoEncoder">AviStandalone</u:VideoEncoderType>
-      
+
     <!--Editor • Save As > Gif options-->
     <s:Int32 x:Key="Quality">10</s:Int32>
     <s:Int32 x:Key="GifskiQuality">50</s:Int32>
@@ -146,6 +146,7 @@
     <s:String x:Key="LatestVideoExtension">.mp4</s:String>
 
     <!--Editor • Save As > Video > Save options-->
+    <s:Boolean x:Key="PickLocationVideo">True</s:Boolean>
     <s:Boolean x:Key="ExecuteCustomCommandsVideo">False</s:Boolean>
     <s:String x:Key="CustomCommandsVideo">{p}</s:String>
 
