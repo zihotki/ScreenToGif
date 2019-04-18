@@ -29,36 +29,6 @@ namespace ScreenToGif.Util
         public static RoutedUICommand NewBoardRecording { get; set; } = new RoutedUICommand("New Board Recording", "Board", typeof(Commands),
             new InputGestureCollection { new KeyGesture(Key.B, ModifierKeys.Control, "Ctrl + B") });
 
-        #region New Empty Animation
-
-        /// <summary>
-        /// New Animation Command, Ctrl + Alt + A
-        /// </summary>
-        public static RoutedUICommand NewAnimation { get; set; } = new RoutedUICommand("New Animation", "NewAnimation", typeof(Commands),
-            new InputGestureCollection { new KeyGesture(Key.A, ModifierKeys.Control | ModifierKeys.Alt, "Ctrl + Alt + A") });
-
-        #endregion
-
-        #region Insert Recording
-
-        /// <summary>
-        /// Insert Recording Command, Ctrl + Shift + N
-        /// </summary>
-        public static RoutedUICommand InsertRecording { get; set; } = new RoutedUICommand("Insert Recording", "InsertRecording", typeof(Commands),
-            new InputGestureCollection { new KeyGesture(Key.N, ModifierKeys.Control | ModifierKeys.Shift, "Ctrl + Shift + N") });
-
-        #endregion
-
-        #region Insert Board Recording
-
-        /// <summary>
-        /// Insert Board Recording Command, Ctrl + Shift + B
-        /// </summary>
-        public static RoutedUICommand InsertBoardRecording { get; set; } = new RoutedUICommand("Insert Board Recording", "InsertBoardRecording", typeof(Commands),
-            new InputGestureCollection { new KeyGesture(Key.B, ModifierKeys.Control | ModifierKeys.Shift, "Ctrl + Shift + B") });
-
-        #endregion
-        
         #region Save as
 
         /// <summary>
@@ -68,18 +38,6 @@ namespace ScreenToGif.Util
             new InputGestureCollection { new KeyGesture(Key.S, ModifierKeys.Control, "Ctrl + S") });
 
         #endregion
-
-        /// <summary>
-        /// Load Command, Ctrl + O
-        /// </summary>
-        public static RoutedUICommand Load { get; set; } = new RoutedUICommand("Load", "Load", typeof(Commands),
-            new InputGestureCollection { new KeyGesture(Key.O, ModifierKeys.Control, "Ctrl + O") });
-
-        /// <summary>
-        /// Load Recent Command, Ctrl + L
-        /// </summary>
-        public static RoutedUICommand LoadRecent { get; set; } = new RoutedUICommand("Load Recent", "LoadRecent", typeof(Commands),
-            new InputGestureCollection { new KeyGesture(Key.L, ModifierKeys.Control, "Ctrl + L") });
 
         #region Discart Project
 
