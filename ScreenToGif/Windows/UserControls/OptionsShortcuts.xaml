@@ -3,14 +3,15 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:ScreenToGif.Windows.UserControls"
              xmlns:n="clr-namespace:ScreenToGif.Controls"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800" IsVisibleChanged="ShortcutsPanel_IsVisibleChanged">
     <StackPanel>
-        <n:LabelSeparator Text="{DynamicResource S.Shortcuts.Global}"/>
         <Grid Margin="10,3,5,3">
             <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
@@ -31,41 +32,30 @@
                                       MainKey="{Binding ExitShortcut, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" ModifierKeys="{Binding ExitModifiers, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
                                       KeyChanged="Globals_OnKeyChanged"/>
             <TextBlock Grid.Row="1" Grid.Column="2" Text="{DynamicResource S.Shortcuts.Global.Exit.Info}" Padding="0" Margin="5,0,0,0" VerticalAlignment="Center" TextWrapping="Wrap" Foreground="#FF969696"/>
-        </Grid>
 
-        <n:LabelSeparator Text="{DynamicResource S.Shortcuts.Recorders}"/>
-        <Grid Margin="10,3,5,3">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-            </Grid.RowDefinitions>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="Auto" MinWidth="80"/>
-                <ColumnDefinition/>
-            </Grid.ColumnDefinitions>
 
-            <Label Grid.Row="0" Grid.Column="0" Content="{DynamicResource S.Shortcuts.Recorders.StartPause}" Foreground="#FF444444" Padding="5,4" VerticalAlignment="Center"/>
-            <n:KeyBox Grid.Row="0" Grid.Column="1" x:Name="StartKeyBox" Height="23" Margin="3" VerticalAlignment="Center" 
+            <Label Grid.Row="2" Grid.Column="0" Content="{DynamicResource S.Shortcuts.Recorders.StartPause}" Foreground="#FF444444" Padding="5,4" VerticalAlignment="Center"/>
+            <n:KeyBox Grid.Row="2" Grid.Column="1" x:Name="StartKeyBox" Height="23" Margin="3" VerticalAlignment="Center" 
                                       MainKey="{Binding StartPauseShortcut, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
                                       ModifierKeys="{Binding StartPauseModifiers, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
                                       KeyChanged="Recorders_OnKeyChanged"/>
-            <TextBlock Grid.Row="0" Grid.Column="2" Text="{DynamicResource S.Shortcuts.Recorders.StartPause.Info}" Padding="0" Margin="5,0,0,0" VerticalAlignment="Center" TextWrapping="Wrap" Foreground="#FF969696"/>
+            <TextBlock Grid.Row="2" Grid.Column="2" Text="{DynamicResource S.Shortcuts.Recorders.StartPause.Info}" Padding="0" Margin="5,0,0,0" VerticalAlignment="Center" TextWrapping="Wrap" Foreground="#FF969696"/>
 
-            <Label Grid.Row="1" Grid.Column="0" Content="{DynamicResource S.Shortcuts.Recorders.Stop}" Foreground="#FF444444" Padding="5,4" VerticalAlignment="Center"/>
-            <n:KeyBox Grid.Row="1" Grid.Column="1" x:Name="StopKeyBox" Height="23" Margin="3" VerticalAlignment="Center" 
+            <Label Grid.Row="3" Grid.Column="0" Content="{DynamicResource S.Shortcuts.Recorders.Stop}" Foreground="#FF444444" Padding="5,4" VerticalAlignment="Center"/>
+            <n:KeyBox Grid.Row="3" Grid.Column="1" x:Name="StopKeyBox" Height="23" Margin="3" VerticalAlignment="Center" 
                                       MainKey="{Binding StopShortcut, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
                                       ModifierKeys="{Binding StopModifiers, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
                                       KeyChanged="Recorders_OnKeyChanged"/>
-            <TextBlock Grid.Row="1" Grid.Column="2" Text="{DynamicResource S.Shortcuts.Recorders.Stop.Info}" Padding="0" Margin="5,0,0,0" VerticalAlignment="Center" TextWrapping="Wrap" Foreground="#FF969696"/>
+            <TextBlock Grid.Row="3" Grid.Column="2" Text="{DynamicResource S.Shortcuts.Recorders.Stop.Info}" Padding="0" Margin="5,0,0,0" VerticalAlignment="Center" TextWrapping="Wrap" Foreground="#FF969696"/>
 
-            <Label Grid.Row="2" Grid.Column="0" Content="{DynamicResource S.Shortcuts.Recorders.Discard}" Foreground="#FF444444" Padding="5,4" VerticalAlignment="Center"/>
-            <n:KeyBox Grid.Row="2" Grid.Column="1" x:Name="DiscardKeyBox" Height="23" Margin="3" VerticalAlignment="Center" 
+            <Label Grid.Row="4" Grid.Column="0" Content="{DynamicResource S.Shortcuts.Recorders.Discard}" Foreground="#FF444444" Padding="5,4" VerticalAlignment="Center"/>
+            <n:KeyBox Grid.Row="4" Grid.Column="1" x:Name="DiscardKeyBox" Height="23" Margin="3" VerticalAlignment="Center" 
                                       MainKey="{Binding DiscardShortcut, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                       ModifierKeys="{Binding DiscardModifiers, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
                                       KeyChanged="Recorders_OnKeyChanged"/>
-            <TextBlock Grid.Row="2" Grid.Column="2" Text="{DynamicResource S.Shortcuts.Recorders.Discard.Info}" Padding="0" Margin="5,0,0,0" VerticalAlignment="Center" TextWrapping="Wrap" Foreground="#FF969696"/>
+            <TextBlock Grid.Row="4" Grid.Column="2" Text="{DynamicResource S.Shortcuts.Recorders.Discard.Info}" Padding="0" Margin="5,0,0,0" VerticalAlignment="Center" TextWrapping="Wrap" Foreground="#FF969696"/>
+
+            <!-- //TODO: save shortcuts -->
         </Grid>
     </StackPanel>
 </UserControl>

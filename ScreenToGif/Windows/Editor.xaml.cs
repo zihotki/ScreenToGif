@@ -107,11 +107,8 @@ namespace ScreenToGif.Windows
         {
             InitializeComponent();
 
-            //Tries to adjust the position/size of the window, centers on screen otherwise.
-            if (!UpdatePositioning())
-            {
-                WindowStartupLocation = WindowStartupLocation.CenterScreen;
-            }
+            //TODO: decide whether this is the best or not
+            WindowState = WindowState.Maximized;
         }
 
         #region Main Events
@@ -119,8 +116,7 @@ namespace ScreenToGif.Windows
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             SystemEvents.PowerModeChanged += System_PowerModeChanged;
-            SystemEvents.DisplaySettingsChanged += System_DisplaySettingsChanged;
-
+         
             ScrollSynchronizer.SetScrollGroup(ZoomBoxControl.GetScrollViewer(), "Canvas");
             ScrollSynchronizer.SetScrollGroup(MainScrollViewer, "Canvas");
 
@@ -141,11 +137,11 @@ namespace ScreenToGif.Windows
 
         private void Window_Activated(object sender, EventArgs e)
         {
-            if (UserSettings.All.EditorExtendChrome)
+            /*if (UserSettings.All.EditorExtendChrome)
                 Glass.ExtendGlassFrame(this, new Thickness(0, 126, 0, 0));
             else
                 Glass.RetractGlassFrame(this);
-
+                */
             //Returns the preview if was playing before the deactivation of the window.
             if (WasPreviewing)
             {
@@ -182,18 +178,9 @@ namespace ScreenToGif.Windows
                 ActionStack.Clear();
             }
 
-            //Manually get the position/size of the window, so it's possible opening multiple instances.
-            UserSettings.All.EditorTop = Top;
-            UserSettings.All.EditorLeft = Left;
-            UserSettings.All.EditorWidth = Width;
-            UserSettings.All.EditorHeight = Height;
-            UserSettings.All.EditorWindowState = WindowState;
-            UserSettings.Save();
-
             Encoder.TryClose();
 
             SystemEvents.PowerModeChanged -= System_PowerModeChanged;
-            SystemEvents.DisplaySettingsChanged -= System_DisplaySettingsChanged;
         }
 
         private void ZoomBox_MouseWheel(object sender, MouseWheelEventArgs e)
@@ -267,12 +254,7 @@ namespace ScreenToGif.Windows
 
             Slept = false;
         }
-
-        private void System_DisplaySettingsChanged(object sender, EventArgs e)
-        {
-            UpdatePositioning(false);
-        }
-
+        
         #endregion
 
         #region Frame Selection
@@ -1241,14 +1223,6 @@ namespace ScreenToGif.Windows
                 CommandManager.InvalidateRequerySuggested();
 
                 SetFocusOnCurrentFrame();
-
-                //Adjust the window size based on the frame size.
-                if (UserSettings.All.AutomaticallySizeOnContent && SizeToContentCommand.Command != null && SizeToContentCommand.Command.CanExecute(null))
-                    SizeToContentCommand.Command.Execute(null);
-
-                //Adjust the frame zoom based on the window size.
-                if (UserSettings.All.AutomaticallyFitImage && FitImageCommand.Command != null && FitImageCommand.Command.CanExecute(null))
-                    FitImageCommand.Command.Execute(null);
             });
         }
 
@@ -1946,51 +1920,6 @@ namespace ScreenToGif.Windows
             return FrameListView.SelectedItems.OfType<FrameListBoxItem>().Select(x => FrameListView.Items.IndexOf(x)).OrderBy(y => y).ToList();
         }
 
-        private bool UpdatePositioning(bool onLoad = true)
-        {
-            //TODO: When the DPI changes, these values are still from the latest dpi.
-            var top = onLoad ? UserSettings.All.EditorTop : Top;
-            var left = onLoad ? UserSettings.All.EditorLeft : Left;
-            var width = onLoad ? UserSettings.All.EditorWidth : Width;
-            var height = onLoad ? UserSettings.All.EditorHeight : Height;
-            var state = onLoad ? UserSettings.All.EditorWindowState : WindowState;
-
-            //If the position was never set, let it center on screen. 
-            if (double.IsNaN(top) && double.IsNaN(left))
-                return false;
-
-            //The catch here is to get the closest monitor from current Top/Left point. 
-            var monitors = Monitor.AllMonitorsScaled(this.Scale());
-            var closest = monitors.FirstOrDefault(x => x.Bounds.Contains(new Point((int)left, (int)top))) ?? monitors.FirstOrDefault(x => x.IsPrimary);
-
-            if (closest == null)
-                return false;
-
-            //To much to the Left.
-            if (closest.WorkingArea.Left > left + width - 100)
-                left = closest.WorkingArea.Left;
-
-            //Too much to the top.
-            if (closest.WorkingArea.Top > top + height - 100)
-                top = closest.WorkingArea.Top;
-
-            //Too much to the right.
-            if (closest.WorkingArea.Right < left + 100)
-                left = closest.WorkingArea.Right - width;
-
-            //Too much to the bottom.
-            if (closest.WorkingArea.Bottom < top + 100)
-                top = closest.WorkingArea.Bottom - height;
-
-            Top = top;
-            Left = left;
-            Width = width;
-            Height = height;
-            WindowState = state;
-
-            return true;
-        }
-
         #endregion
 
         #region Other
@@ -2234,14 +2163,6 @@ namespace ScreenToGif.Windows
                     return;
                 }
 
-                if (UserSettings.All.NotifyFrameDeletion)
-                {
-                    if (!Dialog.Ask(this.TextResource("Editor.DeleteFrames.Title"),
-                        this.TextResource("Editor.DeleteFrames.Instruction"),
-                        string.Format(this.TextResource("Editor.DeleteFrames.Message"), FrameListView.SelectedItems.Count)))
-                        return;
-                }
-
                 #endregion
 
                 var selected = FrameListView.SelectedItems.OfType<FrameListBoxItem>().ToList();
@@ -2275,13 +2196,6 @@ namespace ScreenToGif.Windows
         {
             PlaybackPause();
 
-            if (UserSettings.All.NotifyFrameDeletion)
-            {
-                if (!Dialog.Ask(this.TextResource("Editor.DeleteFrames.Title"), this.TextResource("Editor.DeleteFrames.Instruction"),
-                    string.Format(this.TextResource("Editor.DeleteFrames.Message"), FrameListView.SelectedIndex)))
-                    return;
-            }
-
             ActionStack.SaveState(ActionStack.EditAction.Remove, Project.Frames, Util.Other.CreateIndexList(0, FrameListView.SelectedIndex - 1));
 
             var count = FrameListView.SelectedIndex;
@@ -2299,13 +2213,6 @@ namespace ScreenToGif.Windows
         private void DeleteNext_Executed(object sender, ExecutedRoutedEventArgs e)
         {
             PlaybackPause();
-
-            if (UserSettings.All.NotifyFrameDeletion)
-            {
-                if (!Dialog.Ask(this.TextResource("Editor.DeleteFrames.Title"), this.TextResource("Editor.DeleteFrames.Instruction"),
-                    string.Format(this.TextResource("Editor.DeleteFrames.Message"), FrameListView.Items.Count - FrameListView.SelectedIndex - 1)))
-                    return;
-            }
 
             var countList = FrameListView.Items.Count - 1; //So we have a fixed value.
 

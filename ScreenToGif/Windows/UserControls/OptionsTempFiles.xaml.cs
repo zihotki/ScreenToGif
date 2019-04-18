@@ -51,66 +51,6 @@ namespace ScreenToGif.Windows.UserControls
             InitializeComponent();
         }
 
-        private void CreateLocalSettings_Execute(object sender, ExecutedRoutedEventArgs e)
-        {
-            try
-            {
-                UserSettings.CreateLocalSettings();
-
-                LocalPathTextBlock.TextDecorations.Clear();
-                LocalPathTextBlock.ClearValue(ToolTipProperty);
-            }
-            catch (Exception ex)
-            {
-                Dialog.Ok("Create Local Settings", "Impossible to create local settings", ex.Message);
-            }
-        }
-
-        private void CreateLocalSettings_CanExecute(object sender, CanExecuteRoutedEventArgs e)
-        {
-            e.CanExecute = IsLoaded && !File.Exists(LocalPathTextBlock.Text);
-        }
-
-        private void OpenLocalSettings_Execute(object sender, ExecutedRoutedEventArgs e)
-        {
-            try
-            {
-                if (Keyboard.Modifiers == ModifierKeys.Control)
-                    Process.Start(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Settings.xaml"));
-                else
-                    Process.Start("explorer.exe", $"/select,\"{Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Settings.xaml")}\"");
-            }
-            catch (Exception ex)
-            {
-                Dialog.Ok("Open AppData Local Folder", "Impossible to open where the Local settings file is located", ex.Message);
-            }
-        }
-
-
-        private void RemoveLocalSettings_Execute(object sender, ExecutedRoutedEventArgs e)
-        {
-            try
-            {
-                UserSettings.RemoveLocalSettings();
-
-                LocalPathTextBlock.TextDecorations.Add(new TextDecoration(TextDecorationLocation.Strikethrough,
-                    new Pen(Brushes.DarkSlateGray, 1), 0, TextDecorationUnit.FontRecommended, TextDecorationUnit.FontRecommended));
-
-                LocalPathTextBlock.SetResourceReference(ToolTipProperty, "TempFiles.NotExists");
-            }
-            catch (Exception ex)
-            {
-                Dialog.Ok("Remove Local Settings", "Impossible to remove local settings", ex.Message);
-            }
-        }
-
-
-        private void RemoveLocalSettings_CanExecute(object sender, CanExecuteRoutedEventArgs e)
-        {
-            e.CanExecute = IsLoaded && File.Exists(LocalPathTextBlock.Text);
-        }
-
-
         private void ChooseLogsLocation_Click(object sender, RoutedEventArgs e)
         {
             var folderDialog = new System.Windows.Forms.FolderBrowserDialog { ShowNewFolderButton = true };
@@ -161,14 +101,17 @@ namespace ScreenToGif.Windows.UserControls
                 if (!Directory.Exists(path))
                 {
                     _folderList.Clear();
-                    TempSeparator.TextRight = LocalizationHelper.Get("TempFiles.FilesAndFolders.None");
                     return;
                 }
 
                 _folderList = await Task.Factory.StartNew(() => Directory.GetDirectories(path, "*", SearchOption.TopDirectoryOnly).Select(x => new DirectoryInfo(x)).ToList());
 
-                if (Dialog.Ask("ScreenToGif", LocalizationHelper.Get("TempFiles.KeepRecent"), LocalizationHelper.Get("TempFiles.KeepRecent.Info")))
-                    _folderList = await Task.Factory.StartNew(() => _folderList.Where(w => (DateTime.Now - w.CreationTime).Days > (UserSettings.All.AutomaticCleanUpDays > 0 ? UserSettings.All.AutomaticCleanUpDays : 5)).ToList());
+                if (Dialog.Ask("ScreenToGif", LocalizationHelper.Get("TempFiles.KeepRecent"), 
+                        LocalizationHelper.Get("TempFiles.KeepRecent.Info")))
+                {
+                    _folderList = await Task.Factory.StartNew(() =>
+                          _folderList.Where(w => (DateTime.Now - w.CreationTime).Days > 5).ToList());
+                }
 
                 foreach (var folder in _folderList)
                 {
@@ -189,47 +132,7 @@ namespace ScreenToGif.Windows.UserControls
                 App.MainViewModel.CheckDiskSpace();
             }
 
-            TempSeparator.TextRight = string.Format(LocalizationHelper.Get("TempFiles.FilesAndFolders.Count", "{0} folders and {1} files"), _folderList.Count.ToString("##,##0"),
-                _folderList.Sum(folder => Directory.EnumerateFiles(folder.FullName).Count()).ToString("##,##0"));
-
             ClearTempButton.IsEnabled = _folderList.Any();
-        }
-
-        private void RemoveAppDataSettings_CanExecute(object sender, CanExecuteRoutedEventArgs e)
-        {
-            e.CanExecute = IsLoaded && File.Exists(AppDataPathTextBlock.Text);
-        }
-
-        private void OpenAppDataSettings_Execute(object sender, ExecutedRoutedEventArgs e)
-        {
-            try
-            {
-                if (Keyboard.Modifiers == ModifierKeys.Control)
-                    Process.Start(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "ScreenToGif", "Settings.xaml"));
-                else
-                    Process.Start("explorer.exe", $"/select,\"{Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "ScreenToGif", "Settings.xaml")}\"");
-            }
-            catch (Exception ex)
-            {
-                Dialog.Ok("Open AppData Settings Folder", "Impossible to open where the AppData settings is located", ex.Message);
-            }
-        }
-
-        private void RemoveAppDataSettings_Executed(object sender, ExecutedRoutedEventArgs e)
-        {
-            try
-            {
-                UserSettings.RemoveAppDataSettings();
-
-                AppDataPathTextBlock.TextDecorations.Add(new TextDecoration(TextDecorationLocation.Strikethrough,
-                    new Pen(Brushes.DarkSlateGray, 1), 0, TextDecorationUnit.FontRecommended, TextDecorationUnit.FontRecommended));
-
-                AppDataPathTextBlock.SetResourceReference(ToolTipProperty, "TempFiles.NotExists");
-            }
-            catch (Exception ex)
-            {
-                Dialog.Ok("Remove AppData Settings", "Impossible to remove AppData settings", ex.Message);
-            }
         }
 
         private void TempPanel_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
@@ -308,8 +211,6 @@ namespace ScreenToGif.Windows.UserControls
                 Dispatcher.Invoke(() =>
                 {
                     App.MainViewModel.CheckDiskSpace();
-
-                    TempSeparator.TextRight = string.Format(LocalizationHelper.Get("TempFiles.FilesAndFolders.Count", "{0} folders and {1} files"), _folderList.Count.ToString("##,##0"), _fileCount.ToString("##,##0"));
 
                     ClearTempButton.IsEnabled = _folderList.Any();
                 });

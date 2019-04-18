@@ -18,10 +18,6 @@
         <c:UriToBitmap x:Key="UriToBitmapConverter"/>
         <c:PathToFilename x:Key="PathToFilenameConverter"/>
         <c:DoubleToThickness x:Key="DoubleToThicknessConverter"/>
-        <c:SelectionToEditingMode x:Key="SelectionToEditingModeConverter"/>
-        <c:SelectionToDrawingAttributes x:Key="SelectionToDrawingAttributesConverter"/>
-        <c:SelectionToStylusShape x:Key="SelectionToStylusShapeConverter"/>
-        <c:StylusTipToBool x:Key="StylusTipToBoolConverter"/>
         <c:RoutedCommandToInputGestureTextConverter x:Key="CommandToInputGestureTextConverter"/>
         <c:FontToSupportedGliph x:Key="FontToSupportedGliphConverter"/>
         <c:InvertedBool x:Key="InvertedBool"/>

@@ -3,9 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:ScreenToGif.Windows.UserControls"
             xmlns:n="clr-namespace:ScreenToGif.Controls"
-            xmlns:c="clr-namespace:ScreenToGif.Util.Converters"
             xmlns:u="clr-namespace:ScreenToGif.Util"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
@@ -13,89 +11,62 @@
     <StackPanel CanVerticallyScroll="True" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.CanContentScroll="True">
         <n:LabelSeparator Text="{DynamicResource Application.ScreenRecorder}" Margin="0,0,0,5"/>
 
-        <n:ExtendedCheckBox Text="{DynamicResource Application.ScreenRecorder.RecordMouse}" Margin="15,3,5,3" IsChecked="{Binding Path=ShowCursor, Mode=TwoWay}"/>
-        <n:ExtendedCheckBox Text="{DynamicResource Application.ScreenRecorder.RecordClicks}" Margin="30,3,5,3" IsChecked="{Binding Path=DetectMouseClicks, Mode=TwoWay}" IsEnabled="{Binding Path=ShowCursor}"/>
-
-        <n:ExtendedCheckBox Text="{DynamicResource Application.ScreenRecorder.PreStart}" Margin="15,3,5,3" IsChecked="{Binding Path=UsePreStart, Mode=TwoWay}"/>
-        <WrapPanel Margin="30,3,5,3" Visibility="{Binding UsePreStart, Converter={StaticResource Bool2Visibility}}">
-            <n:IntegerUpDown Minimum="2" Maximum="15" MinWidth="50" Value="{Binding Source={x:Static u:UserSettings.All}, Path=PreStartValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-            <TextBlock Text="{DynamicResource Application.ScreenRecorder.PreStart.Info}" Padding="0" Margin="5,0,0,0" VerticalAlignment="Center" TextWrapping="Wrap" Foreground="#FF969696"/>
-        </WrapPanel>
-
-        <WrapPanel Margin="10,0,5,0">
-            <n:ExtendedCheckBox Text="{DynamicResource Application.ScreenRecorder.StepRecording}" Margin="5,3" VerticalAlignment="Top" IsChecked="{Binding Path=SnapshotMode, Mode=TwoWay}"/>
-            <TextBlock Text="{DynamicResource Application.ScreenRecorder.StepRecording.Info}" Padding="0" Margin="5,0,0,0" VerticalAlignment="Center" TextWrapping="Wrap" Foreground="#FF969696"/>
-        </WrapPanel>
-
-        <WrapPanel Margin="10,0,5,0">
-            <n:ExtendedCheckBox Text="{DynamicResource Application.ScreenRecorder.FixedFramerate}" Margin="5,3" VerticalAlignment="Top" IsChecked="{Binding Path=FixedFrameRate, Mode=TwoWay}"/>
-            <TextBlock Text="{DynamicResource Application.ScreenRecorder.FixedFramerate.Info}" Padding="0" Margin="5,0,0,0" VerticalAlignment="Center" TextWrapping="Wrap" Foreground="#FF969696"/>
-        </WrapPanel>
-
-        <WrapPanel Margin="10,0,5,0">
-            <n:ExtendedCheckBox Text="{DynamicResource Application.ScreenRecorder.AsyncRecording}" Margin="5,3" VerticalAlignment="Top" IsChecked="{Binding Path=AsyncRecording, Mode=TwoWay}"/>
-            <TextBlock Text="{DynamicResource Application.ScreenRecorder.AsyncRecording.Info}" Padding="0" Margin="5,0,0,0" VerticalAlignment="Center" TextWrapping="Wrap" Foreground="#FF969696"/>
-        </WrapPanel>
-
-        <WrapPanel Margin="10,0,5,0">
-            <n:ExtendedCheckBox Text="{DynamicResource Application.ScreenRecorder.NewRecorder}" Margin="5,3" VerticalAlignment="Top" IsChecked="{Binding Path=NewRecorder, Mode=TwoWay}"/>
-            <TextBlock Text="{DynamicResource Application.ScreenRecorder.NewRecorder.Info}" Padding="0" Margin="5,0,0,0" VerticalAlignment="Center" TextWrapping="Wrap" Foreground="#FF969696"/>
-        </WrapPanel>
-
-        <WrapPanel Margin="10,0,5,0">
-            <n:ExtendedCheckBox Text="{DynamicResource Application.ScreenRecorder.Magnifier}" Margin="5,3" VerticalAlignment="Top" IsChecked="{Binding Path=Magnifier, Mode=TwoWay}"/>
-            <TextBlock Text="{DynamicResource Application.ScreenRecorder.Magnifier.Info}" Padding="0" Margin="5,0,0,0" VerticalAlignment="Center" TextWrapping="Wrap" Foreground="#FF969696"/>
-        </WrapPanel>
-
-        <n:LabelSeparator Text="{DynamicResource Application.Other}"/>
-        <Grid Margin="15,3,5,3">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="Auto" MinWidth="120"/>
-                <ColumnDefinition/>
-            </Grid.ColumnDefinitions>
-
-            <TextBlock Grid.Column="0" Text="{DynamicResource S.Application.Other.Homepage}" Foreground="#FF444444" Padding="5,0" VerticalAlignment="Center"/>
-            <ComboBox Grid.Column="1" SelectedIndex="{Binding Path=StartUp, Mode=TwoWay}" MinWidth="120" VerticalAlignment="Center">
-                <ComboBoxItem Content="{DynamicResource S.Application.Other.Homepage.StartUp}"/>
-                <ComboBoxItem Content="{DynamicResource S.Application.Other.Homepage.Recorder}"/>
-                <ComboBoxItem Content="{DynamicResource S.Application.Other.Homepage.Webcam}"/>
-                <ComboBoxItem Content="{DynamicResource S.Application.Other.Homepage.Board}"/>
-                <ComboBoxItem Content="{DynamicResource S.Application.Other.Homepage.Editor}"/>
-                <ComboBoxItem Content="{DynamicResource S.Application.Other.Homepage.Minimized}"/>
-            </ComboBox>
-            <TextBlock Grid.Column="2" Text="{DynamicResource S.Application.Other.Homepage.Info}" Padding="0" Margin="5,0,0,0" VerticalAlignment="Center" TextWrapping="WrapWithOverflow" Foreground="#FF969696"/>
-        </Grid>
-
-        <n:ExtendedCheckBox Text="{DynamicResource Application.Other.LeaveOpen}" Margin="30,3,5,3" IsChecked="{Binding Path=KeepOpen, Mode=TwoWay}"
-                                            Visibility="{Binding ShowNotificationIcon, Converter={StaticResource Bool2Visibility}}"/>
-        <n:ExtendedCheckBox Text="{DynamicResource Application.Other.NotifyFrameDeletion}" Margin="15,3,5,3" 
-                            IsChecked="{Binding Path=NotifyFrameDeletion, Mode=TwoWay}"/>
-        <n:ExtendedCheckBox Text="{DynamicResource Application.Other.NotifyProjectDiscard}" Margin="15,3,5,3" 
-                            IsChecked="{Binding Path=NotifyProjectDiscard, Mode=TwoWay}"/>
-        <n:ExtendedCheckBox Text="{DynamicResource Application.Other.NotifyWhileClosingEditor}" Margin="15,3,5,3" 
-                            IsChecked="{Binding Path=NotifyWhileClosingEditor, Mode=TwoWay}"/>
-        <n:ExtendedCheckBox Text="{DynamicResource Application.Other.NotifyWhileClosingApp}" Margin="15,3,5,3" 
-                            IsChecked="{Binding Path=NotifyWhileClosingApp, Mode=TwoWay}"/>
-        <n:ExtendedCheckBox Text="{DynamicResource Application.Other.DrawOutlineOutside}" Margin="15,3,5,3" 
-                            IsChecked="{Binding Path=DrawOutlineOutside, Mode=TwoWay}"/>
         <n:ExtendedCheckBox Text="{DynamicResource Application.Other.DisableHardwareAcceleration}" Margin="15,3,5,3" 
                             IsChecked="{Binding Path=DisableHardwareAcceleration, Mode=TwoWay}"/>
-        <n:ExtendedCheckBox Text="{DynamicResource Application.Other.CheckForTranslationUpdates}" Margin="15,3,5,3" 
-                            IsChecked="{Binding Path=CheckForTranslationUpdates, Mode=TwoWay}"/>
-        <n:ExtendedCheckBox x:Name="UpdatesCheckBox" Text="{DynamicResource Application.Other.CheckForUpdates}" Margin="15,3,5,3" 
-                            IsChecked="{Binding Path=CheckForUpdates, Mode=TwoWay}"/>
 
-        <n:LabelSeparator Text="{DynamicResource Interface.Other}" Margin="0,0,0,5"/>
-        <n:ExtendedCheckBox Text="{DynamicResource Interface.Other.ExtendChrome}" 
-                            IsChecked="{Binding Path=EditorExtendChrome, Mode=TwoWay}" Margin="15,3,5,3"/>
         <n:ExtendedCheckBox Text="{DynamicResource Interface.Other.HideTitleBar}" 
                             IsChecked="{Binding Path=RecorderThinMode, Mode=TwoWay}" Margin="15,3,5,3"/>
-        <n:ExtendedCheckBox Text="{DynamicResource Interface.Other.TripleClickSelection}" 
-                            IsChecked="{Binding Path=TripleClickSelection, Mode=TwoWay}" Margin="15,3,5,3"/>
-        <n:ExtendedCheckBox Text="{DynamicResource Interface.Other.AutomaticallySizeOnContent}" 
-                            IsChecked="{Binding Path=AutomaticallySizeOnContent, Mode=TwoWay}" Margin="15,3,5,3"/>
-        <n:ExtendedCheckBox Text="{DynamicResource Interface.Other.AutomaticallyFitImage}" 
-                            IsChecked="{Binding Path=AutomaticallyFitImage, Mode=TwoWay}" Margin="15,3,5,3"/>
+
+        <n:LabelSeparator Text="{DynamicResource Extras.External}"/>
+        <WrapPanel Margin="5,0">
+            <n:ImageCard x:Name="FfmpegImageCard" Header="FFmpeg" Click="FfmpegImageCard_Click"/>
+            <n:ImageCard x:Name="GifskiImageCard" Header="Gifski" Click="GifskiImageCard_Click"/>
+        </WrapPanel>
+
+        <n:LabelSeparator Grid.Row="2" Text="{DynamicResource Extras.FfmpegLocation}"/>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition Width="30"/>
+            </Grid.ColumnDefinitions>
+
+            <n:ExtendedTextBox Grid.Column="0" x:Name="FfmpegLocationTextBox" Margin="10,3,0,3" Text="{Binding FfmpegLocation, Source={x:Static u:UserSettings.All}, UpdateSourceTrigger=PropertyChanged}" 
+                                               LostKeyboardFocus="LocationTextBox_LostKeyboardFocus"/>
+
+            <n:ImageButton Grid.Column="1" Style="{StaticResource Style.Button.NoText}" Content="{StaticResource Vector.Open}" ContentWidth="20"
+                                           Click="SelectFfmpeg_Click" ToolTip="{DynamicResource Extras.FfmpegLocation.Select}"
+                                           ToolTipService.Placement="Top" ToolTipService.HorizontalOffset="-5"/>
+        </Grid>
+
+        <n:LabelSeparator Text="{DynamicResource Extras.GifskiLocation}"/>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition Width="30"/>
+            </Grid.ColumnDefinitions>
+
+            <n:ExtendedTextBox Grid.Column="0" x:Name="GifskiLocationTextBox" Margin="10,3,0,3" Text="{Binding GifskiLocation, Source={x:Static u:UserSettings.All}, UpdateSourceTrigger=PropertyChanged}" 
+                                               LostKeyboardFocus="LocationTextBox_LostKeyboardFocus"/>
+
+            <n:ImageButton Grid.Column="1" Style="{StaticResource Style.Button.NoText}" Content="{StaticResource Vector.Open}" ContentWidth="20"
+                                           Click="SelectGifski_Click" ToolTip="{DynamicResource Extras.GifskiLocation.Select}"
+                                           ToolTipService.Placement="Top" ToolTipService.HorizontalOffset="-5"/>
+        </Grid>
+
+        <StackPanel Orientation="Horizontal">
+            <Viewbox Child="{StaticResource Vector.Info}" Height="16" Width="16" Margin="2"/>
+
+            <TextBlock Margin="2" VerticalAlignment="Center">
+                <Hyperlink NavigateUri="https://ffmpeg.org/legal.html" RequestNavigate="ExtrasHyperlink_OnRequestNavigate">
+                    <Run Text="{DynamicResource Extras.License.Ffmpeg}"/>
+                </Hyperlink>
+                                
+                <Run>/</Run>
+
+                <Hyperlink NavigateUri="https://github.com/ImageOptim/gifski/blob/master/LICENSE" RequestNavigate="ExtrasHyperlink_OnRequestNavigate">
+                    <Run Text="{DynamicResource Extras.License.Gifski}"/>
+                </Hyperlink>
+            </TextBlock>
+        </StackPanel>
     </StackPanel>
 </UserControl>

@@ -231,73 +231,9 @@ namespace ScreenToGif.Util
             return resource;
         }
 
-        public static void CreateLocalSettings()
-        {
-            var local = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Settings.xaml");
-
-            if (!File.Exists(local))
-                File.Create(local).Dispose();
-
-            _local = LoadOrDefault(local);
-        }
-
-        public static void RemoveLocalSettings()
-        {
-            var local = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Settings.xaml");
-
-            if (File.Exists(local))
-                File.Delete(local);
-
-            _local = null; //TODO: Should I remove from the merged dictionaries?
-        }
-
-        public static void RemoveAppDataSettings()
-        {
-            var appData = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "ScreenToGif", "Settings.xaml");
-
-            if (File.Exists(appData))
-                File.Delete(appData);
-
-            _appData = null; //TODO: Should I remove from the merged dictionaries?
-        }
-
         private void OnPropertyChanged(string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
-
-        #endregion
-
-        #region Startup
-
-        public double StartupTop
-        {
-            get => (double)GetValue();
-            set => SetValue(value);
-        }
-
-        public double StartupLeft
-        {
-            get => (double)GetValue();
-            set => SetValue(value);
-        }
-
-        public double StartupHeight
-        {
-            get => (double)GetValue();
-            set => SetValue(value);
-        }
-
-        public double StartupWidth
-        {
-            get => (double)GetValue();
-            set => SetValue(value);
-        }
-
-        public WindowState StartupWindowState
-        {
-            get => (WindowState)GetValue();
-            set => SetValue(value);
         }
 
         #endregion
@@ -348,75 +284,11 @@ namespace ScreenToGif.Util
 
         #endregion
 
-        #region Options • Application
-        
-        public bool UsePreStart
-        {
-            get => (bool)GetValue();
-            set => SetValue(value);
-        }
-
-        public int PreStartValue
-        {
-            get => (int)GetValue();
-            set => SetValue(value);
-        }
-
-        public bool SnapshotMode
-        {
-            get => (bool)GetValue();
-            set => SetValue(value);
-        }
-
-        public int SnapshotDefaultDelay
-        {
-            get => (int)GetValue();
-            set => SetValue(value);
-        }
-
-        public bool FixedFrameRate
-        {
-            get => (bool)GetValue();
-            set => SetValue(value);
-        }
-
-        public bool AsyncRecording
-        {
-            get => (bool)GetValue();
-            set => SetValue(value);
-        }
-
-        public bool Magnifier
-        {
-            get => (bool)GetValue();
-            set => SetValue(value);
-        }
-
-        public bool NotifyFrameDeletion
-        {
-            get => (bool)GetValue();
-            set => SetValue(value);
-        }
-
-        public bool NotifyWhileClosingApp
-        {
-            get => (bool)GetValue();
-            set => SetValue(value);
-        }
-
-        public bool DrawOutlineOutside
-        {
-            get => (bool)GetValue();
-            set => SetValue(value);
-        }
-
         public bool DisableHardwareAcceleration
         {
             get => (bool)GetValue();
             set => SetValue(value);
         }
-
-        #endregion
 
         #region Options • Interface
 
@@ -474,31 +346,7 @@ namespace ScreenToGif.Util
             set => SetValue(value);
         }
 
-        public bool EditorExtendChrome
-        {
-            get => (bool)GetValue(defaultValue: false);
-            set => SetValue(value);
-        }
-
         public bool RecorderThinMode
-        {
-            get => (bool)GetValue();
-            set => SetValue(value);
-        }
-
-        public bool TripleClickSelection
-        {
-            get => (bool)GetValue();
-            set => SetValue(value);
-        }
-
-        public bool AutomaticallySizeOnContent
-        {
-            get => (bool)GetValue();
-            set => SetValue(value);
-        }
-
-        public bool AutomaticallyFitImage
         {
             get => (bool)GetValue();
             set => SetValue(value);
@@ -606,18 +454,6 @@ namespace ScreenToGif.Util
         public string TemporaryFolder
         {
             get => (string)GetValue();
-            set => SetValue(value);
-        }
-
-        public bool AutomaticCleanUp
-        {
-            get => (bool)GetValue();
-            set => SetValue(value);
-        }
-
-        public int AutomaticCleanUpDays
-        {
-            get => (int)GetValue();
             set => SetValue(value);
         }
 
@@ -870,40 +706,6 @@ namespace ScreenToGif.Util
         public string GifskiLocation
         {
             get => (string)GetValue();
-            set => SetValue(value);
-        }
-
-        #endregion
-
-        #region Editor
-
-        public double EditorTop
-        {
-            get => (double)GetValue();
-            set => SetValue(value);
-        }
-
-        public double EditorLeft
-        {
-            get => (double)GetValue();
-            set => SetValue(value);
-        }
-
-        public double EditorHeight
-        {
-            get => (double)GetValue();
-            set => SetValue(value);
-        }
-
-        public double EditorWidth
-        {
-            get => (double)GetValue();
-            set => SetValue(value);
-        }
-
-        public WindowState EditorWindowState
-        {
-            get => (WindowState)GetValue();
             set => SetValue(value);
         }
 

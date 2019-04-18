@@ -9,25 +9,8 @@
     <!--Empty String values are suppressed to avoid exceptions-->
     
     <!--Options • Application-->
-    <s:Int32 x:Key="StartUp">0</s:Int32>
-    <s:Boolean x:Key="ShowCursor">True</s:Boolean>
-    <s:Boolean x:Key="DetectMouseClicks">True</s:Boolean>
-    <s:Boolean x:Key="UsePreStart">False</s:Boolean>
-    <s:Int32 x:Key="PreStartValue">3</s:Int32>
     <s:Boolean x:Key="FullScreenMode">False</s:Boolean>
-    <s:Boolean x:Key="SnapshotMode">False</s:Boolean>
-    <s:Int32 x:Key="SnapshotDefaultDelay">1000</s:Int32>
-    <s:Boolean x:Key="FixedFrameRate">False</s:Boolean>
-    <s:Boolean x:Key="AsyncRecording">False</s:Boolean>
-    <s:Boolean x:Key="NewRecorder">False</s:Boolean>
-    <s:Boolean x:Key="Magnifier">True</s:Boolean>
     <s:Boolean x:Key="ShowNotificationIcon">True</s:Boolean>
-    <s:Boolean x:Key="KeepOpen">False</s:Boolean>
-    <s:Boolean x:Key="NotifyFrameDeletion">False</s:Boolean>
-    <s:Boolean x:Key="NotifyProjectDiscard">False</s:Boolean>
-    <s:Boolean x:Key="NotifyWhileClosingEditor">False</s:Boolean>
-    <s:Boolean x:Key="NotifyWhileClosingApp">False</s:Boolean>
-    <s:Boolean x:Key="DrawOutlineOutside">True</s:Boolean>
     <s:Boolean x:Key="DisableHardwareAcceleration">False</s:Boolean>
 
     <!--Options • Interface-->
@@ -40,12 +23,8 @@
     <Color x:Key="BoardGridBackground">#FFFFFFFF</Color>
     <Color x:Key="BoardGridColor1">#FFFFFFFF</Color>
     <Color x:Key="BoardGridColor2">#FFFFFFFF</Color>
-    <s:Boolean x:Key="EditorExtendChrome">False</s:Boolean>
     <s:Boolean x:Key="RecorderThinMode">False</s:Boolean>
-    <s:Boolean x:Key="TripleClickSelection">False</s:Boolean>
-    <s:Boolean x:Key="AutomaticallySizeOnContent">False</s:Boolean>
-    <s:Boolean x:Key="AutomaticallyFitImage">True</s:Boolean>
-
+    
     
     <!--Options • Shortcuts-->
     <Key x:Key="RecorderShortcut">None</Key>
@@ -62,31 +41,22 @@
     <ModifierKeys x:Key="StopModifiers" xml:space="preserve"></ModifierKeys>
     <Key x:Key="DiscardShortcut">F9</Key>
     <ModifierKeys x:Key="DiscardModifiers" xml:space="preserve"></ModifierKeys>
-    
+
+
     <!--Options • Temporary Files and Extras-->
     <s:String x:Key="LogsFolder">.</s:String>
     <!--<s:String x:Key="TemporaryFolder"></s:String>-->
     <!--<s:String x:Key="FfmpegLocation"></s:String>-->
     <!--<s:String x:Key="GifskiLocation"></s:String>-->
-    <s:Boolean x:Key="AutomaticCleanUp">True</s:Boolean>
-    <s:Int32 x:Key="AutomaticCleanUpDays">5</s:Int32>
-
-    <!--Startup-->
-    <s:Double x:Key="StartupTop">NaN</s:Double>
-    <s:Double x:Key="StartupLeft">NaN</s:Double>
-    <s:Double x:Key="StartupWidth">NaN</s:Double>
-    <s:Double x:Key="StartupHeight">NaN</s:Double>
-    <WindowState x:Key="StartupWindowState">Normal</WindowState>
     
     <!--Recorder-->
     <s:Int32 x:Key="RecorderWidth">518</s:Int32>
     <s:Int32 x:Key="RecorderHeight">269</s:Int32>
     <s:Double x:Key="RecorderTop">NaN</s:Double>
     <s:Double x:Key="RecorderLeft">NaN</s:Double>
-    <s:Int32 x:Key="LatestFps">15</s:Int32>
+    <s:Int32 x:Key="LatestFps">25</s:Int32>
     <Rect x:Key="SelectedRegion">Empty</Rect>
-    <s:Int32 x:Key="RecorderModeIndex">0</s:Int32>
-
+    
     <!--Editor-->
     <s:Double x:Key="EditorTop">NaN</s:Double>
     <s:Double x:Key="EditorLeft">NaN</s:Double>
@@ -154,7 +124,6 @@
     <s:Double x:Key="BorderTopThickness">1.0</s:Double>
 
     <!--Editor • Progress-->
-    <u:ProgressType x:Key="ProgressType">Bar</u:ProgressType>
     <s:Boolean x:Key="IsProgressFontGroupExpanded">True</s:Boolean>
     <FontFamily x:Key="ProgressFontFamily">Segoe UI</FontFamily>
     <s:Double x:Key="ProgressFontSize">14.0</s:Double>
@@ -169,8 +138,5 @@
     <HorizontalAlignment x:Key="ProgressHorizontalAligment">Left</HorizontalAlignment>
     <VerticalAlignment x:Key="ProgressVerticalAligment">Bottom</VerticalAlignment>
     <Orientation x:Key="ProgressOrientation">Horizontal</Orientation>
-
-    <!--Other-->
-    <Color x:Key="InsertFillColor">#FFFFFFFF</Color>
-    <s:Int32 x:Key="LatestFpsImport">25</s:Int32>
+    
 </ResourceDictionary>

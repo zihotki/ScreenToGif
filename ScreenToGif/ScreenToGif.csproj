@@ -173,11 +173,9 @@
     <Compile Include="Controls\DoubleUpDown.cs" />
     <Compile Include="Controls\IntegerUpDown.cs" />
     <Compile Include="Controls\RangeSlider.cs" />
-    <Compile Include="Controls\SelectControl.cs" />
     <Compile Include="Controls\SpectrumSlider.cs" />
     <Compile Include="Controls\StatusBand.cs" />
     <Compile Include="Controls\StatusList.cs" />
-    <Compile Include="Controls\TextPath.cs" />
     <Compile Include="Controls\ZoomBox.cs" />
     <Compile Include="ImageUtil\Apng\Apng.cs" />
     <Compile Include="ImageUtil\Apng\Chunks\ActlChunk.cs" />
@@ -212,9 +210,6 @@
     <Compile Include="ImageUtil\Gif\Decoder\GifTrailer.cs" />
     <Compile Include="Windows\UserControls\OptionsApplication.xaml.cs">
       <DependentUpon>OptionsApplication.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Windows\UserControls\OptionsExtras.xaml.cs">
-      <DependentUpon>OptionsExtras.xaml</DependentUpon>
     </Compile>
     <Compile Include="Windows\UserControls\OptionsSave.xaml.cs">
       <DependentUpon>OptionsSave.xaml</DependentUpon>
@@ -267,7 +262,6 @@
     <Compile Include="Util\Converters\InvertedVisibility.cs" />
     <Compile Include="Util\Converters\MultiLineTitle.cs" />
     <Compile Include="Util\Converters\RoutedCommandToInputGestureText.cs" />
-    <Compile Include="Util\Converters\SelectionToEditingMode.cs" />
     <Compile Include="Util\Converters\IntToBool.cs" />
     <Compile Include="Util\Converters\BytesToSize.cs" />
     <Compile Include="Util\Converters\ColorToBrush.cs" />
@@ -285,14 +279,11 @@
     <Compile Include="Util\Converters\KeysToString.cs" />
     <Compile Include="Util\Converters\MaximumValue.cs" />
     <Compile Include="Util\Converters\PathToFilename.cs" />
-    <Compile Include="Util\Converters\SelectionToDrawingAttributes.cs" />
-    <Compile Include="Util\Converters\SelectionToStylusShape.cs" />
     <Compile Include="Util\Converters\ShortcutSelection.cs" />
     <Compile Include="Util\Converters\SourceToSize.cs" />
     <Compile Include="Util\Converters\StageToButtonString.cs" />
     <Compile Include="Util\Converters\StageToCanvas.cs" />
     <Compile Include="Util\Converters\StringToInt.cs" />
-    <Compile Include="Util\Converters\StylusTipToBool.cs" />
     <Compile Include="Util\Converters\TagToSelection.cs" />
     <Compile Include="Util\Converters\UriToBitmap.cs" />
     <Compile Include="Util\Enums.cs" />
@@ -352,9 +343,6 @@
     </Compile>
     <Compile Include="Windows\Options.xaml.cs">
       <DependentUpon>Options.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Windows\Other\RecorderNew.xaml.cs">
-      <DependentUpon>RecorderNew.xaml</DependentUpon>
     </Compile>
     <Compile Include="Windows\Recorder.xaml.cs">
       <DependentUpon>Recorder.xaml</DependentUpon>
@@ -463,10 +451,6 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Windows\Other\RecorderNew.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="Windows\Recorder.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -476,10 +460,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Windows\UserControls\OptionsApplication.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Windows\UserControls\OptionsExtras.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -60,16 +60,6 @@ namespace ScreenToGif.Windows
         private Size _size;
 
         /// <summary>
-        /// The amount of seconds of the pre start delay, plus 1 (1+1=2);
-        /// </summary>
-        private int _preStartCount = 1;
-
-        /// <summary>
-        /// True when the user stop the recording. 
-        /// </summary>
-        private bool _stopRequested;
-
-        /// <summary>
         /// The DPI of the current screen.
         /// </summary>
         private double _scale = 1;
@@ -101,8 +91,6 @@ namespace ScreenToGif.Windows
 
         private readonly System.Timers.Timer _garbageTimer = new System.Timers.Timer();
 
-        private readonly Timer _preStartTimer = new Timer();
-
         #endregion
 
         #region Inicialization
@@ -122,10 +110,6 @@ namespace ScreenToGif.Windows
                 WindowStartupLocation = WindowStartupLocation.CenterScreen;
 
             #endregion
-
-            //Config Timers - Todo: organize
-            _preStartTimer.Tick += PreStart_Elapsed;
-            _preStartTimer.Interval = 1000;
 
             #region Global Hook
 
@@ -150,13 +134,6 @@ namespace ScreenToGif.Windows
 
         private void Recorder_Loaded(object sender, RoutedEventArgs e)
         {
-            #region If Snapshot
-
-            if (UserSettings.All.SnapshotMode)
-                EnableSnapshot_Executed(null, null);
-
-            #endregion
-
             #region Timer
 
             _garbageTimer.Interval = 3000;
@@ -189,7 +166,7 @@ namespace ScreenToGif.Windows
                 RecordPauseButton_Click(null, null);
             else if (Keyboard.Modifiers.HasFlag(UserSettings.All.StopModifiers) && e.Key == UserSettings.All.StopShortcut)
                 StopButton_Click(null, null);
-            else if ((Stage == Stage.Paused || Stage == Stage.Snapping) && Keyboard.Modifiers.HasFlag(UserSettings.All.DiscardModifiers) && e.Key == UserSettings.All.DiscardShortcut)
+            else if ((Stage == Stage.Paused) && Keyboard.Modifiers.HasFlag(UserSettings.All.DiscardModifiers) && e.Key == UserSettings.All.DiscardShortcut)
                 DiscardButton_Click(null, null);
             else
                 _keyList.Add(new SimpleKeyGesture(e.Key, Keyboard.Modifiers, e.IsUppercase));
@@ -386,25 +363,17 @@ namespace ScreenToGif.Windows
                 FpsIntegerUpDown.IsEnabled = true;
                 HeightIntegerBox.IsEnabled = true;
                 WidthIntegerBox.IsEnabled = true;
-                OutterGrid.IsEnabled = true;
+                OuterGrid.IsEnabled = true;
 
                 Cursor = Cursors.Arrow;
                 IsRecording = false;
 
                 DiscardButton.BeginStoryboard(FindResource("HideDiscardStoryboard") as Storyboard, HandoffBehavior.Compose);
-
-                if (!UserSettings.All.SnapshotMode)
-                {
-                    //Only display the Record text when not in snapshot mode. 
-                    Title = "ScreenToGif";
-                    Stage = Stage.Stopped;
-                }
-                else
-                {
-                    Stage = Stage.Snapping;
-                    EnableSnapshot_Executed(null, null);
-                }
-
+                                
+                //Only display the Record text when not in snapshot mode. 
+                Title = "ScreenToGif";
+                Stage = Stage.Stopped;
+                
                 AutoFitButtons();
             });
 
@@ -415,29 +384,20 @@ namespace ScreenToGif.Windows
 
         #region Buttons
 
-        private void EnableSnapshot_CanExecute(object sender, CanExecuteRoutedEventArgs e)
-        {
-            e.CanExecute = (Stage == Stage.Stopped || Stage == Stage.Snapping || Stage == Stage.Paused) && OutterGrid.IsEnabled;
-        }
-
         private void EnableThinMode_CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
-            //Only allows if (it's stoped or snapping but with nothing recorded) and the outter grid is enabled.
-            e.CanExecute = (Stage == Stage.Stopped || (Stage == Stage.Snapping && (Project == null || Project.Frames.Count == 0))) && OutterGrid.IsEnabled;
+            e.CanExecute = Stage == Stage.Stopped && OuterGrid.IsEnabled;
         }
 
         private void Options_CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
-            e.CanExecute = Stage != Stage.Recording && Stage != Stage.PreStarting;
+            e.CanExecute = Stage != Stage.Recording;
         }
 
 
         private void RecordPauseButton_Click(object sender, RoutedEventArgs e)
         {
-            if (!UserSettings.All.SnapshotMode)
-                RecordPause();
-            else
-                Snap();
+            RecordPause();
         }
 
         private void StopButton_Click(object sender, RoutedEventArgs e)
@@ -452,91 +412,27 @@ namespace ScreenToGif.Windows
             FrameCount = 0;
             Stage = Stage.Discarding;
 
-            OutterGrid.IsEnabled = false;
+            OuterGrid.IsEnabled = false;
             Cursor = Cursors.AppStarting;
 
             _discardFramesDel = Discard;
             _discardFramesDel.BeginInvoke(DiscardCallback, null);
         }
 
-        private void EnableSnapshot_Executed(object sender, ExecutedRoutedEventArgs e)
-        {
-            if (UserSettings.All.SnapshotMode)
-            {
-                #region SnapShot Recording
-
-                //Set to Snapshot Mode, change the text of the record button to "Snap" and 
-                //every press of the button, takes a screenshot
-                Stage = Stage.Snapping;
-                Title = "ScreenToGif - " + FindResource("Recorder.Snapshot");
-
-                AutoFitButtons();
-
-                if (Project == null || Project.Frames.Count == 0)
-                {
-                    Project = new ProjectInfo().CreateProjectFolder(ProjectByType.ScreenRecorder);
-                }
-
-                #endregion
-            }
-            else
-            {
-                #region Normal Recording
-
-                _snapDelay = null;
-
-                if (Project.Frames.Count > 0)
-                {
-                    Stage = Stage.Paused;
-                    Title = FindResource("Recorder.Paused").ToString();
-
-                    DiscardButton.BeginStoryboard(FindResource("ShowDiscardStoryboard") as Storyboard, HandoffBehavior.Compose);
-                }
-                else
-                {
-                    Stage = Stage.Stopped;
-                    Title = "ScreenToGif";
-                }
-
-                AutoFitButtons();
-
-                FrameRate.Stop();
-
-                #region Register the events
-
-                UnregisterEvents();
-
-                if (UserSettings.All.AsyncRecording)
-                    _capture.Tick += NormalAsync_Elapsed;
-                else
-                    _capture.Tick += Normal_Elapsed;
-                
-                #endregion
-
-                #endregion
-            }
-        }
-
         private void Options_Executed(object sender, ExecutedRoutedEventArgs e)
         {
             Topmost = false;
 
-            var wasSnapshot = UserSettings.All.SnapshotMode;
-
             var options = new Options();
             options.Owner = this;
             options.ShowDialog();
-
-            //Enables or disables the snapshot mode.
-            if (wasSnapshot != UserSettings.All.SnapshotMode)
-                EnableSnapshot_Executed(sender, e);
 
             Topmost = true;
         }
 
         private void SnapToWindow_CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
-            e.CanExecute = Stage == Stage.Stopped || (Stage == Stage.Snapping && (Project == null || Project.Frames.Count == 0));
+            e.CanExecute = Stage == Stage.Stopped;
         }
 
         private void SnapButton_PreviewMouseDown(object sender, MouseButtonEventArgs e)
@@ -567,39 +463,6 @@ namespace ScreenToGif.Windows
         #endregion
 
         #region Timers
-
-        private void PreStart_Elapsed(object sender, EventArgs e)
-        {
-            if (_preStartCount >= 1)
-            {
-                Title = $"ScreenToGif ({FindResource("Recorder.PreStart")} {_preStartCount}s)";
-                _preStartCount--;
-            }
-            else
-            {
-                _preStartTimer.Stop();
-                RecordPauseButton.IsEnabled = true;
-                Title = "Screen To Gif";
-                IsRecording = true;
-                
-                if (UserSettings.All.AsyncRecording)
-                {
-                    _capture.Tick += NormalAsync_Elapsed;
-                    NormalAsync_Elapsed(null, null);
-                }
-                else
-                {
-                    _capture.Tick += Normal_Elapsed;
-                    Normal_Elapsed(null, null);
-                }
-
-                _capture.Start();
-
-                Stage = Stage.Recording;
-                AutoFitButtons();
-            }
-        }
-
 
         private async void NormalAsync_Elapsed(object sender, EventArgs e)
         {
@@ -684,35 +547,13 @@ namespace ScreenToGif.Windows
                     FrameRate.Start(_capture.Interval);
                     UnregisterEvents();
 
-                    #region Start
+                    _capture.Tick += Normal_Elapsed;
+                    _capture.Start();
 
-                    if (UserSettings.All.UsePreStart)
-                    {
-                        Title = $"Screen To Gif ({FindResource("Recorder.PreStart")} {UserSettings.All.PreStartValue}s)";
-                        RecordPauseButton.IsEnabled = false;
+                    Stage = Stage.Recording;
 
-                        Stage = Stage.PreStarting;
-                        _preStartCount = UserSettings.All.PreStartValue - 1;
+                    AutoFitButtons();
 
-                        _preStartTimer.Start();
-                    }
-                    else
-                    {
-                        #region If Not
-
-                        if (UserSettings.All.AsyncRecording)
-                            _capture.Tick += NormalAsync_Elapsed;
-                        else
-                            _capture.Tick += Normal_Elapsed;
-
-                        _capture.Start();
-
-                        Stage = Stage.Recording;
-
-                        AutoFitButtons();
-
-                        #endregion
-                    }
                     break;
 
                 #endregion
@@ -757,27 +598,6 @@ namespace ScreenToGif.Windows
             }
         }
 
-        private void Snap()
-        {
-            if (Project == null || Project.Frames.Count == 0)
-            {
-                _size = new Size((int)Math.Round((Width - Constants.HorizontalOffset) * _scale), (int)Math.Round((Height - Constants.VerticalOffset) * _scale));
-
-                DiscardButton.BeginStoryboard(FindResource("ShowDiscardStoryboard") as Storyboard, HandoffBehavior.Compose);
-
-                Project = new ProjectInfo().CreateProjectFolder(ProjectByType.ScreenRecorder);
-
-                IsRecording = true;
-            }
-
-            _snapDelay = UserSettings.All.SnapshotDefaultDelay;
-
-            if (UserSettings.All.AsyncRecording)
-                NormalAsync_Elapsed(null, null);
-            else
-                Normal_Elapsed(null, null);
-        }
-
         /// <summary>
         /// Stops the recording or the Pre-Start countdown.
         /// </summary>
@@ -788,46 +608,11 @@ namespace ScreenToGif.Windows
                 _capture.Stop();
                 FrameRate.Stop();
 
-                if (Stage != Stage.Stopped && Stage != Stage.PreStarting && Project.Any)
+                if (Stage != Stage.Stopped && Project.Any)
                 {
-                    #region Stop
-
-                    if (UserSettings.All.AsyncRecording)
-                        _stopRequested = true;
-
                     await Task.Delay(100);
 
                     Close();
-
-                    #endregion
-                }
-                else if ((Stage == Stage.PreStarting || Stage == Stage.Snapping) && !Project.Any)
-                {
-                    #region if Pre-Starting or in Snapmode and no Frames, Stops
-
-                    if (Stage == Stage.PreStarting)
-                    {
-                        //Stop the pre-start timer to kill pre-start warming up
-                        _preStartTimer.Stop();
-                    }
-
-                    //Only returns to the stopped stage if it was recording.
-                    Stage = Stage == Stage.Snapping ? Stage.Snapping : Stage.Stopped;
-
-                    //Enables the controls that are disabled while recording;
-                    FpsIntegerUpDown.IsEnabled = true;
-                    RecordPauseButton.IsEnabled = true;
-                    HeightIntegerBox.IsEnabled = true;
-                    WidthIntegerBox.IsEnabled = true;
-
-                    IsRecording = false;
-                    Topmost = true;
-
-                    Title = "Screen To Gif";
-
-                    AutoFitButtons();
-
-                    #endregion
                 }
             }
             catch (NullReferenceException nll)
@@ -946,8 +731,6 @@ namespace ScreenToGif.Windows
             return true;
         }
 
-        #endregion
-
         #region Other Events
 
         private void LightWindow_SizeChanged(object sender, SizeChangedEventArgs e)
@@ -976,9 +759,9 @@ namespace ScreenToGif.Windows
             if (e.Mode == PowerModes.Suspend)
             {
                 if (Stage == Stage.Recording)
+                {
                     RecordPause();
-                else if (Stage == Stage.PreStarting)
-                    Stop();
+                }
 
                 GC.Collect();
             }
@@ -1013,9 +796,6 @@ namespace ScreenToGif.Windows
 
             if (Stage != (int)Stage.Stopped)
             {
-                _preStartTimer.Stop();
-                _preStartTimer.Dispose();
-
                 _capture.Stop();
                 _capture.Dispose();
             }

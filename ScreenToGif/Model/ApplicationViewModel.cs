@@ -111,9 +111,6 @@ namespace ScreenToGif.Model
                     },
                     ExecuteAction = a =>
                     {
-                        if (UserSettings.All.NotifyWhileClosingApp && !Dialog.Ask(LocalizationHelper.Get("Application.Exiting.Title"), LocalizationHelper.Get("Application.Exiting.Instruction"), LocalizationHelper.Get("Application.Exiting.Message")))
-                            return;
-
                         Application.Current.Shutdown(69);
                     }
                 };
@@ -136,7 +133,7 @@ namespace ScreenToGif.Model
         {
             try
             {
-                if (!UserSettings.All.AutomaticCleanUp || Global.IsCurrentlyDeletingFiles || string.IsNullOrWhiteSpace(UserSettings.All.TemporaryFolder))
+                if (Global.IsCurrentlyDeletingFiles || string.IsNullOrWhiteSpace(UserSettings.All.TemporaryFolder))
                     return;
 
                 Global.IsCurrentlyDeletingFiles = true;
@@ -147,7 +144,7 @@ namespace ScreenToGif.Model
                     return;
 
                 var list = Directory.GetDirectories(path).Select(x => new DirectoryInfo(x))
-                    .Where(w => (DateTime.Now - w.CreationTime).TotalDays > (UserSettings.All.AutomaticCleanUpDays > 0 ? UserSettings.All.AutomaticCleanUpDays : 5)).ToList();
+                    .Where(w => (DateTime.Now - w.CreationTime).TotalDays > 5).ToList();
 
                 //var list = Directory.GetDirectories(path).Select(x => new DirectoryInfo(x));
                 

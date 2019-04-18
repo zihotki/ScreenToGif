@@ -22,8 +22,6 @@ namespace ScreenToGif.Util.Converters
                     return Application.Current.FindResource("Recorder.Pause");
                 case Stage.Paused:
                     return Application.Current.FindResource("Recorder.Continue");
-                case Stage.Snapping:
-                    return Application.Current.FindResource("Recorder.Snap");
             }
 
             return Application.Current.FindResource("Recorder.Record");

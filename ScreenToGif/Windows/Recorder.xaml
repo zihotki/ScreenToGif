@@ -60,12 +60,12 @@
 
     <Window.CommandBindings>
         <CommandBinding Command="u:Commands.Options" CanExecute="Options_CanExecute" Executed="Options_Executed"/>
-        <CommandBinding Command="u:Commands.EnableSnapshot" CanExecute="EnableSnapshot_CanExecute" Executed="EnableSnapshot_Executed"/>
+        <!--<CommandBinding Command="u:Commands.EnableSnapshot" CanExecute="EnableSnapshot_CanExecute" Executed="EnableSnapshot_Executed"/>-->
         <CommandBinding Command="u:Commands.EnableThinMode" CanExecute="EnableThinMode_CanExecute" Executed="EnableThinMode_Executed"/>
         <CommandBinding Command="u:Commands.EnableSnapToWindow" CanExecute="SnapToWindow_CanExecute"/>
     </Window.CommandBindings>
 
-    <Grid x:Name="OutterGrid" UseLayoutRounding="True">
+    <Grid x:Name="OuterGrid" UseLayoutRounding="True">
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
             <RowDefinition Height="31"/>
@@ -129,7 +129,6 @@
                     <Viewbox.Visibility>
                         <MultiBinding Converter="{StaticResource BoolOrToInvertedVisibility}">
                             <Binding Path="RecorderThinMode" Source="{x:Static u:UserSettings.All}"/>
-                            <Binding Path="SnapshotMode" Source="{x:Static u:UserSettings.All}"/>
                         </MultiBinding>
                     </Viewbox.Visibility>
                     
@@ -200,7 +199,7 @@
                             <n:ImageMenuItem Header="{DynamicResource Recorder.RecordingOptions}" IsHitTestVisible="False" Image="{StaticResource Vector.Record}" ContentHeight="16" ContentWidth="16"/>
                             <Separator/>
                             <n:ImageMenuItem Header="{DynamicResource Recorder.Snapshot}" IsCheckable="True" Image="{StaticResource Vector.Camera.Add}" ContentHeight="16" ContentWidth="16" 
-                                             IsChecked="{Binding SnapshotMode, Source={x:Static u:UserSettings.All}, Mode=TwoWay}" Command="u:Commands.EnableSnapshot"/>
+                                             IsChecked="{Binding SnapshotMode, Source={x:Static u:UserSettings.All}, Mode=TwoWay}" />
 
                             <n:ImageMenuItem x:Name="ThinModeMenuItem" Header="{DynamicResource Recorder.ThinMode}" IsCheckable="True" Image="{StaticResource Vector.Application}" ContentHeight="16" ContentWidth="16"
                                              IsChecked="{Binding RecorderThinMode, Source={x:Static u:UserSettings.All}, Mode=TwoWay}" Command="u:Commands.EnableThinMode"/>
