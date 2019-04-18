@@ -25,25 +25,6 @@ namespace ScreenToGif.Util
             return clone as T;
         }
 
-        //public static T Clone<T>(this T source)
-        //{
-        //    var sb = new StringBuilder();
-        //    var writer = XmlWriter.Create(sb, new XmlWriterSettings
-        //    {
-        //        Indent = true,
-        //        ConformanceLevel = ConformanceLevel.Fragment,
-        //        OmitXmlDeclaration = true,
-        //        NamespaceHandling = NamespaceHandling.OmitDuplicates,
-        //    });
-
-        //    var mgr = new XamlDesignerSerializationManager(writer);
-        //    mgr.XamlWriterMode = XamlWriterMode.Expression;
-
-        //    XamlWriter.Save(source, mgr);
-
-        //    return null; // sb.ToString();
-        //}
-
         public static T DeepClone<T>(this T source) where T : UIElement
         {
             var type = source.GetType();

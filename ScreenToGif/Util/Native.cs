@@ -528,24 +528,6 @@ namespace ScreenToGif.Util
             EnabledPopup = 6
         }
 
-        internal struct MemoryStatusEx
-        {
-            internal uint Length;
-            internal uint MemoryLoad;
-            internal ulong TotalPhysicalMemory;
-            internal ulong AvailablePhysicalMemory;
-            internal ulong TotalPageFile;
-            internal ulong AvailablePageFile;
-            internal ulong TotalVirtualMemory;
-            internal ulong AvailableVirtualMemory;
-            internal ulong AvailableExtendedVirtual;
-
-            internal MemoryStatusEx(bool? filler) : this()
-            {
-                Length = checked((uint)Marshal.SizeOf(typeof(MemoryStatusEx)));
-            }
-        }
-
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto)]
         public struct ShellExecuteInfo
         {
@@ -1404,10 +1386,6 @@ namespace ScreenToGif.Util
 
         //[DllImport("SHCore.dll", SetLastError = true)]
         //public static extern void GetProcessDpiAwareness(IntPtr hprocess, out PROCESS_DPI_AWARENESS awareness);
-
-        [DllImport("Kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        internal static extern bool GlobalMemoryStatusEx(ref MemoryStatusEx lpBuffer);
 
         /// <summary>
         /// "open"       - Opens a file or a application.
