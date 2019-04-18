@@ -143,17 +143,10 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Controls\AdornerControl.cs" />
-    <Compile Include="Controls\AttachmentListBoxItem.cs" />
-    <Compile Include="Controls\AwareTabItem.cs" />
     <Compile Include="Controls\CircularProgressBar.cs" />
     <Compile Include="Controls\ColorBox.cs" />
-    <Compile Include="Controls\CroppingAdorner.cs" />
-    <Compile Include="Controls\DataGridHeaderBorder.cs" />
     <Compile Include="Controls\DoubleBox.cs" />
-    <Compile Include="Controls\DragScrollGrid.cs" />
-    <Compile Include="Controls\DrawingCanvas.cs" />
     <Compile Include="Controls\DropDownButton.cs" />
-    <Compile Include="Controls\DynamicGrid.cs" />
     <Compile Include="Controls\EncoderListViewItem.cs" />
     <Compile Include="Controls\ExtendedCheckBox.cs" />
     <Compile Include="Controls\ExtendedTextBox.cs" />
@@ -163,16 +156,11 @@
     <Compile Include="Controls\ExtendedUniformGrid.cs" />
     <Compile Include="Controls\ImageCard.cs" />
     <Compile Include="Controls\LabelSeparator.cs" />
-    <Compile Include="Controls\ElementAdorner.cs" />
     <Compile Include="Controls\NotificationListControl.cs" />
     <Compile Include="Controls\RecorderWindow.cs" />
-    <Compile Include="Controls\Shapes\Arrow.cs" />
-    <Compile Include="Controls\Shapes\Triangle.cs" />
     <Compile Include="Controls\SplitButton.cs" />
     <Compile Include="Controls\KeyBox.cs" />
     <Compile Include="Controls\HexadecimalBox.cs" />
-    <Compile Include="Controls\HideableTabControl.cs" />
-    <Compile Include="Controls\HierarchicalItem.cs" />
     <Compile Include="Controls\ImageButton.cs" />
     <Compile Include="Controls\ImageListBoxItem.cs" />
     <Compile Include="Controls\ImageMenuItem.cs" />
@@ -180,18 +168,12 @@
     <Compile Include="Controls\ImageRepeatButton.cs" />
     <Compile Include="Controls\ImageScrollViewer.cs" />
     <Compile Include="Controls\ImageToggleButton.cs" />
-    <Compile Include="Controls\InkCanvasExtended.cs" />
     <Compile Include="Controls\IntegerBox.cs" />
-    <Compile Include="Controls\MoveResizeControl.cs" />
     <Compile Include="Controls\NumericTextBox.cs" />
     <Compile Include="Controls\DoubleUpDown.cs" />
     <Compile Include="Controls\IntegerUpDown.cs" />
-    <Compile Include="Controls\PathListViewItem.cs" />
-    <Compile Include="Controls\PuncturedRect.cs" />
-    <Compile Include="Controls\RadialPanel.cs" />
     <Compile Include="Controls\RangeSlider.cs" />
     <Compile Include="Controls\SelectControl.cs" />
-    <Compile Include="Controls\ResizingAdorner.cs" />
     <Compile Include="Controls\SpectrumSlider.cs" />
     <Compile Include="Controls\StatusBand.cs" />
     <Compile Include="Controls\StatusList.cs" />
@@ -253,31 +235,7 @@
     <Compile Include="ImageUtil\Gif\Encoder\Quantization\OctreeQuantizer.cs" />
     <Compile Include="ImageUtil\Gif\Encoder\Quantization\PaletteQuantizer.cs" />
     <Compile Include="ImageUtil\Gif\Encoder\Quantization\Quantizer.cs" />
-    <Compile Include="ImageUtil\Psd\AditionalLayers\IAditionalLayerInfo.cs" />
-    <Compile Include="ImageUtil\Psd\AditionalLayers\IMetadata.cs" />
-    <Compile Include="ImageUtil\Psd\AditionalLayers\Metadata.cs" />
-    <Compile Include="ImageUtil\Psd\AditionalLayers\MetadataContent.cs" />
-    <Compile Include="ImageUtil\Psd\Channel.cs" />
-    <Compile Include="ImageUtil\Psd\Image.cs" />
-    <Compile Include="ImageUtil\Psd\ImageChannelData.cs" />
-    <Compile Include="ImageUtil\Psd\ImageData.cs" />
-    <Compile Include="ImageUtil\Psd\ImageResourceBlocks\AnimationBlock.cs" />
-    <Compile Include="ImageUtil\Psd\ImageResourceBlocks\IImageResource.cs" />
-    <Compile Include="ImageUtil\Psd\ImageResourceBlocks\ImageResources.cs" />
-    <Compile Include="ImageUtil\Psd\IPsdContent.cs" />
-    <Compile Include="ImageUtil\Psd\LayerAndMask.cs" />
-    <Compile Include="ImageUtil\Psd\LayerInfo.cs" />
-    <Compile Include="ImageUtil\Psd\LayerRecord.cs" />
-    <Compile Include="ImageUtil\Psd\Psd.cs" />
     <Compile Include="Model\BindableBase.cs" />
-    <Compile Include="Model\DefaultTaskModel.cs" />
-    <Compile Include="Model\ManipulatedEventArgs.cs" />
-    <Compile Include="UserControls\KeyStrokesPanel.xaml.cs">
-      <DependentUpon>KeyStrokesPanel.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="UserControls\MouseClicksPanel.xaml.cs">
-      <DependentUpon>MouseClicksPanel.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Util\ActionStack.cs" />
     <Compile Include="Util\ActivityHook\CustomKeyEventArgs.cs" />
     <Compile Include="Util\ActivityHook\CustomKeyPressEventArgs.cs" />
@@ -445,10 +403,6 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Themes\DataGridStyle.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
     <Page Include="Themes\EncoderListViewItem.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -475,14 +429,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Themes\Slider.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="UserControls\KeyStrokesPanel.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="UserControls\MouseClicksPanel.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

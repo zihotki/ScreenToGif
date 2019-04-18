@@ -5,7 +5,7 @@ namespace ScreenToGif.Util
     /// <summary>
     /// Machine to Human converter. Just kidding. ;)
     /// </summary>
-    public class Humanizer
+    public static class Humanizer
     {
         /// <summary>
         /// Converts a lenght value to a readable size.
@@ -42,56 +42,6 @@ namespace ScreenToGif.Util
             var num = Math.Round(byteCount / Math.Pow(1024, place), 1);
 
             return num + suf[place];
-        }
-
-        /// <summary>
-        /// Random welcome symbol.
-        /// </summary>
-        /// <returns>Returns a welcome text/emoji.</returns>
-        public static string Welcome()
-        {
-            var random = new Random();
-
-            string[] faces = { "^.^", ":D", ";D", "^_^", "\\ (•◡•) /", "☺", "✌", "😉", "😊", "😆", "🎈",
-                "💡", "🎬", "😎", "🎞", "🎨", "🎥", "📽", "📷", "📸", "📹", "🌏", "🌍", "🌎", "🗺", "🌠" };
-
-            var maxValue = Other.IsWin8OrHigher() ? faces.Length : 6; //Exclusive bound.
-
-            return faces[random.Next(maxValue)];
-        }
-
-        /// <summary>
-        /// Gets two sets of welcome messages.
-        /// </summary>
-        /// <returns>Two welcome messages.</returns>
-        public static string WelcomeInfo()
-        {
-            var random = new Random();
-
-            string[] texts = { "Welcome.New", "Welcome.Import", "Welcome.ThankYou", "Welcome.Size", "Welcome.Contact", "Welcome.Trouble", "Welcome.NewRecorder" };
-
-            var pick1 = random.Next(texts.Length);
-
-            return texts[pick1];
-        }
-
-        /// <summary>
-        /// Gets two sets of welcome messages.
-        /// </summary>
-        /// <returns>Two welcome messages.</returns>
-        public static string[] WelcomeInfos()
-        {
-            var random = new Random();
-
-            string[] texts = { "Welcome.New", "Welcome.Import", "Welcome.ThankYou", "Welcome.Size", "Welcome.Contact", "Welcome.Trouble", "Welcome.NewRecorder" };
-
-            var pick1 = random.Next(texts.Length);
-            var pick2 = random.Next(texts.Length);
-
-            while (pick1 == pick2)
-                pick2 = random.Next(texts.Length);
-
-            return new [] {texts[pick1], texts[pick2] };
         }
     }
 }

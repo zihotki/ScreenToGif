@@ -29,12 +29,6 @@ namespace ScreenToGif.Model
         /// </summary>
         [DataMember(Order = 2)]
         public List<FrameInfo> Frames { get; set; } = new List<FrameInfo>();
-        
-        /// <summary>
-        /// True if this project was recently created and was not yet loaded by the editor.
-        /// </summary>
-        [DataMember(Order = 3)]
-        public bool IsNew { get; set; }
 
         /// <summary>
         /// Where this project was created?
@@ -97,7 +91,6 @@ namespace ScreenToGif.Model
             if (string.IsNullOrWhiteSpace(UserSettings.All.TemporaryFolder))
                 UserSettings.All.TemporaryFolder = Path.GetTempPath();
 
-            IsNew = true;
             RelativePath = DateTime.Now.ToString("yyyy-MM-dd HH-mm-ss") + Path.DirectorySeparatorChar;
             CreatedBy = creator;
 
@@ -115,8 +108,6 @@ namespace ScreenToGif.Model
                 Directory.CreateDirectory(RedoStackPath);
 
             #endregion
-
-            CreateMutex();
 
             return this;
         }
@@ -163,19 +154,6 @@ namespace ScreenToGif.Model
                 index = 0;
 
             return LatestIndex >= index ? index : LatestIndex;
-        }
-
-        public void CreateMutex()
-        {
-            //TODO: Validate the possibility of openning this project.
-            //I need to make sure that i'll release the mutexes.
-
-            MutexList.Add(RelativePath);
-        }
-
-        public void ReleaseMutex()
-        {
-            MutexList.Remove(RelativePath);
         }
 
         #endregion
