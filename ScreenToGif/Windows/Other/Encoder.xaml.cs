@@ -403,11 +403,6 @@ namespace ScreenToGif.Windows.Other
                                 else
                                     listFrames = ImageMethods.CutUnchanged(listFrames, id, tokenSource);
                             }
-                            else
-                            {
-                                var size = listFrames[0].Path.ScaledSize();
-                                listFrames.ForEach(x => x.Rect = new Int32Rect(0, 0, (int)size.Width, (int)size.Height));
-                            }
                         }
 
                         #endregion

@@ -44,7 +44,7 @@ namespace ScreenToGif.Model
                         {
                             var window = sender as Recorder;
 
-                            if (window?.Project != null && window.Project.Any)
+                            if (window?.Project != null && window.Project.AnyFrames)
                             {
                                 ShowEditor(window.Project);
                                 caller?.Close();

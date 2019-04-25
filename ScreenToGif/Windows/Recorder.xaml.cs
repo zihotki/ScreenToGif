@@ -331,7 +331,7 @@ namespace ScreenToGif.Windows
 
                 try
                 {
-                    Directory.Delete(Project.FullPath, true);
+                    Directory.Delete(Project.FullPathOfProject, true);
                 }
                 catch (Exception ex)
                 {
@@ -474,9 +474,9 @@ namespace ScreenToGif.Windows
             if (bt == null || !IsLoaded)
                 return;
 
-            var fileName = $"{Project.FullPath}{FrameCount}.png";
+            var fileName = $"{Project.FullPathOfProject}{FrameCount}.png";
 
-            Project.Frames.Add(new FrameInfo(fileName, FrameRate.GetMilliseconds(_snapDelay), _keyList));
+            Project.Frames.Add(new FrameInfo(fileName, FrameCount, FrameRate.GetMilliseconds(_snapDelay)));
 
             _keyList.Clear();
 
@@ -493,9 +493,9 @@ namespace ScreenToGif.Windows
             if (bt == null || !IsLoaded)
                 return;
 
-            var fileName = $"{Project.FullPath}{FrameCount}.png";
+            var fileName = $"{Project.FullPathOfProject}{FrameCount}.png";
 
-            Project.Frames.Add(new FrameInfo(fileName, FrameRate.GetMilliseconds(_snapDelay), _keyList));
+            Project.Frames.Add(new FrameInfo(fileName, FrameCount, FrameRate.GetMilliseconds(_snapDelay)));
 
             _keyList.Clear();
 
@@ -527,7 +527,7 @@ namespace ScreenToGif.Windows
                     _capture = new Timer { Interval = 1000 / FpsIntegerUpDown.Value };
                     _snapDelay = null;
 
-                    Project = new ProjectInfo().CreateProjectFolder(ProjectByType.ScreenRecorder);
+                    Project = new ProjectInfo();
 
                     _keyList.Clear();
                     FrameCount = 0;
@@ -608,7 +608,7 @@ namespace ScreenToGif.Windows
                 _capture.Stop();
                 FrameRate.Stop();
 
-                if (Stage != Stage.Stopped && Project.Any)
+                if (Stage != Stage.Stopped && Project.AnyFrames)
                 {
                     await Task.Delay(100);
 

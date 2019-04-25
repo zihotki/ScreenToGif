@@ -29,6 +29,11 @@ namespace ScreenToGif.Windows
 {
     public partial class Editor : Window, INotification
     {
+        /// <summary>
+        /// The current project.
+        /// </summary>
+        public ProjectInfo Project { get; set; }
+
         #region Properties
 
         public static readonly DependencyProperty FilledListProperty = DependencyProperty.Register("FilledList", typeof(bool), typeof(Editor), new FrameworkPropertyMetadata(false));
@@ -73,29 +78,24 @@ namespace ScreenToGif.Windows
         #region Variables
 
         /// <summary>
-        /// The current project.
-        /// </summary>
-        public ProjectInfo Project { get; set; }
-
-        /// <summary>
         /// Last selected frame index. Used to track users last selection and decide which frame to show.
         /// </summary>
-        private int LastSelected { get; set; } = -1;
+        private int _lastSelected = -1;
 
         /// <summary>
         /// True if the user was selecting frames using the FirstFrame/Previous/Next/LastFrame commands or the scroll wheel.
         /// </summary>
-        private bool WasChangingSelection { get; set; }
+        private bool _wasChangingSelection;
 
         /// <summary>
         /// True if the user was previewing the recording.
         /// </summary>
-        private bool WasPreviewing { get; set; }
+        private bool _wasPreviewing;
 
         /// <summary>
         /// True if the PC is sleeping.
         /// </summary>
-        private bool Slept { get; set; }
+        private bool _slept;
 
         private readonly System.Windows.Forms.Timer _timerPreview = new System.Windows.Forms.Timer();
 
@@ -143,9 +143,9 @@ namespace ScreenToGif.Windows
                 Glass.RetractGlassFrame(this);
                 */
             //Returns the preview if was playing before the deactivation of the window.
-            if (WasPreviewing)
+            if (_wasPreviewing)
             {
-                WasPreviewing = false;
+                _wasPreviewing = false;
                 PlaybackPlayPause();
             }
         }
@@ -155,7 +155,7 @@ namespace ScreenToGif.Windows
             //Pauses the recording preview.
             if (_timerPreview.Enabled)
             {
-                WasPreviewing = true;
+                _wasPreviewing = true;
                 PlaybackPause();
             }
         }
@@ -170,11 +170,10 @@ namespace ScreenToGif.Windows
         {
             PlaybackPause();
 
-            if (Project != null && Project.Any)
+            if (Project != null && Project.AnyFrames)
             {
                 Project.Clear();
 
-                //Remove the ActionStack.
                 ActionStack.Clear();
             }
 
@@ -216,7 +215,7 @@ namespace ScreenToGif.Windows
                 return;
             }
 
-            WasChangingSelection = true;
+            _wasChangingSelection = true;
 
             if (e.Delta > 0)
             {
@@ -246,13 +245,13 @@ namespace ScreenToGif.Windows
         {
             if (e.Mode == PowerModes.Suspend)
             {
-                Slept = true;
+                _slept = true;
                 PlaybackPause();
                 GC.Collect();
                 return;
             }
 
-            Slept = false;
+            _slept = false;
         }
         
         #endregion
@@ -271,13 +270,13 @@ namespace ScreenToGif.Windows
 
             #endregion
 
-            if (LastSelected == -1 || _timerPreview.Enabled || WasChangingSelection 
-                || LastSelected >= FrameListView.Items.Count || (e.AddedItems.Count > 0 && e.RemovedItems.Count > 0))
-                LastSelected = FrameListView.SelectedIndex;
+            if (_lastSelected == -1 || _timerPreview.Enabled || _wasChangingSelection 
+                || _lastSelected >= FrameListView.Items.Count || (e.AddedItems.Count > 0 && e.RemovedItems.Count > 0))
+                _lastSelected = FrameListView.SelectedIndex;
 
             FrameListBoxItem current;
 
-            if (_timerPreview.Enabled || WasChangingSelection)
+            if (_timerPreview.Enabled || _wasChangingSelection)
             {
                 current = FrameListView.Items[FrameListView.SelectedIndex] as FrameListBoxItem;
             }
@@ -297,10 +296,10 @@ namespace ScreenToGif.Windows
             //If there's no focused item.
             if (current == null)
             {
-                if (FrameListView.Items.Count - 1 > LastSelected)
-                    FrameListView.SelectedIndex = LastSelected;
+                if (FrameListView.Items.Count - 1 > _lastSelected)
+                    FrameListView.SelectedIndex = _lastSelected;
                 else
-                    FrameListView.SelectedIndex = LastSelected = FrameListView.Items.Count - 1;
+                    FrameListView.SelectedIndex = _lastSelected = FrameListView.Items.Count - 1;
 
                 if (FrameListView.SelectedIndex > -1)
                     current = FrameListView.Items[FrameListView.SelectedIndex] as FrameListBoxItem;
@@ -320,14 +319,14 @@ namespace ScreenToGif.Windows
                 }
             }
 
-            WasChangingSelection = false;
+            _wasChangingSelection = false;
         }
 
         private void Item_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             if (sender is FrameListBoxItem item)// && !WasChangingSelection)
             {
-                LastSelected = item.FrameNumber;
+                _lastSelected = item.FrameNumber;
                 Keyboard.Focus(item);
             }
         }
@@ -358,7 +357,7 @@ namespace ScreenToGif.Windows
 
         private void File_CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
-            e.CanExecute = Project != null && Project.Any && !IsLoading && !e.Handled;
+            e.CanExecute = Project != null && Project.AnyFrames && !IsLoading && !e.Handled;
         }
 
         private void SaveAs_Executed(object sender, ExecutedRoutedEventArgs e)
@@ -694,16 +693,6 @@ namespace ScreenToGif.Windows
             e.CanExecute = ActionStack.CanUndo() && !IsLoading && !e.Handled;
         }
 
-        private void Reset_CanExecute(object sender, CanExecuteRoutedEventArgs e)
-        {
-            e.CanExecute = ActionStack.CanReset() && !IsLoading && !e.Handled;
-        }
-
-        private void Redo_CanExecute(object sender, CanExecuteRoutedEventArgs e)
-        {
-            e.CanExecute = ActionStack.CanRedo() && !IsLoading && !e.Handled;
-        }
-
         private void Undo_Executed(object sender, ExecutedRoutedEventArgs e)
         {
             PlaybackPause();
@@ -714,6 +703,11 @@ namespace ScreenToGif.Windows
             ShowHint("Hint.Undo");
         }
 
+        private void Reset_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = ActionStack.CanReset() && !IsLoading && !e.Handled;
+        }
+
         private void Reset_Executed(object sender, ExecutedRoutedEventArgs e)
         {
             PlaybackPause();
@@ -722,6 +716,11 @@ namespace ScreenToGif.Windows
             LoadProject(Project);
 
             ShowHint("Hint.Reset");
+        }
+
+        private void Redo_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = ActionStack.CanRedo() && !IsLoading && !e.Handled;
         }
 
         private void Redo_Executed(object sender, ExecutedRoutedEventArgs e)
@@ -740,7 +739,7 @@ namespace ScreenToGif.Windows
 
         private void Zoom_CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
-            e.CanExecute = Project != null && Project.Any && !IsLoading && !OverlayGrid.IsVisible && FrameListView.SelectedIndex != -1;
+            e.CanExecute = Project != null && Project.AnyFrames && !IsLoading && !OverlayGrid.IsVisible && FrameListView.SelectedIndex != -1;
         }
 
         private void Zoom100_Executed(object sender, ExecutedRoutedEventArgs e)
@@ -922,7 +921,7 @@ namespace ScreenToGif.Windows
         {
             PlaybackPause();
 
-            WasChangingSelection = true;
+            _wasChangingSelection = true;
             FrameListView.SelectedIndex = 0;
         }
 
@@ -930,7 +929,7 @@ namespace ScreenToGif.Windows
         {
             PlaybackPause();
 
-            WasChangingSelection = true;
+            _wasChangingSelection = true;
 
             if (FrameListView.SelectedIndex == -1 || FrameListView.SelectedIndex == 0)
             {
@@ -951,7 +950,7 @@ namespace ScreenToGif.Windows
         {
             PlaybackPause();
 
-            WasChangingSelection = true;
+            _wasChangingSelection = true;
 
             if (FrameListView.SelectedIndex == -1 || FrameListView.SelectedIndex == FrameListView.Items.Count - 1)
             {
@@ -967,7 +966,7 @@ namespace ScreenToGif.Windows
         {
             PlaybackPause();
 
-            WasChangingSelection = true;
+            _wasChangingSelection = true;
             FrameListView.SelectedIndex = FrameListView.Items.Count - 1;
         }
 
@@ -1083,7 +1082,7 @@ namespace ScreenToGif.Windows
             ZoomBoxControl.Zoom = 1;
 
             var oldProject = Project;
-            if (oldProject != null && oldProject.Any)
+            if (oldProject != null && oldProject.AnyFrames)
             {
                 oldProject.Persist();
 
@@ -1202,7 +1201,7 @@ namespace ScreenToGif.Windows
                 Cursor = Cursors.Arrow;
                 IsLoading = false;
 
-                if (Project.Any)
+                if (Project.AnyFrames)
                     FilledList = true;
 
                 if (!result)
@@ -1330,11 +1329,11 @@ namespace ScreenToGif.Windows
                 Cursor = Cursors.Arrow;
                 HideProgress();
 
-                if (LastSelected != -1)
+                if (_lastSelected != -1)
                 {
                     ZoomBoxControl.ImageSource = null;
 
-                    var valid = Project.ValidIndex(LastSelected);
+                    var valid = Project.ValidIndex(_lastSelected);
 
                     if (valid > -1)
                     {
@@ -1357,429 +1356,6 @@ namespace ScreenToGif.Windows
 
         #endregion
 
-        /*
-                #region Async Import
-
-                private delegate bool ImportFrames(List<string> fileList);
-
-                private ImportFrames _importFramesDel;
-
-                private List<FrameInfo> InsertInternal(string fileName, string pathTemp)
-                {
-                    List<FrameInfo> listFrames;
-
-                    try
-                    {
-                        switch (fileName.Split('.').Last().ToLowerInvariant())
-                        {
-                            case "stg":
-                            case "zip":
-
-                                listFrames = ImportFromProject(fileName, pathTemp);
-                                break;
-
-                            case "gif":
-
-                                listFrames = ImportFromGif(fileName, pathTemp);
-                                break;
-
-                            case "mp4":
-                            case "wmv":
-                            case "avi":
-
-                                listFrames = ImportFromVideo(fileName, pathTemp);
-                                break;
-
-                            default:
-
-                                listFrames = ImportFromImage(fileName, pathTemp);
-                                break;
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        LogWriter.Log(ex, "Import Error");
-
-                        return new List<FrameInfo>();
-                    }
-
-                    return listFrames;
-                }
-
-                private bool ImportFrom(List<string> fileList)
-                {
-                    #region Disable UI
-
-                    Dispatcher.Invoke(() =>
-                    {
-                        Cursor = Cursors.AppStarting;
-                        IsLoading = true;
-                    });
-
-                    #endregion
-
-                    ShowProgress(DispatcherStringResource("Editor.PreparingImport"), 100);
-
-                    var project = new ProjectInfo().CreateProjectFolder(ProjectByType.Editor);
-
-                    //Adds each image to a list.
-                    foreach (var file in fileList)
-                    {
-                        if (Dispatcher.HasShutdownStarted)
-                            return false;
-
-                        project.Frames.AddRange(InsertInternal(file, project.FullPath) ?? new List<FrameInfo>());
-                    }
-
-                    if (project.Frames.Count == 0)
-                    {
-                        if (Dispatcher.HasShutdownStarted)
-                            return false;
-
-                        Dispatcher.Invoke(() =>
-                        {
-                            Cursor = Cursors.Arrow;
-                            IsLoading = false;
-
-                            if (project.Any)
-                                FilledList = true;
-
-                            HideProgress();
-
-                            CommandManager.InvalidateRequerySuggested();
-                            SetFocusOnCurrentFrame();
-                        });
-
-                        return false;
-                    }
-
-                    Dispatcher.Invoke(() => LoadProject(project));
-
-                    return true;
-                }
-
-                private void ImportFromCallback(IAsyncResult ar)
-                {
-                    _importFramesDel.EndInvoke(ar);
-
-                    Dispatcher.Invoke(delegate
-                    {
-                        ClosePanel(removeEvent: true);
-
-                        CommandManager.InvalidateRequerySuggested();
-                    });
-
-                    GC.Collect();
-                }
-
-                private bool InsertImportFrom(List<string> fileList)
-                {
-                    #region Disable UI
-
-                    Dispatcher.Invoke(() =>
-                    {
-                        Cursor = Cursors.AppStarting;
-                        IsLoading = true;
-                    });
-
-                    #endregion
-
-                    ShowProgress(DispatcherStringResource("Editor.PreparingImport"), 100);
-
-                    var project = new ProjectInfo().CreateProjectFolder(ProjectByType.Editor);
-
-                    //Adds each image to a list.
-                    foreach (var file in fileList)
-                        project.Frames.AddRange(InsertInternal(file, project.FullPath) ?? new List<FrameInfo>());
-
-                    if (!project.Any)
-                    {
-                        project.ReleaseMutex();
-
-                        Dispatcher.Invoke(() =>
-                        {
-                            Cursor = Cursors.Arrow;
-                            IsLoading = false;
-                        });
-
-                        return false;
-                    }
-
-                    return Dispatcher.Invoke(() =>
-                    {
-                        #region Insert
-
-                        //TODO: Treat multi-sized set of images...
-                        var insert = new Insert(Project.Frames, project.Frames, FrameListView.SelectedIndex) { Owner = this };
-                        var result = insert.ShowDialog();
-
-                        project.ReleaseMutex();
-
-                        if (result.HasValue && result.Value)
-                        {
-                            ActionStack.SaveState(ActionStack.EditAction.Add, FrameListView.SelectedIndex, project.Frames.Count);
-
-                            Project.Frames = insert.ActualList;
-                            LoadSelectedStarter(FrameListView.SelectedIndex, Project.Frames.Count - 1); //Check
-
-                            return true;
-                        }
-
-                        HideProgress();
-
-                        if (LastSelected != -1)
-                        {
-                            ZoomBoxControl.ImageSource = null;
-                            ZoomBoxControl.ImageSource = Project.Frames[LastSelected].Path;
-
-                            FrameListView.ScrollIntoView(FrameListView.Items[LastSelected]);
-                        }
-
-                        #region Enabled the UI
-
-                        Dispatcher.Invoke(() =>
-                        {
-                            Cursor = Cursors.Arrow;
-                            IsLoading = false;
-                        });
-
-                        #endregion
-
-                        return false;
-
-                        #endregion
-                    });
-                }
-
-                private void InsertImportFromCallback(IAsyncResult ar)
-                {
-                    var result = _importFramesDel.EndInvoke(ar);
-
-                    GC.Collect();
-
-                    if (!result)
-                        Dispatcher.Invoke(delegate
-                        {
-                            Cursor = Cursors.Arrow;
-                            IsLoading = false;
-
-                            ClosePanel(removeEvent: true);
-
-                            FrameListView.Focus();
-                            CommandManager.InvalidateRequerySuggested();
-                        });
-                }
-
-                #endregion
-
-
-                private List<FrameInfo> ImportFromProject(string sourceFileName, string pathTemp)
-                {
-                    try
-                    {
-                        //Extract to the folder of the newly created project.
-                        ZipFile.ExtractToDirectory(sourceFileName, pathTemp);
-
-                        List<FrameInfo> list;
-
-                        if (File.Exists(Path.Combine(pathTemp, "Project.json")))
-                        {
-                            //Read as text.
-                            var json = File.ReadAllText(Path.Combine(pathTemp, "Project.json"));
-
-                            using (var ms = new MemoryStream(Encoding.UTF8.GetBytes(json)))
-                            {
-                                var ser = new DataContractJsonSerializer(typeof(ProjectInfo));
-                                var project = ser.ReadObject(ms) as ProjectInfo;
-                                list = project.Frames;
-                            }
-                        }
-                        else
-                        {
-                            if (File.Exists(Path.Combine(pathTemp, "List.sb")))
-                                throw new Exception("Project not compatible with this version");
-
-                            throw new FileNotFoundException("Impossible to open project.", "List.sb");
-                        }
-
-                        //Shows the ProgressBar
-                        ShowProgress("Importing Frames", list.Count);
-
-                        var count = 0;
-                        foreach (var frame in list)
-                        {
-                            //Change the file path to the current one.
-                            frame.Path = Path.Combine(pathTemp, Path.GetFileName(frame.Path));
-
-                            count++;
-                            UpdateProgress(count);
-                        }
-
-                        return list;
-                    }
-                    catch (Exception ex)
-                    {
-                        LogWriter.Log(ex, "Importing project");
-                        Dispatcher.Invoke(() => Dialog.Ok("ScreenToGif", "Impossible to load project", ex.Message));
-                        return new List<FrameInfo>();
-                    }
-                }
-
-                private List<FrameInfo> ImportFromGif(string sourceFileName, string pathTemp)
-                {
-                    ShowProgress(DispatcherStringResource("Editor.ImportingFrames"), 50, true);
-
-                    var listFrames = new List<FrameInfo>();
-
-                    var decoder = ImageMethods.GetDecoder(sourceFileName, out var gifMetadata) as GifBitmapDecoder;
-
-                    ShowProgress(DispatcherStringResource("Editor.ImportingFrames"), decoder.Frames.Count);
-
-                    if (decoder.Frames.Count <= 0)
-                        return listFrames;
-
-                    var fullSize = ImageMethods.GetFullSize(decoder, gifMetadata);
-                    var index = 0;
-
-                    BitmapSource baseFrame = null;
-                    foreach (var rawFrame in decoder.Frames)
-                    {
-                        var metadata = ImageMethods.GetFrameMetadata(decoder, gifMetadata, index);
-
-                        var bitmapSource = ImageMethods.MakeFrame(fullSize, rawFrame, metadata, baseFrame);
-
-                        #region Disposal Method
-
-                        switch (metadata.DisposalMethod)
-                        {
-                            case FrameDisposalMethod.None:
-                            case FrameDisposalMethod.DoNotDispose:
-                                baseFrame = bitmapSource;
-                                break;
-                            case FrameDisposalMethod.RestoreBackground:
-                                baseFrame = ImageMethods.IsFullFrame(metadata, fullSize) ? null : ImageMethods.ClearArea(bitmapSource, metadata);
-                                break;
-                            case FrameDisposalMethod.RestorePrevious:
-                                //Reuse same base frame.
-                                break;
-                        }
-
-                        #endregion
-
-                        #region Each Frame
-
-                        var fileName = Path.Combine(pathTemp, $"{index} {DateTime.Now:hh-mm-ss-FFFF}.png");
-
-                        using (var stream = new FileStream(fileName, FileMode.Create))
-                        {
-                            var encoder = new PngBitmapEncoder();
-                            encoder.Frames.Add(BitmapFrame.Create(bitmapSource));
-                            encoder.Save(stream);
-                            stream.Close();
-                        }
-
-                        //It should not throw a overflow exception because of the maximum value for the milliseconds.
-                        var frame = new FrameInfo(fileName, (int)metadata.Delay.TotalMilliseconds);
-                        listFrames.Add(frame);
-
-                        UpdateProgress(index);
-
-                        GC.Collect(1);
-
-                        #endregion
-
-                        index++;
-                    }
-
-                    return listFrames;
-                }
-
-                private List<FrameInfo> ImportFromImage(string sourceFileName, string pathTemp)
-                {
-                    var fileName = Path.Combine(pathTemp, $"{0} {DateTime.Now:hh-mm-ss-FFFF}.png");
-
-                    #region Save the Image to the Recording Folder
-
-                    BitmapSource bitmap = new BitmapImage(new Uri(sourceFileName));
-
-                    if (bitmap.Format != PixelFormats.Bgra32)
-                        bitmap = new FormatConvertedBitmap(bitmap, PixelFormats.Bgra32, null, 0);
-
-                    using (var stream = new FileStream(fileName, FileMode.Create))
-                    {
-                        var encoder = new PngBitmapEncoder();
-                        encoder.Frames.Add(BitmapFrame.Create(bitmap));
-                        encoder.Save(stream);
-                        stream.Close();
-                    }
-
-                    GC.Collect();
-
-                    #endregion
-
-                    return new List<FrameInfo> { new FrameInfo(fileName, 66) };
-                }
-
-                private List<FrameInfo> ImportFromVideo(string fileName, string pathTemp)
-                {
-                    var delay = 66;
-
-                    var frameList = Dispatcher.Invoke(() =>
-                    {
-                        var videoSource = new VideoSource(fileName) { Owner = this };
-                        var result = videoSource.ShowDialog();
-
-                        delay = videoSource.Delay;
-
-                        if (result.HasValue && result.Value)
-                            return videoSource.FrameList;
-
-                        return null;
-                    });
-
-                    //return frameList ?? new List<FrameInfo>();
-
-                    if (frameList == null)
-                        return new List<FrameInfo>();
-
-                    ShowProgress(DispatcherStringResource("Editor.ImportingFrames"), frameList.Count);
-
-                    #region Saves the Frames to the Disk
-
-                    var frameInfoList = new List<FrameInfo>();
-                    var count = 0;
-
-                    foreach (var frame in frameList)
-                    {
-                        var frameName = Path.Combine(pathTemp, $"{count} {DateTime.Now:hh-mm-ss-FFFF}.png");
-
-                        using (var stream = new FileStream(frameName, FileMode.Create))
-                        {
-                            var encoder = new PngBitmapEncoder();
-                            encoder.Frames.Add(frame);
-                            encoder.Save(stream);
-                            stream.Close();
-                        }
-
-                        var frameInfo = new FrameInfo(frameName, delay);
-                        frameInfoList.Add(frameInfo);
-
-                        GC.Collect(1, GCCollectionMode.Forced);
-                        count++;
-
-                        UpdateProgress(count);
-                    }
-
-                    frameList.Clear();
-                    GC.Collect();
-
-                    #endregion
-
-                    return frameInfoList;
-                }
-
-                #endregion
-        */
         #region Playback
 
         private void PlaybackPlayPause()
@@ -1945,7 +1521,7 @@ namespace ScreenToGif.Windows
 
             #endregion
 
-            if (Project == null || !Project.Any)
+            if (Project == null || !Project.AnyFrames)
             {
                 return;
             }
@@ -2008,56 +1584,6 @@ namespace ScreenToGif.Windows
 
             Keyboard.Focus(current);
             current.Focus();
-        }
-
-        private void ChangeProgressText(long cumulative, long total, int current)
-        {
-            switch (UserSettings.All.ProgressPrecision)
-            {
-                case 0: //Minutes
-                    ProgressHorizontalTextBlock.Text = UserSettings.All.ProgressShowTotal ? TimeSpan.FromMilliseconds(cumulative).ToString(@"m\:ss") + "/" + TimeSpan.FromMilliseconds(total).ToString(@"m\:ss")
-                        : TimeSpan.FromMilliseconds(cumulative).ToString(@"m\:ss");
-                    break;
-                case 1: //Seconds
-                    ProgressHorizontalTextBlock.Text = UserSettings.All.ProgressShowTotal ? (int)TimeSpan.FromMilliseconds(cumulative).TotalSeconds + "/" + TimeSpan.FromMilliseconds(total).TotalSeconds + " s"
-                        : (int)TimeSpan.FromMilliseconds(cumulative).TotalSeconds + " s";
-                    break;
-                case 2: //Milliseconds
-                    ProgressHorizontalTextBlock.Text = UserSettings.All.ProgressShowTotal ? cumulative + "/" + total + " ms" : cumulative + " ms";
-                    break;
-                case 3: //Percentage
-                    var count = (double)Project.Frames.Count;
-                    ProgressHorizontalTextBlock.Text = (current / count * 100).ToString("##0.#", CultureInfo.CurrentUICulture) + (UserSettings.All.ProgressShowTotal ? "/100%" : " %");
-                    break;
-                case 4: //Frame number
-                    ProgressHorizontalTextBlock.Text = UserSettings.All.ProgressShowTotal ? current + "/" + Project.Frames.Count
-                        : current.ToString();
-                    break;
-                case 5: //Custom
-                    ProgressHorizontalTextBlock.Text = UserSettings.All.ProgressFormat
-                        .Replace("$ms", cumulative.ToString())
-                        .Replace("$s", ((int)TimeSpan.FromMilliseconds(cumulative).TotalSeconds).ToString())
-                        .Replace("$m", TimeSpan.FromMilliseconds(cumulative).ToString())
-                        .Replace("$p", (current / (double)Project.Frames.Count * 100).ToString("##0.#", CultureInfo.CurrentUICulture))
-                        .Replace("$f", current.ToString())
-                        .Replace("@ms", total.ToString())
-                        .Replace("@s", ((int)TimeSpan.FromMilliseconds(total).TotalSeconds).ToString())
-                        .Replace("@m", TimeSpan.FromMilliseconds(total).ToString(@"m\:ss"))
-                        .Replace("@p", "100")
-                        .Replace("@f", Project.Frames.Count.ToString());
-                    break;
-            }
-        }
-
-        private void ChangeProgressTextToCurrent()
-        {
-            var total = Project.Frames.Sum(y => y.Delay);
-            var cumulative = 0L;
-
-            for (var j = 0; j < FrameListView.SelectedIndex; j++)
-                cumulative += Project.Frames[j].Delay;
-
-            ChangeProgressText(cumulative, total, FrameListView.SelectedIndex);
         }
 
         private string GetOutputFilename()
@@ -2302,7 +1828,7 @@ namespace ScreenToGif.Windows
                     UpdateProgress(count++);
                 }
 
-                var folderList = Directory.EnumerateDirectories(project.FullPath).ToList();
+                var folderList = Directory.EnumerateDirectories(project.FullPathOfProject).ToList();
 
                 ShowProgress(DispatcherStringResource("Editor.DiscardingFolders"), folderList.Count);
 
@@ -2358,8 +1884,6 @@ namespace ScreenToGif.Windows
 
         private delegate void Progress();
 
-        private Progress _progressDel;
-
         private void ProgressAsync()
         {
             Dispatcher.Invoke(() =>
@@ -2378,42 +1902,16 @@ namespace ScreenToGif.Windows
 
                 var render = Dispatcher.Invoke(() =>
                 {
-                    if (UserSettings.All.ProgressType == ProgressType.Bar)
-                    {
-                        #region Bar
-
-                        //Set the size of the bar as the percentage of the total size: Current/Total * Available size
-                        ProgressHorizontalRectangle.Width = count / (double)Project.Frames.Count * ProgressOverlayGrid.RenderSize.Width;
-                        ProgressVerticalRectangle.Height = count / (double)Project.Frames.Count * ProgressOverlayGrid.RenderSize.Height;
-
-                        //Assures that the UIElement is up to the changes.
-                        ProgressHorizontalRectangle.Arrange(new Rect(ProgressOverlayGrid.RenderSize));
-                        ProgressVerticalRectangle.Arrange(new Rect(ProgressOverlayGrid.RenderSize));
-
-                        //Renders the current Visual.
-                        return ProgressOverlayGrid.GetScaledRender(ZoomBoxControl.ScaleDiff, ZoomBoxControl.ImageDpi, ZoomBoxControl.GetImageSize());
-
-                        #endregion
-                    }
-
-                    #region Text
-
-                    //Calculates the cumulative total milliseconds.
-                    var cumulative = 0L;
-
-                    for (var j = 0; j < count; j++)
-                        cumulative += Project.Frames[j].Delay;
-
-                    //Type of the representation.
-                    ChangeProgressText(cumulative, total, count);
+                    //Set the size of the bar as the percentage of the total size: Current/Total * Available size
+                    ProgressHorizontalRectangle.Width = count / (double)Project.Frames.Count * ProgressOverlayGrid.RenderSize.Width;
+                    ProgressVerticalRectangle.Height = count / (double)Project.Frames.Count * ProgressOverlayGrid.RenderSize.Height;
 
                     //Assures that the UIElement is up to the changes.
-                    ProgressHorizontalTextBlock.Arrange(new Rect(ProgressOverlayGrid.RenderSize));
+                    ProgressHorizontalRectangle.Arrange(new Rect(ProgressOverlayGrid.RenderSize));
+                    ProgressVerticalRectangle.Arrange(new Rect(ProgressOverlayGrid.RenderSize));
 
                     //Renders the current Visual.
                     return ProgressOverlayGrid.GetScaledRender(ZoomBoxControl.ScaleDiff, ZoomBoxControl.ImageDpi, ZoomBoxControl.GetImageSize());
-
-                    #endregion
                 });
 
 
