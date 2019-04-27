@@ -52,7 +52,7 @@
                         MinWidth="55" ContentHeight="28" ContentWidth="28" Command="u:Commands.SaveAs" Style="{StaticResource Style.Button.Vertical2}"
                         ToolTip="{Binding Command, RelativeSource={RelativeSource Self}, Converter={StaticResource CommandToInputGestureTextConverter}}" 
                         ToolTipService.Placement="Bottom" ToolTipService.HorizontalOffset="-5"
-                        IsEnabled="{Binding FilledList, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type l:Editor}}}"/>
+                        />
 
 
 

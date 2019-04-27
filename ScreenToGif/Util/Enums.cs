@@ -197,15 +197,6 @@
     }
 
     /// <summary>
-    /// Type of the progress indicator.
-    /// </summary>
-    public enum ProgressType
-    {
-        Bar,
-        Text,
-    }
-
-    /// <summary>
     /// The type of directory, used to decide the icon of the folder inside the SelectFolderDialog.
     /// </summary>
     public enum DirectoryType

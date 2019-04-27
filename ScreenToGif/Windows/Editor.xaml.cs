@@ -26,23 +26,8 @@ namespace ScreenToGif.Windows
 {
     public partial class Editor : Window, INotification
     {
-        public ActionStack Stack
-        {
-            get => _stack;
-            set
-            {
-                if (_stack != null)
-                {
-                    throw new InvalidOperationException("This shouldn't happen");
-                }
-
-                _stack = value;
-            }
-        }
-
         #region Properties
 
-        public static readonly DependencyProperty FilledListProperty = DependencyProperty.Register("FilledList", typeof(bool), typeof(Editor), new FrameworkPropertyMetadata(false));
         public static readonly DependencyProperty NotPreviewingProperty = DependencyProperty.Register("NotPreviewing", typeof(bool), typeof(Editor), new FrameworkPropertyMetadata(true));
         public static readonly DependencyProperty IsLoadingProperty = DependencyProperty.Register("IsLoading", typeof(bool), typeof(Editor), new FrameworkPropertyMetadata(false));
         public static readonly DependencyProperty TotalDurationProperty = DependencyProperty.Register("TotalDuration", typeof(TimeSpan), typeof(Editor));
@@ -51,14 +36,20 @@ namespace ScreenToGif.Windows
         public static readonly DependencyProperty AverageDelayProperty = DependencyProperty.Register("AverageDelay", typeof(double), typeof(Editor));
         public static readonly DependencyProperty FrameDpiProperty = DependencyProperty.Register("FrameDpi", typeof(double), typeof(Editor));
         public static readonly DependencyProperty IsCancelableProperty = DependencyProperty.Register("IsCancelable", typeof(bool), typeof(Editor), new FrameworkPropertyMetadata(false));
+        public static readonly DependencyProperty StackProperty = DependencyProperty.Register("Stack", typeof(ActionStack), typeof(Editor));
 
-        /// <summary>
-        /// True if there is a value inside the list of frames.
-        /// </summary>
-        public bool FilledList
+        public ActionStack Stack
         {
-            get => (bool)GetValue(FilledListProperty);
-            set => SetValue(FilledListProperty, value);
+            get => (ActionStack)GetValue(StackProperty);
+            set
+            {
+                if (GetValue(StackProperty) != null)
+                {
+                    throw new InvalidOperationException("This shouldn't happen");
+                }
+
+                SetValue(StackProperty, value);
+            }
         }
 
         /// <summary>
@@ -140,27 +131,18 @@ namespace ScreenToGif.Windows
             IsLoading = false;
 
 
+            FrameListView.SelectedIndex = -1;
+            FrameListView.SelectedIndex = 0;
+            ZoomBoxControl.PixelSize = Stack.Project.Frames[0].FullPath.ScaledSize();
+            ZoomBoxControl.ImageScale = Stack.Project.Frames[0].FullPath.ScaleOf();
+            ZoomBoxControl.RefreshImage();
 
-            Dispatcher.Invoke(delegate
-            {
-                Cursor = Cursors.Arrow;
-                IsLoading = false;
+            //HideProgress();
 
-                if (Stack.Project.AnyFrames)
-                    FilledList = true;
+            CommandManager.InvalidateRequerySuggested();
 
-                FrameListView.SelectedIndex = -1;
-                FrameListView.SelectedIndex = 0;
-                ZoomBoxControl.PixelSize = Stack.Project.Frames[0].FullPath.ScaledSize();
-                ZoomBoxControl.ImageScale = Stack.Project.Frames[0].FullPath.ScaleOf();
-                ZoomBoxControl.RefreshImage();
-
-                HideProgress();
-
-                CommandManager.InvalidateRequerySuggested();
-
-                SetFocusOnCurrentFrame();
-            });
+            SetFocusOnCurrentFrame();
+        
         }
 
         private void Window_Activated(object sender, EventArgs e)
@@ -801,7 +783,6 @@ namespace ScreenToGif.Windows
 
             FrameListView.SelectedIndex = -1;
 
-            FrameListView.Items.Clear();
             ZoomBoxControl.Clear();
         }
 
@@ -1259,11 +1240,11 @@ namespace ScreenToGif.Windows
                 {
                     //Set the size of the bar as the percentage of the total size: Current/Total * Available size
                     ProgressHorizontalRectangle.Width = count / (double)Stack.Project.Frames.Count * ProgressOverlayGrid.RenderSize.Width;
-                    ProgressVerticalRectangle.Height = count / (double)Stack.Project.Frames.Count * ProgressOverlayGrid.RenderSize.Height;
+                    //ProgressVerticalRectangle.Height = count / (double)Stack.Project.Frames.Count * ProgressOverlayGrid.RenderSize.Height;
 
                     //Assures that the UIElement is up to the changes.
                     ProgressHorizontalRectangle.Arrange(new Rect(ProgressOverlayGrid.RenderSize));
-                    ProgressVerticalRectangle.Arrange(new Rect(ProgressOverlayGrid.RenderSize));
+                    //ProgressVerticalRectangle.Arrange(new Rect(ProgressOverlayGrid.RenderSize));
 
                     //Renders the current Visual.
                     return ProgressOverlayGrid.GetScaledRender(ZoomBoxControl.ScaleDiff, ZoomBoxControl.ImageDpi, ZoomBoxControl.GetImageSize());

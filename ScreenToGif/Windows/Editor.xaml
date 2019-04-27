@@ -31,6 +31,7 @@
         <c:FormatConverter x:Key="FormatConverter"/>
         <c:BoolOrToVisibility x:Key="BoolOrToVisibility"/>
         <c:BoolAndToVisibility x:Key="BoolAndToVisibility"/>
+        <BooleanToVisibilityConverter x:Key="Bool2VisibilityConverterGeneric" />
 
         <Storyboard x:Key="ShowPanelStoryboard">
             <BooleanAnimationUsingKeyFrames Storyboard.TargetName="ActionGrid" Storyboard.TargetProperty="IsHitTestVisible" Duration="0:0:0" >
@@ -92,30 +93,6 @@
                 </DoubleAnimation.EasingFunction>
             </DoubleAnimation>
             <DoubleAnimation Storyboard.TargetName="ActionGrid" Storyboard.TargetProperty="(Grid.Opacity)" From="{Binding ElementName=ActionGrid,Path=Opacity}" To="0" Duration="0:0:1">
-                <DoubleAnimation.EasingFunction>
-                    <PowerEase Power="8" />
-                </DoubleAnimation.EasingFunction>
-            </DoubleAnimation>
-        </Storyboard>
-
-        <Storyboard x:Key="HideWelcomeBorderStoryboard">
-            <DoubleAnimation Storyboard.TargetName="WelcomeGrid" Storyboard.TargetProperty="(Grid.Opacity)" From="{Binding ElementName=WelcomeGrid,Path=Opacity}" To="0" Duration="0:0:1">
-                <DoubleAnimation.EasingFunction>
-                    <PowerEase Power="8" />
-                </DoubleAnimation.EasingFunction>
-            </DoubleAnimation>
-
-            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="WelcomeGrid" Storyboard.TargetProperty="Visibility" Duration="0:0:1" >
-                <DiscreteObjectKeyFrame Value="{x:Static Visibility.Collapsed}" KeyTime="0:0:1"/>
-            </ObjectAnimationUsingKeyFrames>
-        </Storyboard>
-
-        <Storyboard x:Key="ShowWelcomeBorderStoryboard">
-            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="WelcomeGrid" Storyboard.TargetProperty="Visibility" Duration="0:0:0" >
-                <DiscreteObjectKeyFrame Value="{x:Static Visibility.Visible}" KeyTime="0:0:0"/>
-            </ObjectAnimationUsingKeyFrames>
-
-            <DoubleAnimation Storyboard.TargetName="WelcomeGrid" Storyboard.TargetProperty="(Grid.Opacity)" From="0" To="1" Duration="0:0:1">
                 <DoubleAnimation.EasingFunction>
                     <PowerEase Power="8" />
                 </DoubleAnimation.EasingFunction>
@@ -283,34 +260,18 @@
                 <Grid x:Name="OverlayGrid" Visibility="Collapsed" Opacity="0">
 
                     <Grid x:Name="ProgressOverlayGrid" VerticalAlignment="Center" HorizontalAlignment="Center" ClipToBounds="True"
-                          Width="{Binding ElementName=CaptionOverlayGrid, Path=Width, FallbackValue=0}" MinWidth="10" 
-                          Height="{Binding ElementName=CaptionOverlayGrid, Path=Height, FallbackValue=0}" MinHeight="10"
-                          Visibility="{Binding ElementName=ProgressGrid, Path=Visibility}" Background="Transparent">
+                          Width="{Binding ElementName=CaptionOverlayGrid, Path=Width, FallbackValue=100}" MinWidth="10" 
+                          Height="{Binding ElementName=CaptionOverlayGrid, Path=Height, FallbackValue=30}" MinHeight="10"
+                           Background="Transparent">
 
-                        <Grid Visibility="{Binding ProgressType, Source={x:Static u:UserSettings.All}, Converter={StaticResource EnumToVisibility}, ConverterParameter={x:Static u:ProgressType.Bar}}">
-                            <Rectangle Name="ProgressHorizontalRectangle" Height="{Binding Source={x:Static u:UserSettings.All}, Path=ProgressThickness}"
-                                       Visibility="{Binding ProgressOrientation, Source={x:Static u:UserSettings.All}, Converter={StaticResource EnumToVisibility}, ConverterParameter={x:Static Orientation.Horizontal}}"
-                                       Fill="{Binding ProgressColor, Source={x:Static u:UserSettings.All}, Converter={StaticResourceExtension ColorToBrush}}" 
-                                       VerticalAlignment="{Binding ProgressVerticalAligment, Source={x:Static u:UserSettings.All}}" 
-                                       HorizontalAlignment="{Binding ProgressHorizontalAligment, Source={x:Static u:UserSettings.All}}"/>
-
-                            <Rectangle Name="ProgressVerticalRectangle" Width="{Binding Source={x:Static u:UserSettings.All}, Path=ProgressThickness}"
-                                       Visibility="{Binding ProgressOrientation, Source={x:Static u:UserSettings.All}, Converter={StaticResource EnumToVisibility}, ConverterParameter={x:Static Orientation.Vertical}}"
-                                       Fill="{Binding ProgressColor, Source={x:Static u:UserSettings.All}, Converter={StaticResourceExtension ColorToBrush}}" 
-                                       VerticalAlignment="{Binding ProgressVerticalAligment, Source={x:Static u:UserSettings.All}}" 
-                                       HorizontalAlignment="{Binding ProgressHorizontalAligment, Source={x:Static u:UserSettings.All}}"/>
+                        <Grid>
+                            <Rectangle Name="ProgressHorizontalRectangle" 
+                                       Height="30"
+                                       Fill="LightGreen" 
+                                       VerticalAlignment="Center" 
+                                       HorizontalAlignment="Center"/>
                         </Grid>
-
-                        <TextBlock Name="ProgressHorizontalTextBlock" Padding="2,0" 
-                                   Background="{Binding ProgressColor, Source={x:Static u:UserSettings.All}, Converter={StaticResourceExtension ColorToBrush}}" 
-                                   Foreground="{Binding ProgressFontColor, Source={x:Static u:UserSettings.All}, Converter={StaticResourceExtension ColorToBrush}}" 
-                                   VerticalAlignment="{Binding ProgressVerticalAligment, Source={x:Static u:UserSettings.All}}" 
-                                   HorizontalAlignment="{Binding ProgressHorizontalAligment, Source={x:Static u:UserSettings.All}}"
-                                   Visibility="{Binding ProgressType, Source={x:Static u:UserSettings.All}, Converter={StaticResource EnumToVisibility}, ConverterParameter={x:Static u:ProgressType.Text}}"
-                                   FontFamily="{Binding ElementName=ProgressFontComboBox, Path=SelectedItem}" 
-                                   FontStyle="{Binding ElementName=ProgressFontStyleComboBox, Path=SelectedValue}"
-                                   FontWeight="{Binding ElementName=ProgressFontWeightComboBox, Path=SelectedValue}"
-                                   FontSize="{Binding ElementName=ProgressFontSizeNumericUpDown, Path=Value}"/>
+                        
                     </Grid>                    
                 </Grid>
             </ScrollViewer>
@@ -319,7 +280,7 @@
         <!--Lower part of the Window-->
         <ListView Grid.Row="2" x:Name="FrameListView" BorderThickness="0,1,0,0" IsTabStop="False" Focusable="False"
                   PreviewKeyDown="FrameListView_OnPreviewKeyDown"
-                  ItemsSource="{Binding ElementName=EditorWindow, Path=Stack}"
+                  ItemsSource="{Binding ElementName=EditorWindow, Path=Stack.Project.Frames}"
                   IsEnabled="{Binding Path=IsLoading, ElementName=EditorWindow, Converter={StaticResource InvertedBoolConverter}}"
                   Visibility="{Binding RelativeSource={RelativeSource Self}, Path=HasItems, Converter={StaticResource Bool2Visibility}}">
 
@@ -413,38 +374,6 @@
                             </Grid.ToolTip>
                         </Grid>
                     </Border>
-                    <DataTemplate.Triggers>
-                        <MultiTrigger>
-                            <MultiTrigger.Conditions>
-                                <Condition Property="IsMouseOver" Value="True"/>
-                            </MultiTrigger.Conditions>
-                            <Setter Property="Background" TargetName="Bd" Value="{StaticResource Item.MouseOver.Background}"/>
-                            <Setter Property="BorderBrush" TargetName="Bd" Value="{StaticResource Item.MouseOver.Border}"/>
-                        </MultiTrigger>
-                        <MultiTrigger>
-                            <MultiTrigger.Conditions>
-                                <Condition Property="Selector.IsSelectionActive" Value="False"/>
-                                <Condition Binding="{Binding Path=IsSelected, RelativeSource={
-                                            RelativeSource Mode=FindAncestor, AncestorType={x:Type ListBoxItem }}}" 
-                                           Value="True"/>
-                            </MultiTrigger.Conditions>
-                            <Setter Property="Background" TargetName="Bd" Value="{StaticResource Item.SelectedInactive.Background}"/>
-                            <Setter Property="BorderBrush" TargetName="Bd" Value="{StaticResource Item.SelectedInactive.Border}"/>
-                        </MultiTrigger>
-                        <MultiTrigger>
-                            <MultiTrigger.Conditions>
-                                <Condition Property="Selector.IsSelectionActive" Value="True"/>
-                                <Condition Binding="{Binding Path=IsSelected, RelativeSource={
-                                            RelativeSource Mode=FindAncestor, AncestorType={x:Type ListBoxItem }}}" 
-                                           Value="True"/>
-                            </MultiTrigger.Conditions>
-                            <Setter Property="Background" TargetName="Bd" Value="{StaticResource Item.SelectedActive.Background}"/>
-                            <Setter Property="BorderBrush" TargetName="Bd" Value="{StaticResource Item.SelectedActive.Border}"/>
-                        </MultiTrigger>
-                        <Trigger Property="IsEnabled" Value="False">
-                            <Setter Property="TextElement.Foreground" TargetName="Bd" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>
-                        </Trigger>
-                    </DataTemplate.Triggers>
                 </DataTemplate>
             </ListView.ItemTemplate>
 
@@ -488,19 +417,19 @@
                     <TextBlock x:Name="HintTextBlock" Foreground="DarkGreen" FontSize="13" VerticalAlignment="Center" Margin="0,-1,0,0" TextTrimming="CharacterEllipsis" TextDecorations="{x:Null}"/>
                 </StackPanel>
 
-                <Separator Grid.Column="3" Width="1" Margin="1,2" Visibility="{Binding ElementName=WelcomeGrid, Path=Visibility, Converter={StaticResource InvertedVisibilityConverter}, ConverterParameter=0}"/>
+                <Separator Grid.Column="3" Width="1" Margin="1,2" />
 
-                <StackPanel Grid.Column="4" Orientation="Horizontal" Visibility="{Binding ElementName=WelcomeGrid, Path=Visibility, Converter={StaticResource InvertedVisibilityConverter}, ConverterParameter=0}"
-                            IsEnabled="{Binding ElementName=Zoom100Button, Path=IsEnabled}" ToolTip="{DynamicResource Editor.Home.Zoom}">
+                <StackPanel Grid.Column="4" Orientation="Horizontal" 
+                            ToolTip="{DynamicResource Editor.Home.Zoom}">
                     <Viewbox Child="{StaticResource Vector.Zoom}" Height="16"/>
                     <n:IntegerUpDown Margin="1" Minimum="5" Maximum="500" Style="{StaticResource IntegerUpDown.Minimal}"
                                      Value="{Binding Zoom, Converter={StaticResource IntToDecimalConverter}, ElementName=ZoomBoxControl, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
                     <TextBlock Text="%" VerticalAlignment="Center" Foreground="#FF707070"/>
                 </StackPanel>
 
-                <Separator Grid.Column="5" Width="1" Margin="1,2" Visibility="{Binding ElementName=WelcomeGrid, Path=Visibility, Converter={StaticResource InvertedVisibilityConverter}, ConverterParameter=0}"/>
+                <Separator Grid.Column="5" Width="1" Margin="1,2" />
 
-                <Grid Grid.Column="6" x:Name="InfoGrid" Visibility="{Binding ElementName=WelcomeGrid, Path=Visibility, Converter={StaticResource InvertedVisibilityConverter}, ConverterParameter=0}"
+                <Grid Grid.Column="6" x:Name="InfoGrid" 
                       ToolTip="{DynamicResource Editor.FrameNumbersInfo}" ToolTipService.Placement="Bottom">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"/>

@@ -148,17 +148,16 @@
                 </Viewbox>
 
                 <n:IntegerUpDown x:Name="FpsIntegerUpDown" Margin="1,3" StepValue="1" Minimum="1" Maximum="60" MinWidth="45" TabIndex="4"
-                                 Value="{Binding Source={x:Static u:UserSettings.All}, Path=LatestFps, Mode=TwoWay}"
-                                 Visibility="{Binding SnapshotMode, Source={x:Static u:UserSettings.All}, Converter={StaticResource InvertedBoolToVisibility}}">
+                                 Value="{Binding Source={x:Static u:UserSettings.All}, Path=LatestFps, Mode=TwoWay}">
                     <n:IntegerUpDown.ToolTip>
                         <ToolTip HorizontalOffset="-5" Placement="Bottom" Content="{DynamicResource Recorder.Fps}"/>
                     </n:IntegerUpDown.ToolTip>
                 </n:IntegerUpDown>
 
                 <Label Content="{StaticResource Recorder.Fps.Short}" FontSize="12" FontFamily="Segoe UI" Margin="1,0,0,0" VerticalContentAlignment="Center" Padding="0" 
-                       Foreground="{Binding ElementName=RecorderLightWindow, Path=Foreground}" Visibility="{Binding SnapshotMode, Source={x:Static u:UserSettings.All}, Converter={StaticResource InvertedBoolToVisibility}}"/>
+                       Foreground="{Binding ElementName=RecorderLightWindow, Path=Foreground}"/>
 
-                <Separator Width="1" Margin="5,2" Visibility="{Binding SnapshotMode, Source={x:Static u:UserSettings.All}, Converter={StaticResource InvertedBoolToVisibility}}"/>
+                <Separator Width="1" Margin="5,2"/>
 
                 <!--<Viewbox Child="{StaticResource Vector.WidthHeight}" Stretch="UniformToFill" Margin="3,4" HorizontalAlignment="Right" FlowDirection="LeftToRight" SnapsToDevicePixels="True"
                              Visibility="{Binding RecorderThinMode, Converter={StaticResource InvertedBoolToVisibility}, Source={x:Static u:UserSettings.All}}"/>-->
@@ -198,9 +197,6 @@
                         <ContextMenu>
                             <n:ImageMenuItem Header="{DynamicResource Recorder.RecordingOptions}" IsHitTestVisible="False" Image="{StaticResource Vector.Record}" ContentHeight="16" ContentWidth="16"/>
                             <Separator/>
-                            <n:ImageMenuItem Header="{DynamicResource Recorder.Snapshot}" IsCheckable="True" Image="{StaticResource Vector.Camera.Add}" ContentHeight="16" ContentWidth="16" 
-                                             IsChecked="{Binding SnapshotMode, Source={x:Static u:UserSettings.All}, Mode=TwoWay}" />
-
                             <n:ImageMenuItem x:Name="ThinModeMenuItem" Header="{DynamicResource Recorder.ThinMode}" IsCheckable="True" Image="{StaticResource Vector.Application}" ContentHeight="16" ContentWidth="16"
                                              IsChecked="{Binding RecorderThinMode, Source={x:Static u:UserSettings.All}, Mode=TwoWay}" Command="u:Commands.EnableThinMode"/>
                         </ContextMenu>
