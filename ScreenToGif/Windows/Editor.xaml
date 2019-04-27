@@ -212,7 +212,7 @@
         <CommandBinding Command="u:Commands.NewRecording" CanExecute="NewRecording_CanExecute" Executed="NewRecording_Executed"/>
         
         <!--File-->
-        <CommandBinding Command="u:Commands.SaveAs" CanExecute="File_CanExecute" Executed="SaveAs_Executed"/>
+        <CommandBinding Command="u:Commands.SaveAs" CanExecute="Save_CanExecute" Executed="Save_Executed"/>
         
         <!--Action Stack-->
         <CommandBinding Command="Undo" CanExecute="Undo_CanExecute" Executed="Undo_Executed"/>
@@ -318,7 +318,8 @@
 
         <!--Lower part of the Window-->
         <ListView Grid.Row="2" x:Name="FrameListView" BorderThickness="0,1,0,0" IsTabStop="False" Focusable="False"
-                  SelectionChanged="FrameListView_SelectionChanged" PreviewKeyDown="FrameListView_OnPreviewKeyDown"
+                  PreviewKeyDown="FrameListView_OnPreviewKeyDown"
+                  ItemsSource="{Binding ElementName=EditorWindow, Path=Stack}"
                   IsEnabled="{Binding Path=IsLoading, ElementName=EditorWindow, Converter={StaticResource InvertedBoolConverter}}"
                   Visibility="{Binding RelativeSource={RelativeSource Self}, Path=HasItems, Converter={StaticResource Bool2Visibility}}">
 
@@ -376,11 +377,82 @@
                 </Style>
             </ListView.Resources>
 
-            <ListView.ItemContainerStyle>
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <Border x:Name="Bd" BorderBrush="Transparent" BorderThickness="1" Background="Transparent"
+                            Padding="4,1" SnapsToDevicePixels="true">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <!--MaxWidth="{TemplateBinding MaxSize}"-->
+                            <Viewbox x:Name="ViewBoxInternal" VerticalAlignment="Center" HorizontalAlignment="Left" 
+                                   Margin="2,0,2,0" Stretch="UniformToFill" StretchDirection="Both" Effect="{x:Null}">
+                                <ContentPresenter Content="{Binding Value.FullPath}" SnapsToDevicePixels="True" Width="Auto" Height="Auto"/>
+                            </Viewbox>
+                            <ContentPresenter Grid.Column="1" Content="{TemplateBinding Content}" 
+                                              HorizontalAlignment="{Binding HorizontalContentAlignment, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}" 
+                                              SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" 
+                                              Margin="5,0,0,0" 
+                                              VerticalAlignment="Center"/>
+                            <Label Grid.Column="2" Content="{Binding Value.Author}" Foreground="#FF858585" Margin="5,0,0,0" HorizontalAlignment="Left"/>
+                            <!--MaxWidth="{TemplateBinding MaxSize}"-->
+                            <Viewbox Grid.Column="3" x:Name="SelectionMark" VerticalAlignment="Center" HorizontalAlignment="Center"
+                                     Margin="2,0,2,0" Stretch="UniformToFill" StretchDirection="Both"
+                                     Effect="{x:Null}">
+                                <Path x:Name="optionMark" Data="F1 M 9.97498,.8 L 4.6983,9.09834  L 1,5.19331 L 1.27664,3.52165 L 4.255,6.08833 L 9.33331,1.288e-005 Z" Fill="#FF858585" Margin="1" Stretch="None" 
+                                      Visibility="{Binding Path=IsSelected, 
+                                    RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ListBoxItem }},
+                                    Converter={StaticResource Bool2VisibilityConverterGeneric}}"/>
+                            </Viewbox>
+                            <Grid.ToolTip>
+                                <ToolTip Content="{TemplateBinding Tag}" />
+                            </Grid.ToolTip>
+                        </Grid>
+                    </Border>
+                    <DataTemplate.Triggers>
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="IsMouseOver" Value="True"/>
+                            </MultiTrigger.Conditions>
+                            <Setter Property="Background" TargetName="Bd" Value="{StaticResource Item.MouseOver.Background}"/>
+                            <Setter Property="BorderBrush" TargetName="Bd" Value="{StaticResource Item.MouseOver.Border}"/>
+                        </MultiTrigger>
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="Selector.IsSelectionActive" Value="False"/>
+                                <Condition Binding="{Binding Path=IsSelected, RelativeSource={
+                                            RelativeSource Mode=FindAncestor, AncestorType={x:Type ListBoxItem }}}" 
+                                           Value="True"/>
+                            </MultiTrigger.Conditions>
+                            <Setter Property="Background" TargetName="Bd" Value="{StaticResource Item.SelectedInactive.Background}"/>
+                            <Setter Property="BorderBrush" TargetName="Bd" Value="{StaticResource Item.SelectedInactive.Border}"/>
+                        </MultiTrigger>
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="Selector.IsSelectionActive" Value="True"/>
+                                <Condition Binding="{Binding Path=IsSelected, RelativeSource={
+                                            RelativeSource Mode=FindAncestor, AncestorType={x:Type ListBoxItem }}}" 
+                                           Value="True"/>
+                            </MultiTrigger.Conditions>
+                            <Setter Property="Background" TargetName="Bd" Value="{StaticResource Item.SelectedActive.Background}"/>
+                            <Setter Property="BorderBrush" TargetName="Bd" Value="{StaticResource Item.SelectedActive.Border}"/>
+                        </MultiTrigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="TextElement.Foreground" TargetName="Bd" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>
+                        </Trigger>
+                    </DataTemplate.Triggers>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+
+            <!--<ListView.ItemContainerStyle>
                 <Style TargetType="ListBoxItem">
                     <EventSetter Event="PreviewMouseLeftButtonDown" Handler="Item_PreviewMouseLeftButtonDown"/>                    
                 </Style>
-            </ListView.ItemContainerStyle>
+            </ListView.ItemContainerStyle>-->
         </ListView>
 
         <!--Status bar-->

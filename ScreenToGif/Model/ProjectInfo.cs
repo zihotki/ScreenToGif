@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Windows;
@@ -13,7 +15,7 @@ namespace ScreenToGif.Model
 
         public DateTime CreationDate { get; } = DateTime.Now;
 
-        public List<FrameInfo> Frames { get; } = new List<FrameInfo>();
+        public ObservableCollection<FrameInfo> Frames { get; } = new ObservableCollection<FrameInfo>();
 
         public string FullPathOfProject => Path.Combine(UserSettings.All.TemporaryFolder, "ScreenToGif", "Recording", RelativePath);
 

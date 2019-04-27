@@ -150,7 +150,6 @@
     <Compile Include="Controls\EncoderListViewItem.cs" />
     <Compile Include="Controls\ExtendedCheckBox.cs" />
     <Compile Include="Controls\ExtendedTextBox.cs" />
-    <Compile Include="Controls\FrameListBoxItem.cs" />
     <Compile Include="Controls\FrameworkElementAdorner.cs" />
     <Compile Include="Controls\HeaderedTooltip.cs" />
     <Compile Include="Controls\ExtendedUniformGrid.cs" />

@@ -46,7 +46,10 @@ namespace ScreenToGif.Model
 
                             if (window?.Project != null && window.Project.AnyFrames)
                             {
-                                ShowEditor(window.Project);
+                                var editor = new Editor(new ActionStack(window.Project));
+                                editor.Show();
+
+                                Application.Current.MainWindow = editor;
                                 caller?.Close();
                             }
                             else
@@ -57,25 +60,6 @@ namespace ScreenToGif.Model
 
                         Application.Current.MainWindow = recorder;
                         recorder.Show();
-                    }
-                };
-            }
-        }
-
-        public ICommand OpenEditor
-        {
-            get
-            {
-                return new RelayCommand
-                {
-                    CanExecutePredicate = a => true,
-                    ExecuteAction = a =>
-                    {
-                        var caller = a as Window;
-
-                        ShowEditor();
-
-                        caller?.Close();
                     }
                 };
             }
@@ -120,14 +104,6 @@ namespace ScreenToGif.Model
         #endregion
 
         #region Methods
-
-        private void ShowEditor(ProjectInfo project = null)
-        {
-            var editor = new Editor { Project = project };
-            editor.Show();
-
-            Application.Current.MainWindow = editor;
-        }
 
         internal void ClearTemporaryFilesTask()
         {
@@ -247,15 +223,5 @@ namespace ScreenToGif.Model
         {
             ExecuteAction(parameter);
         }
-
-        //public bool CanExecute(object parameter)
-        //{
-        //    return CanExecutePredicate == null || CanExecutePredicate(parameter);
-        //}
-
-        //public void Execute(object parameter)
-        //{
-        //    ExecuteAction(parameter);
-        //}
     }
 }

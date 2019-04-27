@@ -1,100 +1,104 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
+﻿using System.Collections.Generic;
 using System.Linq;
 using ScreenToGif.Model;
 
 namespace ScreenToGif.Util
 {
-    /// <summary>
-    /// Do, Undo, Redo stack.
-    /// </summary>
-    public static class ActionStack
+    public class ActionStack
     {
-        private static readonly Stack<StateChange> StackToUndo = new Stack<StateChange>();
-        private static readonly Stack<StateChange> StackToRedo = new Stack<StateChange>();
+        private readonly Stack<StateChange> _stackToUndo = new Stack<StateChange>();
+        private readonly Stack<StateChange> _stackToRedo = new Stack<StateChange>();
 
-        private static ProjectInfo _project;
+        public ProjectInfo Project { get; }
 
-        public static ProjectInfo Project
+        private readonly List<FrameInfo> _allFrames;
+
+        public ActionStack(ProjectInfo project)
         {
-            get { return _project; }
-            set
+            Project = project;
+            _allFrames = project.Frames.ToList();
+        }
+
+        public void Remove(List<FrameInfo> frames)
+        {
+            _stackToUndo.Push(new StateChange { RemovedFrames = frames });
+        }
+
+        public void Undo()
+        {
+            if (_stackToUndo.Count > 0)
             {
-                _project = value;
-                Reset();
-            }
-        }
-        
-        private class StateChange
-        {
-            public List<FrameInfo> RemovedFrames { get; set; }
-        }
-
-        public static void Remove(List<FrameInfo> frames)
-        {
-            StackToUndo.Push(new StateChange { RemovedFrames = frames });
-        }
-
-        public static void Undo()
-        {
-            if (StackToUndo.Count > 0)
-            {
-                var operation = StackToUndo.Pop();
-                StackToRedo.Push(operation);
+                var operation = _stackToUndo.Pop();
+                _stackToRedo.Push(operation);
 
                 var framesToUndo = operation.RemovedFrames;
-                Project.Frames = Project.Frames
+
+                // TODO:
+                /*Project.Frames = Project.Frames
                     .Union(framesToUndo)
                     .OrderBy(x => x.Index)
-                    .ToList();
+                    .ToList();*/
             }
         }
 
-        public static void Redo()
+        public void Redo()
         {
-            if (StackToRedo.Count > 0)
+            if (_stackToRedo.Count > 0)
             {
-                var operation = StackToRedo.Pop();
-                StackToUndo.Push(operation);
+                var operation = _stackToRedo.Pop();
+                _stackToUndo.Push(operation);
 
                 var framesToRedo = operation.RemovedFrames;
+                // TODO:
+                /*
                 Project.Frames = Project.Frames
                     .Except(framesToRedo)
                     .OrderBy(x => x.Index)
-                    .ToList();
+                    .ToList();*/
             }
         }
 
-        public static void Reset()
+        public void Reset()
         {
+            if (CanUndo())
+            {
+                // TODO
+                _stackToRedo.Clear();
+                _stackToUndo.Clear();
+            }
             while (CanUndo())
             {
                 Undo();
             }
 
-            StackToRedo.Clear();
+            _stackToRedo.Clear();
         }
 
-        public static void Clear()
+        public void Dispose()
         {
-            StackToRedo.Clear();
-            StackToUndo.Clear();
+            _stackToRedo.Clear();
+            _stackToUndo.Clear();
+            Project.Clear();
         }
 
-        public static bool CanUndo()
+        public bool CanUndo()
         {
-            return StackToUndo.Count > 0;
+            return _stackToUndo.Count > 0;
         }
 
-        public static bool CanRedo()
+        public bool CanRedo()
         {
-            return StackToRedo.Count > 0;
+            return _stackToRedo.Count > 0;
         }
 
-        public static bool CanReset()
+        public bool CanReset()
         {
-            return StackToUndo.Count > 0;
+            return _stackToUndo.Count > 0;
+        }
+
+        private class StateChange
+        {
+            public List<FrameInfo> RemovedFrames { get; set; }
         }
     }
 }

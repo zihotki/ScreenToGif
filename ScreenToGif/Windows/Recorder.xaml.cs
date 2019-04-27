@@ -69,6 +69,10 @@ namespace ScreenToGif.Windows
         /// </summary>
         private IntPtr _lastHandle;
 
+        private Timer _capture = new Timer();
+
+        private readonly System.Timers.Timer _garbageTimer = new System.Timers.Timer();
+
         #region Flags
 
         /// <summary>
@@ -85,15 +89,8 @@ namespace ScreenToGif.Windows
 
         #endregion
 
-        #region Timer
 
-        private Timer _capture = new Timer();
-
-        private readonly System.Timers.Timer _garbageTimer = new System.Timers.Timer();
-
-        #endregion
-
-        #region Inicialization
+        #region Initialization
 
         public Recorder(bool hideBackButton = true)
         {
@@ -317,13 +314,11 @@ namespace ScreenToGif.Windows
         {
             try
             {
-                #region Remove all the files
-
                 foreach (var frame in Project.Frames)
                 {
                     try
                     {
-                        File.Delete(frame.Path);
+                        File.Delete(frame.FullPath);
                     }
                     catch (Exception)
                     { }
@@ -337,8 +332,6 @@ namespace ScreenToGif.Windows
                 {
                     LogWriter.Log(ex, "Delete Temp Path");
                 }
-
-                #endregion
 
                 Project.Frames.Clear();
             }
@@ -511,8 +504,6 @@ namespace ScreenToGif.Windows
 
         #endregion
 
-        #region Methods
-
         /// <summary>
         /// Method that starts or pauses the recording
         /// </summary>
@@ -522,12 +513,8 @@ namespace ScreenToGif.Windows
             {
                 case Stage.Stopped:
 
-                    #region To Record
-
                     _capture = new Timer { Interval = 1000 / FpsIntegerUpDown.Value };
                     _snapDelay = null;
-
-                    Project = new ProjectInfo();
 
                     _keyList.Clear();
                     FrameCount = 0;
@@ -536,6 +523,8 @@ namespace ScreenToGif.Windows
 
                     //Sizing.
                     _size = new Size((int)Math.Round((Width - Constants.HorizontalOffset) * _scale), (int)Math.Round((Height - Constants.VerticalOffset) * _scale));
+
+                    Project = new ProjectInfo(new Int32Rect { Height = (int)_size.Height, Width = (int)_size.Width } );
 
                     HeightIntegerBox.IsEnabled = false;
                     WidthIntegerBox.IsEnabled = false;
@@ -556,13 +545,7 @@ namespace ScreenToGif.Windows
 
                     break;
 
-                #endregion
-
-                #endregion
-
                 case Stage.Recording:
-
-                    #region To Pause
 
                     Stage = Stage.Paused;
                     Title = FindResource("Recorder.Paused").ToString();
@@ -576,11 +559,7 @@ namespace ScreenToGif.Windows
                     FrameRate.Stop();
                     break;
 
-                #endregion
-
                 case Stage.Paused:
-
-                    #region To Record Again
 
                     Stage = Stage.Recording;
                     Title = "Screen To Gif";
@@ -593,8 +572,6 @@ namespace ScreenToGif.Windows
 
                     _capture.Start();
                     break;
-
-                    #endregion
             }
         }
 
@@ -746,8 +723,6 @@ namespace ScreenToGif.Windows
 
         private async void Window_LocationChanged(object sender, EventArgs e)
         {
-            //TestTextBlock.Text = $"{_left};{_top}";
-
             await Task.Factory.StartNew(UpdateScreenDpi);
 
             _left = (int)Math.Round((Math.Round(Left, MidpointRounding.AwayFromZero) + Constants.LeftOffset) * _scale);
