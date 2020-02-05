@@ -54,17 +54,6 @@ namespace ScreenToGif.Controls
                 e.Handled = true;
                 Focus();
             }
-
-            if (UserSettings.All.TripleClickSelection && e.ClickCount == 3)
-                SelectAll();
-        }
-
-        protected override void OnGotFocus(RoutedEventArgs e)
-        {
-            base.OnGotFocus(e);
-
-            if (!UserSettings.All.TripleClickSelection)
-                SelectAll();
         }
     }
 }

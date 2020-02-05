@@ -25,7 +25,7 @@ namespace ScreenToGif.Util
             _stopwatch = new Stopwatch();
 
             _interval = interval;
-            _fixedFrameRate = UserSettings.All.FixedFrameRate;
+            _fixedFrameRate = false;// UserSettings.All.FixedFrameRate;
         }
 
         /// <summary>

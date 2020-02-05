@@ -64,7 +64,7 @@
         <CommandBinding Command="u:Commands.EnableSnapToWindow" CanExecute="SnapToWindow_CanExecute"/>
     </Window.CommandBindings>
 
-    <Grid x:Name="OutterGrid" UseLayoutRounding="True">
+    <Grid x:Name="OuterGrid" UseLayoutRounding="True">
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
             <RowDefinition Height="31"/>

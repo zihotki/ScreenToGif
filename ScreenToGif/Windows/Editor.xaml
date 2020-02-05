@@ -21,10 +21,6 @@
         <c:UriToBitmap x:Key="UriToBitmapConverter"/>
         <c:PathToFilename x:Key="PathToFilenameConverter"/>
         <c:DoubleToThickness x:Key="DoubleToThicknessConverter"/>
-        <c:SelectionToEditingMode x:Key="SelectionToEditingModeConverter"/>
-        <c:SelectionToDrawingAttributes x:Key="SelectionToDrawingAttributesConverter"/>
-        <c:SelectionToStylusShape x:Key="SelectionToStylusShapeConverter"/>
-        <c:StylusTipToBool x:Key="StylusTipToBoolConverter"/>
         <c:RoutedCommandToInputGestureTextConverter x:Key="CommandToInputGestureTextConverter"/>
         <c:FontToSupportedGliph x:Key="FontToSupportedGliphConverter"/>
         <c:InvertedBool x:Key="InvertedBool"/>
@@ -35,6 +31,7 @@
         <c:FormatConverter x:Key="FormatConverter"/>
         <c:BoolOrToVisibility x:Key="BoolOrToVisibility"/>
         <c:BoolAndToVisibility x:Key="BoolAndToVisibility"/>
+        <BooleanToVisibilityConverter x:Key="Bool2VisibilityConverterGeneric" />
 
         <Storyboard x:Key="ShowPanelStoryboard">
             <BooleanAnimationUsingKeyFrames Storyboard.TargetName="ActionGrid" Storyboard.TargetProperty="IsHitTestVisible" Duration="0:0:0" >
@@ -96,30 +93,6 @@
                 </DoubleAnimation.EasingFunction>
             </DoubleAnimation>
             <DoubleAnimation Storyboard.TargetName="ActionGrid" Storyboard.TargetProperty="(Grid.Opacity)" From="{Binding ElementName=ActionGrid,Path=Opacity}" To="0" Duration="0:0:1">
-                <DoubleAnimation.EasingFunction>
-                    <PowerEase Power="8" />
-                </DoubleAnimation.EasingFunction>
-            </DoubleAnimation>
-        </Storyboard>
-
-        <Storyboard x:Key="HideWelcomeBorderStoryboard">
-            <DoubleAnimation Storyboard.TargetName="WelcomeGrid" Storyboard.TargetProperty="(Grid.Opacity)" From="{Binding ElementName=WelcomeGrid,Path=Opacity}" To="0" Duration="0:0:1">
-                <DoubleAnimation.EasingFunction>
-                    <PowerEase Power="8" />
-                </DoubleAnimation.EasingFunction>
-            </DoubleAnimation>
-
-            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="WelcomeGrid" Storyboard.TargetProperty="Visibility" Duration="0:0:1" >
-                <DiscreteObjectKeyFrame Value="{x:Static Visibility.Collapsed}" KeyTime="0:0:1"/>
-            </ObjectAnimationUsingKeyFrames>
-        </Storyboard>
-
-        <Storyboard x:Key="ShowWelcomeBorderStoryboard">
-            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="WelcomeGrid" Storyboard.TargetProperty="Visibility" Duration="0:0:0" >
-                <DiscreteObjectKeyFrame Value="{x:Static Visibility.Visible}" KeyTime="0:0:0"/>
-            </ObjectAnimationUsingKeyFrames>
-
-            <DoubleAnimation Storyboard.TargetName="WelcomeGrid" Storyboard.TargetProperty="(Grid.Opacity)" From="0" To="1" Duration="0:0:1">
                 <DoubleAnimation.EasingFunction>
                     <PowerEase Power="8" />
                 </DoubleAnimation.EasingFunction>
@@ -216,7 +189,7 @@
         <CommandBinding Command="u:Commands.NewRecording" CanExecute="NewRecording_CanExecute" Executed="NewRecording_Executed"/>
         
         <!--File-->
-        <CommandBinding Command="u:Commands.SaveAs" CanExecute="File_CanExecute" Executed="SaveAs_Executed"/>
+        <CommandBinding Command="u:Commands.SaveAs" CanExecute="Save_CanExecute" Executed="Save_Executed"/>
         
         <!--Action Stack-->
         <CommandBinding Command="Undo" CanExecute="Undo_CanExecute" Executed="Undo_Executed"/>
@@ -225,8 +198,6 @@
 
         <!--Zoom-->
         <CommandBinding Command="u:Commands.Zoom100" CanExecute="Zoom_CanExecute" Executed="Zoom100_Executed"/>
-        <CommandBinding x:Name="SizeToContentCommand" Command="u:Commands.SizeToContent" CanExecute="Zoom_CanExecute" Executed="SizeToContent_Executed"/>
-        <CommandBinding x:Name="FitImageCommand" Command="u:Commands.FitImage" CanExecute="Zoom_CanExecute" Executed="FitImage_Executed"/>
 
         <!--Playback-->
         <CommandBinding Command="u:Commands.FirstFrame" CanExecute="Playback_CanExecute" Executed="FirstFrame_Executed"/>
@@ -288,40 +259,19 @@
                           PreviewMouseWheel="ZoomBox_MouseWheel" Visibility="{Binding Path=Visibility, ElementName=OverlayGrid}">
                 <Grid x:Name="OverlayGrid" Visibility="Collapsed" Opacity="0">
 
-                    <n:SelectControl x:Name="ObfuscateOverlaySelectControl" VerticalAlignment="Center" HorizontalAlignment="Center"
-                                     Width="{Binding ElementName=CaptionOverlayGrid, Path=Width, FallbackValue=0}" 
-                                     Height="{Binding ElementName=CaptionOverlayGrid, Path=Height, FallbackValue=0}"
-                                     Visibility="{Binding ElementName=ObfuscateGrid, Path=Visibility}" EmbeddedMode="True"/>
-
                     <Grid x:Name="ProgressOverlayGrid" VerticalAlignment="Center" HorizontalAlignment="Center" ClipToBounds="True"
-                          Width="{Binding ElementName=CaptionOverlayGrid, Path=Width, FallbackValue=0}" MinWidth="10" 
-                          Height="{Binding ElementName=CaptionOverlayGrid, Path=Height, FallbackValue=0}" MinHeight="10"
-                          Visibility="{Binding ElementName=ProgressGrid, Path=Visibility}" Background="Transparent">
+                          Width="{Binding ElementName=CaptionOverlayGrid, Path=Width, FallbackValue=100}" MinWidth="10" 
+                          Height="{Binding ElementName=CaptionOverlayGrid, Path=Height, FallbackValue=30}" MinHeight="10"
+                           Background="Transparent">
 
-                        <Grid Visibility="{Binding ProgressType, Source={x:Static u:UserSettings.All}, Converter={StaticResource EnumToVisibility}, ConverterParameter={x:Static u:ProgressType.Bar}}">
-                            <Rectangle Name="ProgressHorizontalRectangle" Height="{Binding Source={x:Static u:UserSettings.All}, Path=ProgressThickness}"
-                                       Visibility="{Binding ProgressOrientation, Source={x:Static u:UserSettings.All}, Converter={StaticResource EnumToVisibility}, ConverterParameter={x:Static Orientation.Horizontal}}"
-                                       Fill="{Binding ProgressColor, Source={x:Static u:UserSettings.All}, Converter={StaticResourceExtension ColorToBrush}}" 
-                                       VerticalAlignment="{Binding ProgressVerticalAligment, Source={x:Static u:UserSettings.All}}" 
-                                       HorizontalAlignment="{Binding ProgressHorizontalAligment, Source={x:Static u:UserSettings.All}}"/>
-
-                            <Rectangle Name="ProgressVerticalRectangle" Width="{Binding Source={x:Static u:UserSettings.All}, Path=ProgressThickness}"
-                                       Visibility="{Binding ProgressOrientation, Source={x:Static u:UserSettings.All}, Converter={StaticResource EnumToVisibility}, ConverterParameter={x:Static Orientation.Vertical}}"
-                                       Fill="{Binding ProgressColor, Source={x:Static u:UserSettings.All}, Converter={StaticResourceExtension ColorToBrush}}" 
-                                       VerticalAlignment="{Binding ProgressVerticalAligment, Source={x:Static u:UserSettings.All}}" 
-                                       HorizontalAlignment="{Binding ProgressHorizontalAligment, Source={x:Static u:UserSettings.All}}"/>
+                        <Grid>
+                            <Rectangle Name="ProgressHorizontalRectangle" 
+                                       Height="30"
+                                       Fill="LightGreen" 
+                                       VerticalAlignment="Center" 
+                                       HorizontalAlignment="Center"/>
                         </Grid>
-
-                        <TextBlock Name="ProgressHorizontalTextBlock" Padding="2,0" 
-                                   Background="{Binding ProgressColor, Source={x:Static u:UserSettings.All}, Converter={StaticResourceExtension ColorToBrush}}" 
-                                   Foreground="{Binding ProgressFontColor, Source={x:Static u:UserSettings.All}, Converter={StaticResourceExtension ColorToBrush}}" 
-                                   VerticalAlignment="{Binding ProgressVerticalAligment, Source={x:Static u:UserSettings.All}}" 
-                                   HorizontalAlignment="{Binding ProgressHorizontalAligment, Source={x:Static u:UserSettings.All}}"
-                                   Visibility="{Binding ProgressType, Source={x:Static u:UserSettings.All}, Converter={StaticResource EnumToVisibility}, ConverterParameter={x:Static u:ProgressType.Text}}"
-                                   FontFamily="{Binding ElementName=ProgressFontComboBox, Path=SelectedItem}" 
-                                   FontStyle="{Binding ElementName=ProgressFontStyleComboBox, Path=SelectedValue}"
-                                   FontWeight="{Binding ElementName=ProgressFontWeightComboBox, Path=SelectedValue}"
-                                   FontSize="{Binding ElementName=ProgressFontSizeNumericUpDown, Path=Value}"/>
+                        
                     </Grid>                    
                 </Grid>
             </ScrollViewer>
@@ -329,7 +279,8 @@
 
         <!--Lower part of the Window-->
         <ListView Grid.Row="2" x:Name="FrameListView" BorderThickness="0,1,0,0" IsTabStop="False" Focusable="False"
-                  SelectionChanged="FrameListView_SelectionChanged" PreviewKeyDown="FrameListView_OnPreviewKeyDown"
+                  PreviewKeyDown="FrameListView_OnPreviewKeyDown"
+                  ItemsSource="{Binding ElementName=EditorWindow, Path=Stack.Project.Frames}"
                   IsEnabled="{Binding Path=IsLoading, ElementName=EditorWindow, Converter={StaticResource InvertedBoolConverter}}"
                   Visibility="{Binding RelativeSource={RelativeSource Self}, Path=HasItems, Converter={StaticResource Bool2Visibility}}">
 
@@ -385,20 +336,52 @@
                         </Setter.Value>
                     </Setter>
                 </Style>
-
-                <ContextMenu x:Key="FrameListContextMenu">
-                    <n:ImageMenuItem Header="{DynamicResource Editor.List.OpenImage}" Image="{StaticResource Vector.Image}" ContentHeight="16" ContentWidth="16" Command="u:Commands.OpenImage"/>
-                    <n:ImageMenuItem Header="{DynamicResource Editor.List.ExploreFolder}" Image="{StaticResource Vector.Open}" ContentHeight="16" ContentWidth="16" Command="u:Commands.ExploreFolder"/>
-                    <n:ImageMenuItem Header="{DynamicResource Editor.List.ExportImage}" Image="{StaticResource Vector.Save}" ContentHeight="16" ContentWidth="16" Command="u:Commands.ExportImages"/>
-                </ContextMenu>
             </ListView.Resources>
 
-            <ListView.ItemContainerStyle>
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <Border x:Name="Bd" BorderBrush="Transparent" BorderThickness="1" Background="Transparent"
+                            Padding="4,1" SnapsToDevicePixels="true">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <!--MaxWidth="{TemplateBinding MaxSize}"-->
+                            <Viewbox x:Name="ViewBoxInternal" VerticalAlignment="Center" HorizontalAlignment="Left" 
+                                   Margin="2,0,2,0" Stretch="UniformToFill" StretchDirection="Both" Effect="{x:Null}">
+                                <ContentPresenter Content="{Binding Value.FullPath}" SnapsToDevicePixels="True" Width="Auto" Height="Auto"/>
+                            </Viewbox>
+                            <ContentPresenter Grid.Column="1" Content="{TemplateBinding Content}" 
+                                              HorizontalAlignment="{Binding HorizontalContentAlignment, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}" 
+                                              SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" 
+                                              Margin="5,0,0,0" 
+                                              VerticalAlignment="Center"/>
+                            <Label Grid.Column="2" Content="{Binding Value.Author}" Foreground="#FF858585" Margin="5,0,0,0" HorizontalAlignment="Left"/>
+                            <!--MaxWidth="{TemplateBinding MaxSize}"-->
+                            <Viewbox Grid.Column="3" x:Name="SelectionMark" VerticalAlignment="Center" HorizontalAlignment="Center"
+                                     Margin="2,0,2,0" Stretch="UniformToFill" StretchDirection="Both"
+                                     Effect="{x:Null}">
+                                <Path x:Name="optionMark" Data="F1 M 9.97498,.8 L 4.6983,9.09834  L 1,5.19331 L 1.27664,3.52165 L 4.255,6.08833 L 9.33331,1.288e-005 Z" Fill="#FF858585" Margin="1" Stretch="None" 
+                                      Visibility="{Binding Path=IsSelected, 
+                                    RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ListBoxItem }},
+                                    Converter={StaticResource Bool2VisibilityConverterGeneric}}"/>
+                            </Viewbox>
+                            <Grid.ToolTip>
+                                <ToolTip Content="{TemplateBinding Tag}" />
+                            </Grid.ToolTip>
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+
+            <!--<ListView.ItemContainerStyle>
                 <Style TargetType="ListBoxItem">
-                    <EventSetter Event="PreviewMouseLeftButtonDown" Handler="Item_PreviewMouseLeftButtonDown"/>
-                    <Setter Property="ContextMenu" Value="{StaticResource FrameListContextMenu}"/>
+                    <EventSetter Event="PreviewMouseLeftButtonDown" Handler="Item_PreviewMouseLeftButtonDown"/>                    
                 </Style>
-            </ListView.ItemContainerStyle>
+            </ListView.ItemContainerStyle>-->
         </ListView>
 
         <!--Status bar-->
@@ -434,19 +417,19 @@
                     <TextBlock x:Name="HintTextBlock" Foreground="DarkGreen" FontSize="13" VerticalAlignment="Center" Margin="0,-1,0,0" TextTrimming="CharacterEllipsis" TextDecorations="{x:Null}"/>
                 </StackPanel>
 
-                <Separator Grid.Column="3" Width="1" Margin="1,2" Visibility="{Binding ElementName=WelcomeGrid, Path=Visibility, Converter={StaticResource InvertedVisibilityConverter}, ConverterParameter=0}"/>
+                <Separator Grid.Column="3" Width="1" Margin="1,2" />
 
-                <StackPanel Grid.Column="4" Orientation="Horizontal" Visibility="{Binding ElementName=WelcomeGrid, Path=Visibility, Converter={StaticResource InvertedVisibilityConverter}, ConverterParameter=0}"
-                            IsEnabled="{Binding ElementName=Zoom100Button, Path=IsEnabled}" ToolTip="{DynamicResource Editor.Home.Zoom}">
+                <StackPanel Grid.Column="4" Orientation="Horizontal" 
+                            ToolTip="{DynamicResource Editor.Home.Zoom}">
                     <Viewbox Child="{StaticResource Vector.Zoom}" Height="16"/>
                     <n:IntegerUpDown Margin="1" Minimum="5" Maximum="500" Style="{StaticResource IntegerUpDown.Minimal}"
                                      Value="{Binding Zoom, Converter={StaticResource IntToDecimalConverter}, ElementName=ZoomBoxControl, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
                     <TextBlock Text="%" VerticalAlignment="Center" Foreground="#FF707070"/>
                 </StackPanel>
 
-                <Separator Grid.Column="5" Width="1" Margin="1,2" Visibility="{Binding ElementName=WelcomeGrid, Path=Visibility, Converter={StaticResource InvertedVisibilityConverter}, ConverterParameter=0}"/>
+                <Separator Grid.Column="5" Width="1" Margin="1,2" />
 
-                <Grid Grid.Column="6" x:Name="InfoGrid" Visibility="{Binding ElementName=WelcomeGrid, Path=Visibility, Converter={StaticResource InvertedVisibilityConverter}, ConverterParameter=0}"
+                <Grid Grid.Column="6" x:Name="InfoGrid" 
                       ToolTip="{DynamicResource Editor.FrameNumbersInfo}" ToolTipService.Placement="Bottom">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"/>

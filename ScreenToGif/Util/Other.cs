@@ -8,7 +8,6 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Interop;
 using System.Windows.Media;
-using ScreenToGif.Model;
 
 namespace ScreenToGif.Util
 {
@@ -344,14 +343,7 @@ namespace ScreenToGif.Util
 
             return 0;
         }
-
-        #region List
-
-        public static List<FrameInfo> CopyList(this List<FrameInfo> target)
-        {
-            return new List<FrameInfo>(target.Select(s => new FrameInfo(s.Path, s.Delay, s.CursorX, s.CursorY, s.WasClicked, new List<SimpleKeyGesture>(s.KeyList.Select(y => new SimpleKeyGesture(y.Key, y.Modifiers, y.IsUppercase))), s.Index)));
-        }
-
+        
         /// <summary>
         /// Creates an index list based on the start and end indexes (positions). 
         /// </summary>
@@ -379,116 +371,7 @@ namespace ScreenToGif.Util
 
             return Enumerable.Range(start, quantity).ToList();
         }
-
-        /// <summary>
-        /// Copies the List and saves the images in another folder.
-        /// </summary>
-        /// <param name="target">The List to copy</param>
-        /// <param name="usePadding">If true, the name of the frames will be adjusted in order to circunvent file ordering issue. For example: 010.png instead of 10.png if there's more than 999 frames.</param>
-        /// <returns>The copied list.</returns>
-        public static List<FrameInfo> CopyToEncode(this List<FrameInfo> target, bool usePadding = false)
-        {
-            #region Folder
-
-            var fileNameAux = Path.GetFileName(target[0].Path);
-
-            if (fileNameAux == null)
-                throw new ArgumentException("Impossible to get filename.");
-
-            var encodeFolder = Path.Combine(target[0].Path.Replace(fileNameAux, ""), "Encode " + DateTime.Now.ToString("yyyy-MM-dd hh-mm-ss"));
-
-            if (!Directory.Exists(encodeFolder))
-                Directory.CreateDirectory(encodeFolder);
-
-            #endregion
-
-            var newList = new List<FrameInfo>();
-
-            try
-            {
-                var pad = usePadding ? (target.Count - 1).ToString().Length : 0;
-
-                foreach (var frameInfo in target)
-                {
-                    //Changes the path of the image. Writes as an ordered list of files, replacing the old filenames.
-                    var filename = Path.Combine(encodeFolder, newList.Count.ToString().PadLeft(pad, '0') + ".png");
-                    //var filename = Path.Combine(encodeFolder, Path.GetFileName(frameInfo.Path) + ".png");
-
-                    //Copy the image to the folder.
-                    File.Copy(frameInfo.Path, filename, true);
-                    //File.Copy(frameInfo.Path, filename);
-
-                    //Create the new object and add to the list.
-                    newList.Add(new FrameInfo(filename, frameInfo.Delay));
-                }
-            }
-            catch (Exception ex)
-            {
-                LogWriter.Log(ex, "");
-                throw;
-            }
-
-            return newList;
-        }
-
-        /// <summary>
-        /// Makes a Yo-yo efect with the given List (List + Reverted List)
-        /// </summary>
-        /// <param name="list">The list to apply the efect</param>
-        /// <returns>A List with the Yo-yo efect</returns>
-        public static List<FrameInfo> Yoyo(List<FrameInfo> list)
-        {
-            var listReverted = new List<FrameInfo>(list);
-            listReverted.Reverse();
-
-            var currentFolder = Path.GetDirectoryName(list[0].Path);
-
-            foreach (var frame in listReverted)
-            {
-                var newPath = Path.Combine(currentFolder, list.Count + " Y " + DateTime.Now.ToString("yy MM dd hh mm ss fff") + ".png");
-
-                File.Copy(frame.Path, newPath);
-
-                list.Add(new FrameInfo(newPath, frame.Delay, frame.CursorX, frame.CursorY, frame.WasClicked, frame.KeyList, frame.Index));
-            }
-
-            return list;
-        }
-
-        public static List<FrameInfo> Move(this List<FrameInfo> list, int oldIndex, int newIndex)
-        {
-            //Saves the current item on a temp variable.
-            var item = list[oldIndex];
-
-            list.RemoveAt(oldIndex);
-
-            //The actual index could have shifted due to the removal.
-            if (newIndex > oldIndex)
-                newIndex--;
-
-            list.Insert(newIndex, item);
-
-            return list;
-        }
-
-        public static List<int> Move(this List<int> list, int oldIndex, int newIndex)
-        {
-            //Saves the current item on a temp variable.
-            var item = list[oldIndex];
-
-            list.RemoveAt(oldIndex);
-
-            //The actual index could have shifted due to the removal.
-            if (newIndex > oldIndex)
-                newIndex--;
-
-            list.Insert(newIndex, item);
-
-            return list;
-        }
-
-        #endregion
-
+        
         #region Event Helper
 
         /// <summary>

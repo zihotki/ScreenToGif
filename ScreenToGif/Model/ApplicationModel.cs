@@ -29,16 +29,6 @@ namespace ScreenToGif.Model
             }
         }
 
-        public string EditorGesture
-        {
-            get => _editorGesture;
-            set
-            {
-                _editorGesture = value;
-                OnPropertyChanged();
-            }
-        }
-
         public string OptionsGesture
         {
             get => _optionsGesture;

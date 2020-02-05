@@ -167,7 +167,7 @@ namespace ScreenToGif.Windows.Other
 
         #region Private
 
-        private void InternalAddItem(List<FrameInfo> listFrames, Parameters param)
+        private void InternalAddItem(ProjectInfo project, Parameters param)
         {
             //Creates the Cancellation Token
             var cancellationTokenSource = new CancellationTokenSource();
@@ -179,7 +179,7 @@ namespace ScreenToGif.Windows.Other
             var a = -1;
             var task = new Task(() =>
             {
-                Encode(listFrames, a, param, cancellationTokenSource);
+                Encode(project, a, param, cancellationTokenSource);
 
             }, CancellationTokenList.Last().Token, TaskCreationOptions.LongRunning);
 
@@ -205,7 +205,7 @@ namespace ScreenToGif.Windows.Other
             {
                 OutputType = param.Type,
                 Text = FindResource("Encoder.Starting").ToString(),
-                FrameCount = listFrames.Count,
+                FrameCount = project.Frames.Count,
                 Id = a,
                 TokenSource = cancellationTokenSource
             };
@@ -378,9 +378,11 @@ namespace ScreenToGif.Windows.Other
         }
 
 
-        private async void Encode(List<FrameInfo> listFrames, int id, Parameters param, CancellationTokenSource tokenSource)
+        private async void Encode(ProjectInfo project, int id, Parameters param, CancellationTokenSource tokenSource)
         {
             var processing = this.DispatcherStringResource("Encoder.Processing");
+
+            var listFrames = project.Frames;
 
             try
             {
@@ -389,28 +391,6 @@ namespace ScreenToGif.Windows.Other
                     case Export.Gif:
 
                         #region Gif
-
-                        #region Cut/Paint Unchanged Pixels
-
-                        if (param.EncoderType == GifEncoderType.Legacy || param.EncoderType == GifEncoderType.ScreenToGif)
-                        {
-                            if (param.DetectUnchangedPixels)
-                            {
-                                Update(id, 0, FindResource("Encoder.Analyzing").ToString());
-
-                                if (param.DummyColor.HasValue)
-                                    listFrames = ImageMethods.PaintTransparentAndCut(listFrames, param.DummyColor.Value, id, tokenSource);
-                                else
-                                    listFrames = ImageMethods.CutUnchanged(listFrames, id, tokenSource);
-                            }
-                            else
-                            {
-                                var size = listFrames[0].Path.ScaledSize();
-                                listFrames.ForEach(x => x.Rect = new Int32Rect(0, 0, (int)size.Width, (int)size.Height));
-                            }
-                        }
-
-                        #endregion
 
                         switch (param.EncoderType)
                         {
@@ -428,13 +408,7 @@ namespace ScreenToGif.Windows.Other
 
                                         for (var i = 0; i < listFrames.Count; i++)
                                         {
-                                            if (!listFrames[i].HasArea && param.DetectUnchangedPixels)
-                                                continue;
-
-                                            if (listFrames[i].Delay == 0)
-                                                listFrames[i].Delay = 10;
-
-                                            encoder.AddFrame(listFrames[i].Path, listFrames[i].Rect, listFrames[i].Delay);
+                                            encoder.AddFrame(listFrames[i].FullPath, project.FrameSize, listFrames[i].Delay);
 
                                             Update(id, i, string.Format(processing, i));
 
@@ -494,13 +468,11 @@ namespace ScreenToGif.Windows.Other
 
                                         #endregion
 
-                                        if (!frame.HasArea && param.DetectUnchangedPixels)
-                                            continue;
-
-                                        var bitmapAux = new Bitmap(frame.Path);
+                                        
+                                        var bitmapAux = new Bitmap(frame.FullPath);
 
                                         encoder.SetDelay(frame.Delay);
-                                        encoder.AddFrame(bitmapAux, frame.Rect.X, frame.Rect.Y);
+                                        encoder.AddFrame(bitmapAux, project.FrameSize.X, project.FrameSize.Y);
 
                                         bitmapAux.Dispose();
 
@@ -522,7 +494,7 @@ namespace ScreenToGif.Windows.Other
                                     {
                                         for (var i = 0; i < listFrames.Count; i++)
                                         {
-                                            var bitmapAux = new Bitmap(listFrames[i].Path);
+                                            var bitmapAux = new Bitmap(listFrames[i].FullPath);
                                             encoder.AddFrame(bitmapAux, 0, 0, TimeSpan.FromMilliseconds(listFrames[i].Delay));
                                             bitmapAux.Dispose();
 
@@ -575,11 +547,11 @@ namespace ScreenToGif.Windows.Other
                                 var concat = new StringBuilder();
                                 foreach (var frame in listFrames)
                                 {
-                                    concat.AppendLine("file '" + frame.Path + "'");
+                                    concat.AppendLine("file '" + frame.FullPath + "'");
                                     concat.AppendLine("duration " + (frame.Delay / 1000d).ToString(CultureInfo.InvariantCulture));
                                 }
 
-                                var concatPath = Path.GetDirectoryName(listFrames[0].Path) ?? Path.GetTempPath();
+                                var concatPath = Path.GetDirectoryName(listFrames[0].FullPath) ?? Path.GetTempPath();
                                 var concatFile = Path.Combine(concatPath, "concat.txt");
 
                                 if (!Directory.Exists(concatPath))
@@ -638,7 +610,7 @@ namespace ScreenToGif.Windows.Other
                                     for (var i = 0; i < listFrames.Count; i++)
                                     {
                                         Update(id, i, string.Format(processing, i));
-                                        gifski.AddFrame(handle, (uint)i, listFrames[i].Path, listFrames[i].Delay);
+                                        gifski.AddFrame(handle, (uint)i, listFrames[i].FullPath, listFrames[i].Delay);
                                     }
 
                                     gifski.EndAdding(handle);
@@ -669,42 +641,17 @@ namespace ScreenToGif.Windows.Other
                         {
                             case ApngEncoderType.ScreenToGif:
                             {
-                                #region Cut/Paint Unchanged Pixels
-
-                                if (param.DetectUnchangedPixels)
-                                {
-                                    Update(id, 0, FindResource("Encoder.Analyzing").ToString());
-
-                                    if (param.DummyColor.HasValue)
-                                        listFrames = ImageMethods.PaintTransparentAndCut(listFrames, param.DummyColor.Value, id, tokenSource);
-                                    else
-                                        listFrames = ImageMethods.CutUnchanged(listFrames, id, tokenSource);
-                                }
-                                else
-                                {
-                                    var size = listFrames[0].Path.ScaledSize();
-                                    listFrames.ForEach(x => x.Rect = new Int32Rect(0, 0, (int)size.Width, (int)size.Height));
-                                }
-
-                                #endregion
-
                                 #region Encoding
 
                                 using (var stream = new MemoryStream())
                                 {
-                                    var frameCount = listFrames.Count(x => x.HasArea);
+                                    var frameCount = listFrames.Count;
 
                                     using (var encoder = new Apng(stream, frameCount, param.RepeatCount))
                                     {
                                         for (var i = 0; i < listFrames.Count; i++)
                                         {
-                                            if (!listFrames[i].HasArea && param.DetectUnchangedPixels)
-                                                continue;
-
-                                            if (listFrames[i].Delay == 0)
-                                                listFrames[i].Delay = 10;
-
-                                            encoder.AddFrame(listFrames[i].Path, listFrames[i].Rect, listFrames[i].Delay);
+                                            encoder.AddFrame(listFrames[i].FullPath, project.FrameSize, listFrames[i].Delay);
 
                                             Update(id, i, string.Format(processing, i));
 
@@ -753,11 +700,11 @@ namespace ScreenToGif.Windows.Other
                                 var concat = new StringBuilder();
                                 foreach (var frame in listFrames)
                                 {
-                                    concat.AppendLine("file '" + frame.Path + "'");
+                                    concat.AppendLine("file '" + frame.FullPath + "'");
                                     concat.AppendLine("duration " + (frame.Delay / 1000d).ToString(CultureInfo.InvariantCulture));
                                 }
 
-                                var concatPath = Path.GetDirectoryName(listFrames[0].Path) ?? Path.GetTempPath();
+                                var concatPath = Path.GetDirectoryName(listFrames[0].FullPath) ?? Path.GetTempPath();
                                 var concatFile = Path.Combine(concatPath, "concat.txt");
 
                                 if (!Directory.Exists(concatPath))
@@ -810,7 +757,7 @@ namespace ScreenToGif.Windows.Other
 
                                 #region Avi Standalone
 
-                                var image = listFrames[0].Path.SourceFrom();
+                                var image = listFrames[0].FullPath.SourceFrom();
 
                                 if (File.Exists(param.Filename))
                                     File.Delete(param.Filename);
@@ -823,7 +770,7 @@ namespace ScreenToGif.Windows.Other
                                     {
                                         using (var outStream = new MemoryStream())
                                         {
-                                            var bitImage = frame.Path.SourceFrom();
+                                            var bitImage = frame.FullPath.SourceFrom();
 
                                             var enc = new BmpBitmapEncoder();
                                             enc.Frames.Add(BitmapFrame.Create(bitImage));
@@ -870,11 +817,11 @@ namespace ScreenToGif.Windows.Other
                                 var concat = new StringBuilder();
                                 foreach (var frame in listFrames)
                                 {
-                                    concat.AppendLine("file '" + frame.Path + "'");
+                                    concat.AppendLine("file '" + frame.FullPath + "'");
                                     concat.AppendLine("duration " + (frame.Delay / 1000d).ToString(CultureInfo.InvariantCulture));
                                 }
 
-                                var concatPath = Path.GetDirectoryName(listFrames[0].Path) ?? Path.GetTempPath();
+                                var concatPath = Path.GetDirectoryName(listFrames[0].FullPath) ?? Path.GetTempPath();
                                 var concatFile = Path.Combine(concatPath, "concat.txt");
 
                                 if (!Directory.Exists(concatPath))
@@ -1003,7 +950,7 @@ namespace ScreenToGif.Windows.Other
 
                 try
                 {
-                    var encoderFolder = Path.GetDirectoryName(listFrames[0].Path);
+                    var encoderFolder = Path.GetDirectoryName(listFrames[0].FullPath);
 
                     if (!string.IsNullOrEmpty(encoderFolder))
                         if (Directory.Exists(encoderFolder))
@@ -1059,7 +1006,7 @@ namespace ScreenToGif.Windows.Other
         /// <param name="listFrames">The list of frames to be encoded.</param>
         /// <param name="param">Encoding parameters.</param>
         /// <param name="scale">Screen scale.</param>
-        public static void AddItem(List<FrameInfo> listFrames, Parameters param, double scale)
+        public static void AddItem(ProjectInfo project, Parameters param, double scale)
         {
             //Show or restore the encoder window.
             if (_encoder == null)
@@ -1071,7 +1018,7 @@ namespace ScreenToGif.Windows.Other
                 throw new ApplicationException("Error while starting the Encoding window.");
 
             _encoder.Activate();
-            _encoder.InternalAddItem(listFrames, param);
+            _encoder.InternalAddItem(project, param);
         }
 
         /// <summary>

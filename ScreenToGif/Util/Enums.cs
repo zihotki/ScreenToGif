@@ -73,11 +73,6 @@
     public enum Stage
     {
         /// <summary>
-        /// Recording stopped, but selecting the region to record.
-        /// </summary>
-        SelectingRegion = -1,
-
-        /// <summary>
         /// Recording stopped.
         /// </summary>
         Stopped = 0,
@@ -91,11 +86,6 @@
         /// Recording paused.
         /// </summary>
         Paused = 2,
-
-        /// <summary>
-        /// Pre start countdown active.
-        /// </summary>
-        PreStarting = 3,
 
         /// <summary>
         /// The recording is being discarded.
@@ -204,15 +194,6 @@
     {
         AviStandalone,
         Ffmpg,
-    }
-
-    /// <summary>
-    /// Type of the progress indicator.
-    /// </summary>
-    public enum ProgressType
-    {
-        Bar,
-        Text,
     }
 
     /// <summary>

@@ -20,8 +20,6 @@ namespace ScreenToGif.Util
 
         public int RepeatCount { get; set; }
 
-        public bool DetectUnchangedPixels { get; set; }
-
         public Color? DummyColor { get; set; }
 
 

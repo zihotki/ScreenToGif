@@ -44,9 +44,12 @@ namespace ScreenToGif.Model
                         {
                             var window = sender as Recorder;
 
-                            if (window?.Project != null && window.Project.Any)
+                            if (window?.Project != null && window.Project.AnyFrames)
                             {
-                                ShowEditor(window.Project);
+                                var editor = new Editor(new ActionStack(window.Project));
+                                editor.Show();
+
+                                Application.Current.MainWindow = editor;
                                 caller?.Close();
                             }
                             else
@@ -57,25 +60,6 @@ namespace ScreenToGif.Model
 
                         Application.Current.MainWindow = recorder;
                         recorder.Show();
-                    }
-                };
-            }
-        }
-
-        public ICommand OpenEditor
-        {
-            get
-            {
-                return new RelayCommand
-                {
-                    CanExecutePredicate = a => true,
-                    ExecuteAction = a =>
-                    {
-                        var caller = a as Window;
-
-                        ShowEditor();
-
-                        caller?.Close();
                     }
                 };
             }
@@ -111,9 +95,6 @@ namespace ScreenToGif.Model
                     },
                     ExecuteAction = a =>
                     {
-                        if (UserSettings.All.NotifyWhileClosingApp && !Dialog.Ask(LocalizationHelper.Get("Application.Exiting.Title"), LocalizationHelper.Get("Application.Exiting.Instruction"), LocalizationHelper.Get("Application.Exiting.Message")))
-                            return;
-
                         Application.Current.Shutdown(69);
                     }
                 };
@@ -124,19 +105,11 @@ namespace ScreenToGif.Model
 
         #region Methods
 
-        private void ShowEditor(ProjectInfo project = null)
-        {
-            var editor = new Editor { Project = project };
-            editor.Show();
-
-            Application.Current.MainWindow = editor;
-        }
-
         internal void ClearTemporaryFilesTask()
         {
             try
             {
-                if (!UserSettings.All.AutomaticCleanUp || Global.IsCurrentlyDeletingFiles || string.IsNullOrWhiteSpace(UserSettings.All.TemporaryFolder))
+                if (Global.IsCurrentlyDeletingFiles || string.IsNullOrWhiteSpace(UserSettings.All.TemporaryFolder))
                     return;
 
                 Global.IsCurrentlyDeletingFiles = true;
@@ -147,7 +120,7 @@ namespace ScreenToGif.Model
                     return;
 
                 var list = Directory.GetDirectories(path).Select(x => new DirectoryInfo(x))
-                    .Where(w => (DateTime.Now - w.CreationTime).TotalDays > (UserSettings.All.AutomaticCleanUpDays > 0 ? UserSettings.All.AutomaticCleanUpDays : 5)).ToList();
+                    .Where(w => (DateTime.Now - w.CreationTime).TotalDays > 5).ToList();
 
                 //var list = Directory.GetDirectories(path).Select(x => new DirectoryInfo(x));
                 
@@ -250,15 +223,5 @@ namespace ScreenToGif.Model
         {
             ExecuteAction(parameter);
         }
-
-        //public bool CanExecute(object parameter)
-        //{
-        //    return CanExecutePredicate == null || CanExecutePredicate(parameter);
-        //}
-
-        //public void Execute(object parameter)
-        //{
-        //    ExecuteAction(parameter);
-        //}
     }
 }

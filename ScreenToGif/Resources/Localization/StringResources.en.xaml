@@ -198,7 +198,7 @@
     <s:String x:Key="TempFiles.Clear">Clear Temp. Folder</s:String>
     <s:String x:Key="TempFiles.LogsLocation">Logs folder</s:String>
     <s:String x:Key="TempFiles.LogsLocation.Choose">Choose the location for the error logs files</s:String>
-    <s:String x:Key="TempFiles.Location">Location folder</s:String>
+    <s:String x:Key="TempFiles.Location">Temp Folder Location</s:String>
     <s:String x:Key="TempFiles.Location.Choose">Choose the location for the temporary files</s:String>
     <s:String x:Key="TempFiles.Settings">Settings location</s:String>
     <s:String x:Key="TempFiles.AppDataPath">AppData:</s:String>

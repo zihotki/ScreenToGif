@@ -8,21 +8,14 @@
              xmlns:u="clr-namespace:ScreenToGif.Util"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800" IsVisibleChanged="TempPanel_IsVisibleChanged">
-    <UserControl.CommandBindings>
-        <CommandBinding Command="u:Commands.CreateLocalSettings" CanExecute="CreateLocalSettings_CanExecute" Executed="CreateLocalSettings_Execute"/>
-        <CommandBinding Command="u:Commands.OpenLocalSettings" CanExecute="RemoveLocalSettings_CanExecute" Executed="OpenLocalSettings_Execute"/>
-        <CommandBinding Command="u:Commands.RemoveLocalSettings" CanExecute="RemoveLocalSettings_CanExecute" Executed="RemoveLocalSettings_Execute"/>
-    </UserControl.CommandBindings>
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="21"/>
-            <RowDefinition MinHeight="29" Height="Auto"/>
-            <RowDefinition Height="21"/>
-            <RowDefinition MinHeight="29" Height="Auto"/>
-            <RowDefinition Height="21"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
-            <RowDefinition Height="21"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
@@ -54,19 +47,7 @@
                                            ToolTipService.Placement="Top" ToolTipService.HorizontalOffset="-5"/>
         </Grid>
 
-        <n:LabelSeparator Grid.Row="4" x:Name="TempSeparator" Text="{DynamicResource TempFiles.FilesAndFolders}"/>
-        <StackPanel Grid.Row="5">
-            <n:ExtendedCheckBox Text="{DynamicResource TempFiles.AutomaticRemoval}" Margin="10,3,5,3"
-                                                IsChecked="{Binding Source={x:Static u:UserSettings.All}, Path=AutomaticCleanUp, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                                ToolTip="{DynamicResource TempFiles.AutomaticRemoval.Info}"/>
-
-            <WrapPanel Margin="30,3,5,3" Visibility="{Binding Source={x:Static u:UserSettings.All}, Path=AutomaticCleanUp, Converter={StaticResource Bool2Visibility}}">
-                <n:IntegerUpDown Minimum="1" Maximum="30" MinWidth="50" Value="{Binding Source={x:Static u:UserSettings.All}, Path=AutomaticCleanUpDays, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-                <TextBlock Text="{DynamicResource TempFiles.AutomaticRemovalDays.Info}" Padding="0" Margin="5,0,0,0" VerticalAlignment="Center" TextWrapping="Wrap" Foreground="#FF969696"/>
-            </WrapPanel>
-        </StackPanel>
-
-        <Grid Grid.Row="6">
+        <Grid Grid.Row="4">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition/>
                 <ColumnDefinition Width="Auto"/>
@@ -82,8 +63,8 @@
                                            Content="{StaticResource Vector.Delete.Folder}" ContentHeight="20" Click="ClearTempButton_Click" Margin="5" IsEnabled="False"/>
         </Grid>
 
-        <n:LabelSeparator Grid.Row="7" Text="{DynamicResource TempFiles.Settings}"/>
-        <Grid Grid.Row="8" Margin="10,0,0,0">
+        <n:LabelSeparator Grid.Row="5" Text="{DynamicResource TempFiles.Settings}"/>
+        <Grid Grid.Row="6" Margin="10,0,0,0">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
@@ -100,23 +81,9 @@
             <TextBlock Grid.Row="0" Grid.Column="0" Text="{DynamicResource TempFiles.AppDataPath}" Foreground="#FF444444" Padding="3"/>
             <TextBlock Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" x:Name="AppDataPathTextBlock" Text="..." Foreground="#FF444444" Padding="3" TextWrapping="Wrap" FontStyle="Italic"/>
 
-            <n:ImageButton Grid.Row="0" Grid.Column="3" x:Name="OpenAppDataButton" ToolTip="{DynamicResource TempFiles.OpenSettingsFolder}" Style="{StaticResource Style.Button.NoText}"
-                                           Content="{StaticResource Vector.Open}" Padding="3" ContentHeight="14" Command="u:Commands.OpenAppDataSettings"/>
-
-            <n:ImageButton Grid.Row="0" Grid.Column="4" x:Name="RemoveAppDataButton" ToolTip="{DynamicResource TempFiles.RemoveSettings}" Style="{StaticResource Style.Button.NoText}"
-                                           Content="{StaticResource Vector.Remove}" Padding="3" ContentHeight="14" Command="u:Commands.RemoveAppDataSettings"/>
-
+            
             <TextBlock Grid.Row="1" Grid.Column="0" Text="{DynamicResource TempFiles.LocalPath}" Foreground="#FF444444" Padding="3"/>
             <TextBlock Grid.Row="1" Grid.Column="1" x:Name="LocalPathTextBlock" Text="..." Foreground="#FF444444" Padding="3" TextWrapping="Wrap" FontStyle="Italic"/>
-
-            <n:ImageButton Grid.Row="1" Grid.Column="2" x:Name="CreateLocalButton" ToolTip="{DynamicResource TempFiles.CreateSettings}" Style="{StaticResource Style.Button.NoText}"
-                                           Content="{StaticResource Vector.Add}" Padding="3" ContentHeight="14" Command="u:Commands.CreateLocalSettings"/>
-
-            <n:ImageButton Grid.Row="1" Grid.Column="3" x:Name="OpenLocalButton" ToolTip="{DynamicResource TempFiles.OpenSettingsFolder}" Style="{StaticResource Style.Button.NoText}"
-                                           Content="{StaticResource Vector.Open}" Padding="3" ContentHeight="14" Command="u:Commands.OpenLocalSettings"/>
-
-            <n:ImageButton Grid.Row="1" Grid.Column="4" x:Name="RemoveLocalButton" ToolTip="{DynamicResource TempFiles.RemoveSettings}" Style="{StaticResource Style.Button.NoText}"
-                                           Content="{StaticResource Vector.Remove}" Padding="3" ContentHeight="14" Command="u:Commands.RemoveLocalSettings"/>
 
             <TextBlock Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="5" Text="{DynamicResource TempFiles.SettingsInfo}" Foreground="#FF444444" TextWrapping="Wrap" Padding="4,2" Margin="0,10,0,0"/>
         </Grid>
