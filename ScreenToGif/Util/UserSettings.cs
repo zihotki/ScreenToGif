@@ -52,7 +52,7 @@ namespace ScreenToGif.Util
                 if (!string.IsNullOrWhiteSpace(directory) && !Directory.Exists(directory))
                     Directory.CreateDirectory(directory);
 
-                //Just creates an empty filewithout writting anything. 
+                //Just creates an empty file without writting anything. 
                 File.Create(appData).Dispose();
             }
 
@@ -359,12 +359,6 @@ namespace ScreenToGif.Util
         public int PreStartValue
         {
             get => (int)GetValue();
-            set => SetValue(value);
-        }
-
-        public bool SnapshotMode
-        {
-            get => (bool)GetValue();
             set => SetValue(value);
         }
 

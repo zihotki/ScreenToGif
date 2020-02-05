@@ -1627,13 +1627,6 @@
                             <n:ImageButton.ToolTip>
                                 <ToolTip Content="{DynamicResource Suppress}" Placement="Top" HorizontalOffset="-5"/>
                             </n:ImageButton.ToolTip>
-                            <!--<local:ImageButton.Triggers>
-                                <EventTrigger RoutedEvent="Button.Click">
-                                    <EventTrigger.Actions>
-                                        <BeginStoryboard Storyboard="{StaticResource HideWarningStoryboard}" Storyboard.TargetName="WarningGrid" HandoffBehavior="SnapshotAndReplace"/>
-                                    </EventTrigger.Actions>
-                                </EventTrigger>
-                            </local:ImageButton.Triggers>-->
                         </n:ImageButton>
                     </Grid>
 

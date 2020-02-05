@@ -82,8 +82,6 @@
     <s:String x:Key="Application.ScreenRecorder.SelectCursorColor">Select the Cursor Color</s:String>
     <s:String x:Key="Application.ScreenRecorder.PreStart">Use a pre start countdown.</s:String>
     <s:String x:Key="Application.ScreenRecorder.PreStart.Info">(in seconds, waits before starting to capture)</s:String>
-    <s:String x:Key="Application.ScreenRecorder.StepRecording">Enable snapshot mode.</s:String>
-    <s:String x:Key="Application.ScreenRecorder.StepRecording.Info">(Each frame will be captured manually by you)</s:String>
     <s:String x:Key="Application.ScreenRecorder.FixedFramerate">Fixed frame rate.</s:String>
     <s:String x:Key="Application.ScreenRecorder.FixedFramerate.Info">(Constant delay that does not change with recording lag)</s:String>
     <s:String x:Key="Application.ScreenRecorder.AsyncRecording">Enable asynchronous recording.</s:String>
@@ -171,7 +169,7 @@
     <s:String x:Key="S.Shortcuts.Global.Exit.Info">(Closes all windows and removes the app from the system tray)</s:String>
     <s:String x:Key="S.Shortcuts.Recorders">Recorders</s:String>
     <s:String x:Key="S.Shortcuts.Recorders.StartPause">Start/Pause:</s:String>
-    <s:String x:Key="S.Shortcuts.Recorders.StartPause.Info">(It starts or pauses the recording. It is used to take snapshots if the snapshot mode is activated)</s:String>
+    <s:String x:Key="S.Shortcuts.Recorders.StartPause.Info">(It starts or pauses the recording)</s:String>
     <s:String x:Key="S.Shortcuts.Recorders.Stop">Stop:</s:String>    
     <s:String x:Key="S.Shortcuts.Recorders.Stop.Info">(It stops the recording and opens the editor)</s:String>
     <s:String x:Key="S.Shortcuts.Recorders.Discard">Discard:</s:String>
@@ -302,7 +300,6 @@
 
     <!--Recorder-->
     <s:String x:Key="Recorder.RecordingOptions">Recording Options:</s:String>
-    <s:String x:Key="Recorder.Snapshot">Snapshot mode</s:String>
     <s:String x:Key="Recorder.ThinMode">Hide the title bar</s:String>
     <s:String x:Key="Recorder.Fullscreen">Fullscreen mode</s:String>
 
@@ -311,7 +308,6 @@
     <s:String x:Key="Recorder.Continue">Continue</s:String>
     <s:String x:Key="Recorder.Stop">Stop</s:String>
     <s:String x:Key="Recorder.Discard">Discard</s:String>
-    <s:String x:Key="Recorder.Snap">Snap</s:String>
     <s:String x:Key="Recorder.Height">Height</s:String>
     <s:String x:Key="Recorder.Width">Width</s:String>
     <s:String x:Key="Recorder.Fps">Maximum Frames per Second</s:String>

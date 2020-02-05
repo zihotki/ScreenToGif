@@ -98,11 +98,6 @@
         PreStarting = 3,
 
         /// <summary>
-        /// Single shot mode.
-        /// </summary>
-        Snapping = 4,
-
-        /// <summary>
         /// The recording is being discarded.
         /// </summary>
         Discarding = 5

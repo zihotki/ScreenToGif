@@ -15,7 +15,6 @@
     <s:Boolean x:Key="UsePreStart">False</s:Boolean>
     <s:Int32 x:Key="PreStartValue">3</s:Int32>
     <s:Boolean x:Key="FullScreenMode">False</s:Boolean>
-    <s:Boolean x:Key="SnapshotMode">False</s:Boolean>
     <s:Int32 x:Key="SnapshotDefaultDelay">1000</s:Int32>
     <s:Boolean x:Key="FixedFrameRate">False</s:Boolean>
     <s:Boolean x:Key="AsyncRecording">False</s:Boolean>

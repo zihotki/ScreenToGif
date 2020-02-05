@@ -47,11 +47,6 @@ namespace ScreenToGif.Windows.Other
         private bool _recordClicked = false;
 
         /// <summary>
-        /// The delay of each frame took as snapshot.
-        /// </summary>
-        private int? _snapDelay = null;
-
-        /// <summary>
         /// The DPI of the current screen.
         /// </summary>
         private double _scale = 1;
@@ -234,13 +229,6 @@ namespace ScreenToGif.Windows.Other
             _garbageTimer.Start();
 
             #endregion
-
-            #region If Snapshot
-
-            if (UserSettings.All.SnapshotMode)
-                EnableSnapshot_Executed(null, null);
-
-            #endregion
         }
 
         private void Window_StateChanged(object sender, EventArgs e)
@@ -257,7 +245,7 @@ namespace ScreenToGif.Windows.Other
         {
             #region Validate
 
-            if (Stage != Stage.Stopped && Stage != Stage.Snapping)
+            if (Stage != Stage.Stopped)
                 return;
 
             #endregion
@@ -269,7 +257,7 @@ namespace ScreenToGif.Windows.Other
         {
             #region Validate
 
-            if (Stage != Stage.Stopped && Stage != Stage.Snapping)
+            if (Stage != Stage.Stopped)
                 return;
 
             #endregion
@@ -367,7 +355,7 @@ namespace ScreenToGif.Windows.Other
                 RecordPauseButton_Click(null, null);
             else if (Keyboard.Modifiers.HasFlag(UserSettings.All.StopModifiers) && e.Key == UserSettings.All.StopShortcut)
                 StopButton_Click(null, null);
-            else if ((Stage == Stage.Paused || Stage == Stage.Snapping) && Keyboard.Modifiers.HasFlag(UserSettings.All.DiscardModifiers) && e.Key == UserSettings.All.DiscardShortcut)
+            else if (Stage == Stage.Paused && Keyboard.Modifiers.HasFlag(UserSettings.All.DiscardModifiers) && e.Key == UserSettings.All.DiscardShortcut)
                 DiscardButton_Click(null, null);
             else
                 _keyList.Add(new SimpleKeyGesture(e.Key, Keyboard.Modifiers, e.IsUppercase));
@@ -386,10 +374,7 @@ namespace ScreenToGif.Windows.Other
 
         private void RecordPauseButton_Click(object sender, RoutedEventArgs e)
         {
-            if (!UserSettings.All.SnapshotMode)
-                RecordPause();
-            else
-                Snap();
+            RecordPause();
         }
 
         private void StopButton_Click(object sender, RoutedEventArgs e)
@@ -416,76 +401,11 @@ namespace ScreenToGif.Windows.Other
             e.CanExecute = Stage != Stage.Recording && Stage != Stage.PreStarting;
         }
 
-        private void EnableSnapshot_CanExecute(object sender, CanExecuteRoutedEventArgs e)
-        {
-            e.CanExecute = (Stage == Stage.Stopped || Stage == Stage.Snapping || Stage == Stage.Paused) && RecordControlsGrid.IsVisible;
-        }
-
-
         private void Options_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-            var wasSnapshot = UserSettings.All.SnapshotMode;
-
             var options = new Options();
             options.Owner = this;
             options.ShowDialog();
-
-            //Enables or disables the snapshot mode.
-            if (wasSnapshot != UserSettings.All.SnapshotMode)
-            {
-                EnableSnapshot_Executed(sender, e);
-            }
-        }
-
-        private void EnableSnapshot_Executed(object sender, ExecutedRoutedEventArgs e)
-        {
-            if (UserSettings.All.SnapshotMode)
-            {
-                #region SnapShot Recording
-
-                //Set to Snapshot Mode, change the text of the record button to "Snap" and every press of the button, takes a screenshot.
-                Stage = Stage.Snapping;
-                Title = "ScreenToGif - " + FindResource("Recorder.Snapshot");
-
-                if (Project == null || Project.Frames.Count == 0)
-                    Project = new ProjectInfo().CreateProjectFolder(ProjectByType.ScreenRecorder);
-
-                #endregion
-            }
-            else
-            {
-                #region Normal Recording
-
-                _snapDelay = null;
-
-                if (Project.Frames.Count > 0)
-                {
-                    Stage = Stage.Paused;
-                    Title = FindResource("Recorder.Paused").ToString();
-
-                    DiscardButton.BeginStoryboard(FindResource("ShowDiscardStoryboard") as Storyboard, HandoffBehavior.Compose);
-                }
-                else
-                {
-                    Stage = Stage.Stopped;
-                    Title = "ScreenToGif";
-                }
-
-                FrameRate.Stop();
-
-                #region Register the events
-
-                UnregisterEvents();
-
-                if (UserSettings.All.AsyncRecording)
-                    _capture.Tick += NormalAsync_Elapsed;
-                else
-                    _capture.Tick += Normal_Elapsed;
-                
-                #endregion
-
-                #endregion
-            }
         }
 
         private void System_PowerModeChanged(object sender, PowerModeChangedEventArgs e)
@@ -691,7 +611,6 @@ namespace ScreenToGif.Windows.Other
                     #region To Record
 
                     _capture = new Timer { Interval = 1000 / FpsIntegerUpDown.Value };
-                    _snapDelay = null;
 
                     Project = new ProjectInfo().CreateProjectFolder(ProjectByType.ScreenRecorder);
 
@@ -787,43 +706,6 @@ namespace ScreenToGif.Windows.Other
             }
         }
 
-        private void Snap()
-        {
-            #region If region not yet selected
-
-            if (ScreenRegion.IsEmpty)
-            {
-                PickRegion(ReselectSplitButton.SelectedIndex == 1 ? SelectControl.ModeType.Window : ReselectSplitButton.SelectedIndex == 2 ? SelectControl.ModeType.Fullscreen : SelectControl.ModeType.Region);
-                return;
-            }
-
-            #endregion
-
-            if (Project == null || Project.Frames.Count == 0)
-            {
-                _rect = ScreenRegion.Scale(_scale).Offset(Util.Other.RoundUpValue(_scale));
-
-                ReselectSplitButton.BeginStoryboard(this.FindStoryboard("HideReselectStoryboard"), HandoffBehavior.Compose);
-                DiscardButton.BeginStoryboard(this.FindStoryboard("ShowDiscardStoryboard"), HandoffBehavior.Compose);
-
-                Project = new ProjectInfo().CreateProjectFolder(ProjectByType.ScreenRecorder);
-
-                IsRecording = true;
-            }
-
-            _snapDelay = UserSettings.All.SnapshotDefaultDelay;
-
-            #region Take Screenshot (All possibles types)
-
-            if (UserSettings.All.AsyncRecording)
-                NormalAsync_Elapsed(null, null);
-            else
-                Normal_Elapsed(null, null);
-            
-
-            #endregion
-        }
-
         /// <summary>
         /// Stops the recording or the Pre-Start countdown.
         /// </summary>
@@ -847,7 +729,7 @@ namespace ScreenToGif.Windows.Other
 
                     #endregion
                 }
-                else if ((Stage == Stage.PreStarting || Stage == Stage.Snapping) && !Project.Any)
+                else if (Stage == Stage.PreStarting  && !Project.Any)
                 {
                     #region if Pre-Starting or in Snapmode and no Frames, Stops
 
@@ -858,7 +740,7 @@ namespace ScreenToGif.Windows.Other
                     }
 
                     //Only returns to the stopped stage if it was recording.
-                    Stage = Stage == Stage.Snapping ? Stage.Snapping : Stage.Stopped;
+                    Stage = Stage.Stopped;
 
                     //Enables the controls that are disabled while recording;
                     FpsIntegerUpDown.IsEnabled = true;
@@ -1055,9 +937,6 @@ namespace ScreenToGif.Windows.Other
                 case Stage.PreStarting:
 
                     break;
-                case Stage.Snapping:
-
-                    break;
                 case Stage.Recording:
 
                     break;
@@ -1128,17 +1007,8 @@ namespace ScreenToGif.Windows.Other
                 DiscardButton.BeginStoryboard(this.FindStoryboard("HideDiscardStoryboard"), HandoffBehavior.Compose);
                 ReselectSplitButton.BeginStoryboard(this.FindStoryboard("ShowReselectStoryboard"), HandoffBehavior.Compose);
 
-                if (!UserSettings.All.SnapshotMode)
-                {
-                    //Only display the Record text when not in snapshot mode. 
-                    Title = "ScreenToGif";
-                    Stage = Stage.Stopped;
-                }
-                else
-                {
-                    Stage = Stage.Snapping;
-                    EnableSnapshot_Executed(null, null);
-                }
+                Title = "ScreenToGif";
+                Stage = Stage.Stopped;
             });
 
             GC.Collect();
@@ -1196,7 +1066,7 @@ namespace ScreenToGif.Windows.Other
 
             var fileName = $"{Project.FullPath}{FrameCount}.png";
 
-            Project.Frames.Add(new FrameInfo(fileName, FrameRate.GetMilliseconds(_snapDelay), _keyList));
+            Project.Frames.Add(new FrameInfo(fileName, FrameRate.GetMilliseconds(), _keyList));
 
             _keyList.Clear();
 
@@ -1226,7 +1096,7 @@ namespace ScreenToGif.Windows.Other
             if (!RecordControlsGrid.IsVisible)
                 return;
 
-            Project.Frames.Add(new FrameInfo(fileName, FrameRate.GetMilliseconds(_snapDelay), cursorPosX, cursorPosY, _recordClicked, _keyList));
+            Project.Frames.Add(new FrameInfo(fileName, FrameRate.GetMilliseconds(), cursorPosX, cursorPosY, _recordClicked, _keyList));
 
             _keyList.Clear();
 
@@ -1246,7 +1116,7 @@ namespace ScreenToGif.Windows.Other
 
             var fileName = $"{Project.FullPath}{FrameCount}.png";
 
-            Project.Frames.Add(new FrameInfo(fileName, FrameRate.GetMilliseconds(_snapDelay), _keyList));
+            Project.Frames.Add(new FrameInfo(fileName, FrameRate.GetMilliseconds(), _keyList));
 
             _keyList.Clear();
 
@@ -1264,7 +1134,7 @@ namespace ScreenToGif.Windows.Other
 
             var fileName = $"{Project.FullPath}{FrameCount}.png";
 
-            Project.Frames.Add(new FrameInfo(fileName, FrameRate.GetMilliseconds(_snapDelay), cursorPosX, cursorPosY, _recordClicked, _keyList));
+            Project.Frames.Add(new FrameInfo(fileName, FrameRate.GetMilliseconds(), cursorPosX, cursorPosY, _recordClicked, _keyList));
 
             _keyList.Clear();
 

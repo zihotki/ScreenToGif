@@ -15,8 +15,8 @@
                 <ResourceDictionary Source="/Resources/IconSet.xaml"/>
                 <ResourceDictionary Source="/Resources/Glyphs.xaml"/>
                 <ResourceDictionary Source="/Resources/Backgrounds.xaml"/>
-                <ResourceDictionary Source="/Themes/DataGridStyle.xaml"/>
-                <ResourceDictionary Source="/Resources/Settings.xaml"/>
+                <!--<ResourceDictionary Source="/Themes/DataGridStyle.xaml"/>-->
+                <ResourceDictionary Source="/Resources/Settings.xaml"/> 
 
                 <ResourceDictionary Source="/Themes/Buttons.xaml"/>
                 <ResourceDictionary Source="/Themes/Common.xaml"/>

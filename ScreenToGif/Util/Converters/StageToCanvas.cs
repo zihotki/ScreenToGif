@@ -23,8 +23,6 @@ namespace ScreenToGif.Util.Converters
                     return (Canvas)Application.Current.FindResource("Vector.Pause");
                 case Stage.Paused:
                     return (Canvas)Application.Current.FindResource("Vector.Record");
-                case Stage.Snapping:
-                    return (Canvas)Application.Current.FindResource("Vector.Camera.Add");
             }
 
             return (Canvas)Application.Current.FindResource("Vector.Record");

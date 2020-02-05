@@ -134,6 +134,42 @@ namespace ScreenToGif.Util
             new InputGestureCollection { new KeyGesture(Key.O, ModifierKeys.Control | ModifierKeys.Alt, "Ctrl + Alt + O") });
 
         /// <summary>
+        /// Create Local Settings Command, Ctrl + Alt + C
+        /// </summary>
+        public static RoutedUICommand CreateLocalSettings { get; set; } = new RoutedUICommand("Create Local Settings", "CreateLocalSettings", typeof(Commands),
+            new InputGestureCollection { new KeyGesture(Key.C, ModifierKeys.Control | ModifierKeys.Alt, "Ctrl + Alt + C") });
+
+        /// <summary>
+        /// Remove Local Settings Command, Ctrl + Alt + D
+        /// </summary>
+        public static RoutedUICommand RemoveLocalSettings { get; set; } = new RoutedUICommand("Remove Local Settings", "RemoveLocalSettings", typeof(Commands),
+            new InputGestureCollection { new KeyGesture(Key.D, ModifierKeys.Control | ModifierKeys.Alt, "Ctrl + Alt + D") });
+
+        /// <summary>
+        /// Open Local Settings Command, Ctrl + Shift + A
+        /// </summary>
+        public static RoutedUICommand OpenLocalSettings { get; set; } = new RoutedUICommand("Open Local Settings", "OpenLocalSettings", typeof(Commands),
+            new InputGestureCollection { new KeyGesture(Key.A, ModifierKeys.Control | ModifierKeys.Shift, "Ctrl + Shift + A") });
+
+        /// <summary>
+        /// Remove AppData Settings Command, Ctrl + Alt + F
+        /// </summary>
+        public static RoutedUICommand RemoveAppDataSettings { get; set; } = new RoutedUICommand("Remove AppData Settings", "RemoveAppDataSettings", typeof(Commands),
+            new InputGestureCollection { new KeyGesture(Key.F, ModifierKeys.Control | ModifierKeys.Alt, "Ctrl + Alt + F") });
+
+        /// <summary>
+        /// Open AppData Settings Command, Ctrl + Alt + A
+        /// </summary>
+        public static RoutedUICommand OpenAppDataSettings { get; set; } = new RoutedUICommand("Open AppData Settings", "OpenAppDataSettings", typeof(Commands),
+            new InputGestureCollection { new KeyGesture(Key.A, ModifierKeys.Control | ModifierKeys.Alt, "Ctrl + Alt + A") });
+
+        /// <summary>
+        /// Clear all completed encodings, Ctrl + D
+        /// </summary>
+        public static RoutedUICommand ClearAll { get; set; } = new RoutedUICommand("Clear All", "ClearAll", typeof(Commands),
+            new InputGestureCollection { new KeyGesture(Key.D, ModifierKeys.Control, "Ctrl + D") });
+
+        /// <summary>
         /// Enable/Disable Thin mode Command, No Input
         /// </summary>
         public static RoutedUICommand EnableThinMode { get; set; } = new RoutedUICommand("Enable Thin Mode", "EnableThinMode", typeof(Commands));

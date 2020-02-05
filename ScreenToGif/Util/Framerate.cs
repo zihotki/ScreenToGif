@@ -19,7 +19,7 @@ namespace ScreenToGif.Util
         /// <summary>
         /// Prepares the FrameRate monitor.
         /// </summary>
-        /// <param name="interval">The selected interval of each snapshot.</param>
+        /// <param name="interval">The selected interval of each frame shot.</param>
         public static void Start(int interval)
         {
             _stopwatch = new Stopwatch();
@@ -32,12 +32,8 @@ namespace ScreenToGif.Util
         /// Gets the diff between the last call.
         /// </summary>
         /// <returns>The ammount of seconds.</returns>
-        public static int GetMilliseconds(int? framerate = null)
+        public static int GetMilliseconds()
         {
-            //Specific delay, for the snapshot feature, for example.
-            if (framerate.HasValue)
-                return framerate.Value;
-
             if (_fixedFrameRate)
                 return _interval;
 
